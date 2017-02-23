@@ -8,8 +8,9 @@
 
 volatile uint32_t vsync_rising_edge_flag = false;
 uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE] = {0};
-uint8_t last_elements[4] = {0};
-uint32_t image_length = 0;
+uint16_t *start_of_image_ptr = 0;
+uint16_t *end_of_image_ptr = 0;
+//uint8_t last_elements[4] = {0};
 
 /**
  * \brief Handler for vertical synchronisation using by the OV2640 image
@@ -183,10 +184,10 @@ void start_capture(void)
 			PIO_PCIMR_RXBUFF)) {
 	}
 
-	last_elements[0] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-4];
-	last_elements[1] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-3];
-	last_elements[2] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-2];
-	last_elements[3] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-1];
+	//last_elements[0] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-4];
+	//last_elements[1] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-3];
+	//last_elements[2] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-2];
+	//last_elements[3] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-1];
 
 	/* Disable pio capture*/
 	pio_capture_disable(OV_DATA_BUS_PIO);
@@ -200,7 +201,7 @@ void start_capture(void)
  */
 uint8_t find_image_len(void) {
 	uint16_t *reading_ptr =  image_dest_buffer_ptr;
-	uint16_t *start_of_image_ptr = reading_ptr;
+	//uint16_t *start_of_image_ptr = reading_ptr;
 	while((*reading_ptr != 0xD8FF) && (reading_ptr < (image_dest_buffer_ptr + CAM_BUFFER_SIZE)))
 	{
 		reading_ptr++;
@@ -255,6 +256,9 @@ uint8_t find_image_len(void) {
 	{
 		return 0;
 	}
+	// need to get past end of file to include it in image
+	reading_ptr++;
+	end_of_image_ptr = reading_ptr;
 	image_length = (uint32_t) (((uint8_t*) reading_ptr) - ((uint8_t*) start_of_image_ptr));
 	return 1;
 }

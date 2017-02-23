@@ -203,7 +203,7 @@ void write_image_to_file(void){
 	
 	for (int i = 0; i < image_length; i++)
 	{
-		usart_putchar(BOARD_USART, (uint32_t) image_dest_buffer_ptr[i]);
+		usart_putchar(BOARD_USART, (uint32_t) ((uint8_t*) start_of_image_ptr)[i]);
 	}
 }
 

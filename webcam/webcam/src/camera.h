@@ -19,6 +19,8 @@ uint32_t image_length;
 volatile uint32_t vsync_rising_edge_flag;
 /* Pointer to the image data destination buffer */
 uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE];
+uint16_t *start_of_image_ptr;
+uint16_t *end_of_image_ptr;
 //uint8_t last_elements[4];
 
 
