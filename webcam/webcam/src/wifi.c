@@ -48,8 +48,11 @@ void WIFI_USART_Handler(void)
  *  \brief Processes incoming bytes.
  */
 void process_incoming_byte(uint8_t inByte) {
-	input_buffer[buffer_index++] = inByte;
-	ioport_toggle_pin_level(LED_PIN);
+	if(!data_recieved)
+	{
+		input_buffer[buffer_index] = inByte;
+		buffer_index++;
+	}
 }
 
 /**
@@ -96,7 +99,7 @@ void configure_usart_wifi(void)
 void wifi_command_response_handler(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
-	
+	ioport_toggle_pin_level(LED_PIN);
 	process_data_wifi();
 }
 
@@ -131,6 +134,7 @@ void configure_wifi_comm_pin(void){
 	NVIC_EnableIRQ((IRQn_Type)WIFI_COMM_ID);
 	
 	pio_enable_interrupt(WIFI_COMM_PIO, WIFI_COMM_PIN_MSK);
+	data_recieved = 0;
 }
 
 /**

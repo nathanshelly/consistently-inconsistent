@@ -47,6 +47,12 @@ int main (void)
 	//init_camera();
 	//configure_camera();
 	
+	usart_write_line(BOARD_USART, "get wl n s\r\n");
+	
+	delay_ms(1000);
+	data_recieved = 0;
+
+	
 	//usart_write_line(BOARD_USART, "\r\n");
 	write_wifi_command("\r\n", 1);
 	
@@ -57,9 +63,9 @@ int main (void)
 	//write_wifi_command("get wl n s\r\n", 1);
 	
 	usart_write_line(BOARD_USART, "get wl n s\r\n");
-	delay_ms(1000);
-		
 	
+	
+	delay_ms(1000);
 	data_recieved = 0;
 	//write_wifi_command("set sy c e off\r\n", 1);
 	//write_wifi_command("set sy c e off\r\n", 1);
@@ -79,8 +85,6 @@ int main (void)
 	}
 	
 	usart_write_line(BOARD_USART, "reboot\r\n");
-	
-	
 	
 	int associated = 0;
 	int seconds = 0;
