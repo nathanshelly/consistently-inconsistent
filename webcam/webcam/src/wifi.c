@@ -179,6 +179,7 @@ void configure_wifi_web_setup_pin(void){
  *  \brief Writes wifi command.
  */
 void write_wifi_command(char* comm, uint8_t cnt){
+	data_recieved = 0;
 	usart_write_line(BOARD_USART, comm);
 	
 	timeout_counter = 0;

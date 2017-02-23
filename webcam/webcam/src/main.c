@@ -44,47 +44,12 @@ int main (void)
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
 			
 	// set up camera	
-	//init_camera();
-	//configure_camera();
+	init_camera();
+	configure_camera();
 	
-	usart_write_line(BOARD_USART, "get wl n s\r\n");
-	
-	delay_ms(1000);
-	data_recieved = 0;
-
-	
-	//usart_write_line(BOARD_USART, "\r\n");
 	write_wifi_command("\r\n", 1);
-	
-	
-	//delay_ms(1000);
-	data_recieved = 0;
-	
-	//write_wifi_command("get wl n s\r\n", 1);
-	
-	usart_write_line(BOARD_USART, "get wl n s\r\n");
-	
-	
-	delay_ms(1000);
-	data_recieved = 0;
-	//write_wifi_command("set sy c e off\r\n", 1);
-	//write_wifi_command("set sy c e off\r\n", 1);
-	//usart_write_line(BOARD_USART, "set sy c e off\r\n");
-	
-	//usart_write_line(BOARD_USART, "set sy c e off\r\n");
-	write_wifi_command("set sy c e off\r\n", 1);
-	
-	//delay_ms(1000);
-	data_recieved = 0;
-	
-	write_wifi_command("set sy c e off\r\n", 1);
-	//usart_write_line(BOARD_USART, "set sy c e off\r\n");
-	
-	while(1) {
 		
-	}
-	
-	usart_write_line(BOARD_USART, "reboot\r\n");
+	write_wifi_command("reboot\r\n", 10);
 	
 	int associated = 0;
 	int seconds = 0;
@@ -100,7 +65,7 @@ int main (void)
 	
 	buffer_index = 0;
 	
-	write_wifi_command("set sy c e off\r\n", 5);
+	write_wifi_command("set sy c e off\r\n", 5);	
 	write_wifi_command("set sy c p off\r\n", 5);
 
 	while(1) {
@@ -111,19 +76,26 @@ int main (void)
 		write_wifi_command("get wl n s\r\n", 1);
 		if(strstr(input_buffer, "2"))
 		{
-			// have network
-			write_wifi_command("poll all\r\n", 2);
-			if(!strstr(input_buffer, "None"))
+			start_capture();
+			if (find_image_len())
 			{
-				start_capture();
-				if (find_image_len())
-				{
-					write_image_to_file();
-					write_wifi_command("list\r\n", 2);
-					
-					// strstr(input_buffer, "None")
-				}
+				write_image_to_file();
 			}
+			// have network
+			
+			// EDIT THIS AT SOME POINT FOR STREAMS
+			//write_wifi_command("poll all\r\n", 2);
+			//if(!strstr(input_buffer, "None"))
+			//{
+				//start_capture();
+				//if (find_image_len())
+				//{
+					//write_image_to_file();
+					//write_wifi_command("list\r\n", 2);
+					//
+					//// strstr(input_buffer, "None")
+				//}
+			//}
 		}
 	}
 	return 0;
