@@ -162,17 +162,17 @@ void configure_wifi_web_setup_pin(void){
 	pmc_enable_periph_clk(WIFI_SETUP_ID);
 
 	/* Adjust PIO debounce filter using a 10 Hz filter. */
-	pio_set_debounce_filter(WIFI_SETUP, WIFI_SETUP_MASK, 10);
+	pio_set_debounce_filter(WIFI_SETUP_PIO, WIFI_SETUP_MASK, 10);
 
 	/* Initialize PIO interrupt handler, see PIO definition in conf_board.h */
-	pio_handler_set(WIFI_SETUP, WIFI_SETUP_ID, WIFI_SETUP_MASK,
+	pio_handler_set(WIFI_SETUP_PIO, WIFI_SETUP_ID, WIFI_SETUP_MASK,
 			WIFI_SETUP_ATTR, wifi_web_setup_handler);
 			
 	/* Enable PIO controller IRQs. */
 	NVIC_EnableIRQ((IRQn_Type) WIFI_SETUP_ID);
 
 	/* Enable PIO interrupt lines. */
-	pio_enable_interrupt(WIFI_SETUP, WIFI_SETUP_MASK);
+	pio_enable_interrupt(WIFI_SETUP_PIO, WIFI_SETUP_MASK);
 }
 
 /**
