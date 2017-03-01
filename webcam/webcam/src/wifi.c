@@ -48,11 +48,8 @@ void WIFI_USART_Handler(void)
  *  \brief Processes incoming bytes.
  */
 void process_incoming_byte(uint8_t inByte) {
-	if(!data_recieved)
-	{
-		input_buffer[buffer_index] = inByte;
-		buffer_index++;
-	}
+	input_buffer[buffer_index] = inByte;
+	buffer_index++;
 }
 
 /**

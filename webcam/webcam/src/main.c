@@ -47,7 +47,7 @@ int main (void)
 	init_camera();
 	configure_camera();
 	
-	write_wifi_command("\r\n", 1);
+	//write_wifi_command("\r\n", 1);
 		
 	write_wifi_command("reboot\r\n", 10);
 	
@@ -58,11 +58,11 @@ int main (void)
 	wifi_setup_flag = false;
 		
 	while(!associated){
-		delay_ms(1000);
 		associated = strstr(input_buffer, "[Associated]\r\n");
-		if (seconds > 20){
+		if (seconds > 100){
 			blink_LED(50);
 		}
+		delay_ms(200);
 		seconds++;
 	}
 	
@@ -75,6 +75,7 @@ int main (void)
 		blink_LED(50);
 		if(wifi_setup_flag) {
 			write_wifi_command("setup web\r\n", 2000);
+			//delay_ms(1000);
 			
 			seconds = 0;
 			
