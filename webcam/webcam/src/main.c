@@ -51,8 +51,11 @@ int main (void)
 		
 	write_wifi_command("reboot\r\n", 10);
 	
+	int connected = 0;
 	int associated = 0;
 	int seconds = 0;
+	uint8_t* token = 0;
+	wifi_setup_flag = false;
 		
 	while(!associated){
 		delay_ms(1000);
@@ -69,33 +72,60 @@ int main (void)
 	write_wifi_command("set sy c p off\r\n", 5);
 
 	while(1) {
+		blink_LED(50);
 		if(wifi_setup_flag) {
 			write_wifi_command("setup web\r\n", 2000);
+			
+			seconds = 0;
+			
+			while(!connected){
+				delay_ms(1000);
+				connected = strstr(input_buffer, "[Associated]\r\n");
+				if (seconds > 300) {
+					blink_LED(50);
+				}
+				seconds++;
+			}
+			
+			wifi_setup_flag = false;
 		}
 		
 		write_wifi_command("get wl n s\r\n", 1);
 		if(strstr(input_buffer, "2"))
 		{
-			start_capture();
-			if (find_image_len())
-			{
-				write_image_to_file();
-			}
 			// have network
-			
-			// EDIT THIS AT SOME POINT FOR STREAMS
-			//write_wifi_command("poll all\r\n", 2);
-			//if(!strstr(input_buffer, "None"))
-			//{
-				//start_capture();
-				//if (find_image_len())
-				//{
-					//write_image_to_file();
-					//write_wifi_command("list\r\n", 2);
-					//
-					//// strstr(input_buffer, "None")
-				//}
-			//}
+			write_wifi_command("poll all\r\n", 2);
+			if(!strstr(input_buffer, "None"))
+			{
+				// have open streams
+				start_capture();
+				if (find_image_len())
+				{
+					write_image_to_file();
+				}
+				
+				delay_ms(200);
+				write_wifi_command("list\r\n", 2);
+				delay_ms(200);
+				
+				/* throw out first two tokens */
+				token = strtok(input_buffer, "#");
+				token = strtok(NULL, "#");
+				
+				/* walk through other tokens */
+				while(token != NULL)
+				{
+					//printf("%s\n", token);
+					token = strtok(NULL, "#");
+					if(strstr(token, "WEBS"))
+					{
+						char* templated_command[40];
+						sprintf(templated_command, "write %c 1\r\n", token[1]);
+						write_wifi_command(templated_command, 2);
+						write_wifi_command("0", 2);
+					}
+				}
+			}
 		}
 	}
 	return 0;

@@ -1,1 +1,4 @@
 *.in
+webcam/webcam/Debug
+webcam/webcam/src/ASF
+
