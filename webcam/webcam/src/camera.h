@@ -14,15 +14,12 @@
 #include "conf_clock.h"
 
 #define CAM_BUFFER_SIZE					100000
-uint32_t image_length;
 
+uint32_t image_length;
 volatile uint32_t vsync_rising_edge_flag;
-/* Pointer to the image data destination buffer */
 uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE];
 uint16_t *start_of_image_ptr;
 uint16_t *end_of_image_ptr;
-//uint8_t last_elements[4];
-
 
 void vsync_handler(uint32_t ul_id, uint32_t ul_mask);
 void init_vsync_interrupts(void);
@@ -52,27 +49,6 @@ uint8_t find_image_len(void);
 #define OV_HSYNC_ID                    ID_PIOA
 #define OV_HSYNC_TYPE                  PIO_PULLUP
 
-///* Define display function and line size of captured picture according to the */
-///* current mode (color or black and white) */
-//#ifdef DEFAULT_MODE_COLORED
-//#define _display() draw_frame_yuv_color_int()
-//
-///* (IMAGE_WIDTH *2 ) because ov7740 use YUV422 format in color mode */
-///* (draw_frame_yuv_color_int for more details) */
-//uint16_t image_width= (IMAGE_WIDTH * 2);
-//#else
-//#define _display() draw_frame_yuv_bw8()
-//
-//uint16_t image_width= (IMAGE_WIDTH);
-//#endif
-
-#define CONF_BOARD_OV2640_IMAGE_SENSOR
-
-/* Image sensor board defines. */
-// Image sensor Power pin.
-//#define OV_POWER_PIO                   PIOC // this is also probably wrong
-//#define OV_POWER_MASK                  ID_PIOC
-
 #define ID_BOARD_TWI				   ID_TWI0
 #define BOARD_TWI			           TWI0
 #define BOARD_TWI_IRQn		           TWI0_IRQn
@@ -96,7 +72,7 @@ uint8_t find_image_len(void);
 #define OV_DATA_BUS_TYPE               PIO_INPUT
 #define OV_DATA_BUS_ATTR               PIO_DEFAULT
       
-//
+
 //#define OV_DATA_BUS_D0                 PIO_PA24_IDX
 //#define OV_DATA_BUS_D1                 PIO_PA25_IDX
 //#define OV_DATA_BUS_D2                 PIO_PA26_IDX

@@ -5,7 +5,6 @@
  *  Author: Nathan
  */ 
 
-
 #ifndef WIFI_H_
 #define WIFI_H_
 
@@ -13,6 +12,18 @@
 #include "conf_board.h"
 #include "conf_clock.h"
 #include <string.h>
+
+/** All interrupt mask. */
+#define ALL_INTERRUPT_MASK  0xffffffff
+#define BUFFER_SIZE			500
+
+// declare all of the variables!!!
+volatile uint8_t input_buffer[BUFFER_SIZE];
+volatile uint32_t buffer_index;
+volatile uint8_t timeout_counter;
+volatile uint32_t data_recieved;
+volatile uint32_t wifi_setup_flag;
+volatile uint32_t received_byte_wifi;
 
 void WIFI_USART_Handler(void);
 void process_incoming_byte(uint8_t inByte);
@@ -26,7 +37,6 @@ void write_wifi_command(char* comm, uint8_t cnt);
 void write_image_to_file(void);
 void print_to_file(char* message, int num_bytes);
 void blink_LED(int ms_blink);
-
 
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0
@@ -46,17 +56,5 @@ void blink_LED(int ms_blink);
 #define WIFI_SETUP_ID            ID_PIOB
 #define WIFI_SETUP_TYPE          PIO_INPUT
 #define WIFI_SETUP_ATTR          PIO_PULLUP | PIO_DEBOUNCE | PIO_IT_RISE_EDGE
-
-/** All interrupt mask. */
-#define ALL_INTERRUPT_MASK  0xffffffff
-#define BUFFER_SIZE					500
-
-// declare all of the variables!!!
-volatile uint8_t input_buffer[BUFFER_SIZE];
-volatile uint32_t wifi_setup_flag;
-volatile uint32_t received_byte_wifi;
-volatile uint32_t buffer_index;
-volatile uint8_t timeout_counter;
-volatile uint32_t data_recieved;
 
 #endif /* WIFI_H_ */

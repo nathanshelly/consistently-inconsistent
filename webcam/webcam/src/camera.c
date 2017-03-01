@@ -10,7 +10,7 @@ volatile uint32_t vsync_rising_edge_flag = false;
 uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE] = {0};
 uint16_t *start_of_image_ptr = 0;
 uint16_t *end_of_image_ptr = 0;
-//uint8_t last_elements[4] = {0};
+uint32_t image_length = 0;
 
 /**
  * \brief Handler for vertical synchronisation using by the OV2640 image
@@ -201,7 +201,6 @@ void start_capture(void)
  */
 uint8_t find_image_len(void) {
 	uint16_t *reading_ptr =  image_dest_buffer_ptr;
-	//uint16_t *start_of_image_ptr = reading_ptr;
 	while((*reading_ptr != 0xD8FF) && (reading_ptr < (image_dest_buffer_ptr + CAM_BUFFER_SIZE)))
 	{
 		reading_ptr++;
@@ -209,44 +208,12 @@ uint8_t find_image_len(void) {
 	
 	if (*reading_ptr != 0xD8FF)
 	{
-		// fuck
 		return 0;
 	}
 	else
 	{
 		start_of_image_ptr = reading_ptr;
 	}
-	
-	//while(reading_ptr < image_dest_buffer_ptr + CAM_BUFFER_SIZE) {
-		//switch(*reading_ptr) {
-		//case 0xD8FF:
-			//// fuck
-			//return 0;
-		//case 0x01FF:
-		//case 0xD0FF:
-		//case 0xD1FF:
-		//case 0xD2FF:
-		//case 0xD3FF:
-		//case 0xD4FF:
-		//case 0xD5FF:
-		//case 0xD6FF:
-		//case 0xD7FF:
-			//reading_ptr++;
-			//break;
-		//case 0xD9FF:
-			//// returns 1 on success
-			//image_length = (uint32_t) (((uint8_t*) reading_ptr) - image_dest_buffer_ptr);
-			//return 1;
-			//break;
-		//default:
-			//reading_ptr++;
-			//length = *reading_ptr;
-			//// swap endianness
-			//length = (length>>8) | (length<<8);
-			//temp_ptr = (uint16_t *) (((uint8_t *) reading_ptr) + length);
-			//reading_ptr = temp_ptr;
-		//}	
-	//}
 	
 	while((*reading_ptr != 0xD9FF) && (reading_ptr < (image_dest_buffer_ptr + CAM_BUFFER_SIZE)))
 	{

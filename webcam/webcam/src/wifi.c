@@ -10,10 +10,11 @@
 
 volatile uint8_t input_buffer[BUFFER_SIZE] = {0};
 volatile uint32_t buffer_index = 0;
-volatile uint32_t wifi_setup_flag = false;
-volatile uint32_t received_byte_wifi = 0;
 volatile uint8_t timeout_counter = 0;
 volatile uint32_t data_recieved = 0;
+volatile uint32_t wifi_setup_flag = false;
+volatile uint32_t received_byte_wifi = 0;
+
 
 /**
  *  \brief Interrupt handler for USART.
