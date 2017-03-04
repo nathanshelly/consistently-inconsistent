@@ -49,13 +49,16 @@ int main (void)
 		
 	write_wifi_command("reboot\r\n", 10);
 	
-	int connected = 0;
+	
 	int associated = 0;
 	int seconds = 0;
 	uint8_t* token = 0;
 	wifi_setup_flag = false;
 		
 	while(!associated){
+		if(wifi_setup_flag) {
+			wifi_setup();
+		}
 		associated = strstr(input_buffer, "[Associated]\r\n");
 		if (seconds > 100){
 			blink_LED(50);
@@ -70,23 +73,8 @@ int main (void)
 	write_wifi_command("set sy c p off\r\n", 5);
 
 	while(1) {
-		blink_LED(50);
 		if(wifi_setup_flag) {
-			write_wifi_command("setup web\r\n", 2000);
-			
-			seconds = 0;
-			
-			while(!connected){
-				
-				connected = strstr(input_buffer, "[Associated]\r\n");
-				if (seconds > 1500) {
-					blink_LED(50);
-				}
-				delay_ms(200);
-				seconds++;
-			}
-			
-			wifi_setup_flag = false;
+			wifi_setup();
 		}
 		
 		write_wifi_command("get wl n s\r\n", 1);
@@ -103,9 +91,9 @@ int main (void)
 					write_image_to_file();
 				}
 				
-				delay_ms(200);
+				delay_ms(50);
 				write_wifi_command("list\r\n", 2);
-				delay_ms(200);
+				delay_ms(50);
 				
 				/* throw out first two tokens */
 				token = strtok(input_buffer, "#");
@@ -114,16 +102,17 @@ int main (void)
 				/* walk through other tokens */
 				while(token != NULL)
 				{
-					//printf("%s\n", token);
 					token = strtok(NULL, "#");
 					if(strstr(token, "WEBS"))
 					{
-						char* templated_command[40];
+						char* templated_command[15];
 						sprintf(templated_command, "write %c 1\r\n", token[1]);
 						write_wifi_command(templated_command, 2);
 						write_wifi_command("0", 2);
 					}
 				}
+			} else {
+				delay_ms(1000);
 			}
 		}
 	}

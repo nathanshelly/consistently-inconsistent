@@ -182,11 +182,12 @@ void write_wifi_command(char* comm, uint8_t cnt){
 	
 	timeout_counter = 0;
 	while(timeout_counter < cnt && !data_recieved) {
-		delay_ms(1000);
+		// leave long
+		delay_ms(200);
 		timeout_counter++;
 	}
 	
-	delay_ms(1000);
+	delay_ms(100);
 }
 
 /**
@@ -195,7 +196,7 @@ void write_wifi_command(char* comm, uint8_t cnt){
 void write_image_to_file(void){
 	// will have already checked if image is valid
 	write_wifi_command("fde image.jpg\r\n", 2);
-	char* templated_command[40];
+	char* templated_command[35];
 	sprintf(templated_command, "fcr image.jpg %d\r\n", image_length);
 	usart_write_line(BOARD_USART, templated_command);
 	
@@ -219,4 +220,24 @@ void blink_LED(int ms_blink){
 	delay_ms(ms_blink);
 	ioport_toggle_pin_level(LED_PIN);
 	delay_ms(ms_blink);
+}
+
+void wifi_setup(void){
+	
+	int connected = 0;
+	int seconds = 0;
+	
+	write_wifi_command("setup web\r\n", 2000);
+			
+	while(!connected){
+				
+		connected = strstr(input_buffer, "[Associated]\r\n");
+		if (seconds > 1500) {
+			blink_LED(50);
+		}
+		delay_ms(200);
+		seconds++;
+	}
+			
+	wifi_setup_flag = false;
 }
