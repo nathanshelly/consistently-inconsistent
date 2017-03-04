@@ -45,6 +45,7 @@ int main (void)
 			
 	// set up camera	
 	init_camera();
+	blink_LED(250);
 	configure_camera();
 		
 	write_wifi_command("reboot\r\n", 10);
