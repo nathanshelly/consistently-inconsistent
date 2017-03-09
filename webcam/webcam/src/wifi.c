@@ -39,18 +39,11 @@ void WIFI_USART_Handler(void)
 	
 	if (ul_status & US_CSR_RXRDY) {
 		recieved_char_flag = usart_read(BOARD_USART, &received_byte_wifi);
-		process_incoming_byte((uint8_t) received_byte_wifi);
+		input_buffer[buffer_index] = (uint8_t) received_byte_wifi;
+		buffer_index++;
 	}	
 	
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
-}
-
-/**
- *  \brief Processes incoming bytes.
- */
-void process_incoming_byte(uint8_t inByte) {
-	input_buffer[buffer_index] = inByte;
-	buffer_index++;
 }
 
 /**
@@ -98,13 +91,7 @@ void wifi_command_response_handler(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
 	ioport_toggle_pin_level(LED_PIN);
-	process_data_wifi();
-}
-
-/**
- *  \brief Processes data from wifi.
- */
-void process_data_wifi(void){
+	
 	input_buffer[buffer_index] = 0;
 	data_recieved = 1;
 	buffer_index = 0;

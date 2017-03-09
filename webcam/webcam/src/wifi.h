@@ -26,10 +26,10 @@ volatile uint32_t wifi_setup_flag;
 volatile uint32_t received_byte_wifi;
 
 void WIFI_USART_Handler(void);
-void process_incoming_byte(uint8_t inByte);
+//void process_incoming_byte(uint8_t inByte);
 void configure_usart_wifi(void);
 void wifi_command_response_handler(uint32_t ul_id, uint32_t ul_mask);
-void process_data_wifi(void);
+//void process_data_wifi(void);
 void configure_wifi_comm_pin(void);
 void wifi_web_setup_handler(uint32_t ul_id, uint32_t ul_mask);
 void configure_wifi_web_setup_pin(void);
