@@ -9,8 +9,6 @@
 volatile uint32_t vsync_rising_edge_flag = false;
 uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE] = {0};
 uint8_t *start_of_image_ptr = 0;
-//uint16_t *end_of_image_ptr = 0;
-//uint32_t image_length = 0;
 
 /**
  * \brief Handler for vertical synchronisation using by the OV2640 image
@@ -199,6 +197,7 @@ void start_capture(void)
 
 /**
  *  \brief Finds image len.
+	Returns a uint32_t for the length
  */
 uint32_t find_image_len(void) {
 	uint16_t *reading_ptr =  image_dest_buffer_ptr;
@@ -226,6 +225,5 @@ uint32_t find_image_len(void) {
 	}
 	// need to get past end of file to include it in image
 	reading_ptr++;
-	//end_of_image_ptr = reading_ptr;
 	return (uint32_t) (((uint8_t*) reading_ptr) - ((uint8_t*) image_dest_buffer_ptr));
 }

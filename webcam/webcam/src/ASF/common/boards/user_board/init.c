@@ -24,46 +24,38 @@ void board_init(void)
 	
 	ioport_init();
 		
+	// initialize test LED pin
 	gpio_configure_pin(LED_PIN, LED_FLAGS);
 	gpio_configure_pin(LED0_GPIO, LED0_FLAGS);
-	
-	/* Set output direction on the given LED IOPORTs */
 	ioport_set_pin_dir(LED_PIN, IOPORT_DIR_OUTPUT);
 	ioport_set_pin_level(LED_PIN, false);
 	
-	
-	// configure MCU RTS as a gpio and drive it low
+	// initialize MCU RTS as a gpio and drive it low
 	gpio_configure_pin(RTS_LOW, RTS_LOW_FLAGS);
 	gpio_configure_pin(RTS_LOW_GPIO, RTS_LOW_GPIO_FLAGS);
 	ioport_set_pin_dir(RTS_LOW, IOPORT_DIR_OUTPUT);
 	ioport_set_pin_level(RTS_LOW, false);
-	
-	gpio_configure_pin(CAM_RST, CAM_RST_FLAGS);
-	ioport_set_pin_dir(CAM_RST, IOPORT_DIR_OUTPUT);
-	ioport_set_pin_level(CAM_RST, false);
 
-	// configure network status pin
+	// initialize network status pin
 	gpio_configure_pin(NET_PIN, NET_PIN_FLAGS);
 	ioport_set_pin_dir(NET_PIN, IOPORT_DIR_INPUT);
 	ioport_set_pin_mode(NET_PIN, IOPORT_MODE_PULLUP);
-
-	gpio_configure_pin(PIN_PCK1, PIN_PCK1_FLAGS);
-	gpio_configure_pin(TWI0_DATA_GPIO, TWI0_DATA_FLAGS);
-	gpio_configure_pin(TWI0_CLK_GPIO, TWI0_CLK_FLAGS);
 	
-	///* Configure UART pins */
-	//#ifdef CONF_BOARD_UART_CONSOLE
-	//gpio_configure_group(PINS_UART_PIO, PINS_UART, PINS_UART_FLAGS);
-	//#endif
-	
+	// initialize USART pins
 	gpio_configure_pin(PIN_USART0_RXD_IDX, PIN_USART0_RXD_FLAGS);
 	gpio_configure_pin(PIN_USART0_TXD_IDX, PIN_USART0_TXD_FLAGS);
 	gpio_configure_pin(PIN_USART0_CTS_IDX, PIN_USART0_CTS_FLAGS);
-	//gpio_configure_pin(PIN_USART0_RTS_IDX, PIN_USART0_RTS_FLAGS);
+	//gpio_configure_pin(PIN_USART0_RTS_IDX, PIN_USART0_RTS_FLAGS);	// don't configure RTS pin as RTS
 	
-	//gpio_configure_pin(OV_SW_OVT_GPIO, OV_SW_OVT_FLAGS);
-	//gpio_configure_pin(OV_RST_GPIO, OV_RST_FLAGS);
-	//gpio_configure_pin(OV_FSIN_GPIO, OV_FSIN_FLAGS);
+	// initialize camera communication pins
+	gpio_configure_pin(PIN_PCK1, PIN_PCK1_FLAGS);
+	gpio_configure_pin(TWI0_DATA_GPIO, TWI0_DATA_FLAGS);
+	gpio_configure_pin(TWI0_CLK_GPIO, TWI0_CLK_FLAGS);
+	gpio_configure_pin(CAM_RST, CAM_RST_FLAGS);
+	ioport_set_pin_dir(CAM_RST, IOPORT_DIR_OUTPUT);
+	ioport_set_pin_level(CAM_RST, false);
+	
+	// initialize camera data transmission pins
 	gpio_configure_pin(OV_HSYNC_GPIO, OV_HSYNC_FLAGS);
 	gpio_configure_pin(OV_VSYNC_GPIO, OV_VSYNC_FLAGS);
 	gpio_configure_pin(OV_DATA_BUS_D2, OV_DATA_BUS_FLAGS);

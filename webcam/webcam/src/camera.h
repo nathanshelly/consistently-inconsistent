@@ -15,12 +15,12 @@
 
 #define CAM_BUFFER_SIZE					100000
 
-//uint32_t image_length;
+// variable declarations
 volatile uint32_t vsync_rising_edge_flag;
 uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE];
 uint8_t *start_of_image_ptr;
-//uint16_t *end_of_image_ptr;
 
+// function declarations
 void handler_vsync(uint32_t ul_id, uint32_t ul_mask);
 void configure_vsync(void);
 void init_pio_capture(Pio *p_pio, uint32_t ul_id);
@@ -49,6 +49,7 @@ uint32_t find_image_len(void);
 #define OV_HSYNC_ID                    ID_PIOA
 #define OV_HSYNC_TYPE                  PIO_PULLUP
 
+// TWI definitions
 #define ID_BOARD_TWI				   ID_TWI0
 #define BOARD_TWI			           TWI0
 #define BOARD_TWI_IRQn		           TWI0_IRQn
@@ -72,16 +73,4 @@ uint32_t find_image_len(void);
 #define OV_DATA_BUS_TYPE               PIO_INPUT
 #define OV_DATA_BUS_ATTR               PIO_DEFAULT
       
-
-//#define OV_DATA_BUS_D0                 PIO_PA24_IDX
-//#define OV_DATA_BUS_D1                 PIO_PA25_IDX
-//#define OV_DATA_BUS_D2                 PIO_PA26_IDX
-//#define OV_DATA_BUS_D3                 PIO_PA27_IDX
-//#define OV_DATA_BUS_D4                 PIO_PA28_IDX
-//#define OV_DATA_BUS_D5                 PIO_PA29_IDX
-//#define OV_DATA_BUS_D6                 PIO_PA30_IDX
-//#define OV_DATA_BUS_D7                 PIO_PA31_IDX
-//#define OV_DATA_BUS_FLAGS              (PIO_INPUT | PIO_PULLUP)
-
-
 #endif /* CAMERA_H_ */

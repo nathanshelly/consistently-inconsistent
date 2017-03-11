@@ -178,7 +178,7 @@ void write_wifi_command(char* comm, uint8_t cnt){
 }
 
 /**
- *  \brief Writes image to file.
+ *  \brief Writes image to file on the wifi chip.
  */
 void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
 	// will have already checked if image is valid
@@ -193,6 +193,11 @@ void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
 	}
 }
 
+/**
+ *  \brief Prints a message to a text file with a static name.
+	Need to pass number of bytes in the message
+	Useful for debugging purposes
+ */
 void print_to_file(char* message, int num_bytes) {
 	usart_write_line(BOARD_USART, "fde batman.txt\r\n");
 	char* templated_command[40];
@@ -201,6 +206,11 @@ void print_to_file(char* message, int num_bytes) {
 	usart_write_line(BOARD_USART, message);
 }
 
+/**
+ *  \brief Blinks a defined LED_PIN.
+	Delays, switches, delays, switches, delays
+	Total time is 3x ms_blink
+ */
 void blink_LED(int ms_blink){
 	delay_ms(ms_blink);
 	ioport_toggle_pin_level(LED_PIN);
@@ -209,26 +219,32 @@ void blink_LED(int ms_blink){
 	delay_ms(ms_blink);
 }
 
+/**
+ *  \brief Sets up wifi chip on new network.
+ */
 void setup_wifi(void){
 	
 	int connected = 0;
 	int seconds = 0;
 	
-	write_wifi_command("setup web\r\n", 2000);
+	write_wifi_command("setup web\r\n", 2000);	// command wifi chip to setup
 			
-	while(!connected){
+	while(!connected){		// waits a long time for the user to connect to the chip and join a network
 				
-		connected = strstr(input_buffer, "[Associated]\r\n");
-		if (seconds > 1500) {
+		connected = strstr(input_buffer, "[Associated]\r\n");	// check for connection
+		if (seconds > 1500) {	// blink debug LED quickly after a while
 			blink_LED(50);
 		}
 		delay_ms(200);
 		seconds++;
 	}
 			
-	wifi_setup_flag = false;
+	wifi_setup_flag = false;	// turn off setup flag
 }
 
+/**
+ *  \brief Wrapper function for wifi module configuration.
+ */
 void configure_wifi(){
 	configure_usart();
 	configure_command_complete();
@@ -236,18 +252,21 @@ void configure_wifi(){
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
 }
 
+/**
+ *  \brief Reboots the wifi chip.
+ */
 void reboot_wifi(){
 	
-	write_wifi_command("reboot\r\n", 10);
+	write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
 	
 	int associated = 0;
 	int seconds = 0;
 	
-	wifi_setup_flag = false;
+	wifi_setup_flag = false;		// resets the wifi setup flag
 		
-	while(!associated){
-		if(wifi_setup_flag) {
-			setup_wifi();
+	while(!associated){				// waits for association
+		if(wifi_setup_flag) {		// listens for wifi setup flag (should be pressed shortly after power)
+			setup_wifi();			// sets up wifi on new network
 		}
 		associated = strstr(input_buffer, "[Associated]\r\n");
 		if (seconds > 100){
@@ -259,7 +278,7 @@ void reboot_wifi(){
 	
 	buffer_index = 0;
 	
-	write_wifi_command("set sy c e off\r\n", 5);	
+	write_wifi_command("set sy c e off\r\n", 5);	// resets a couple of system parameters in case they were changed
 	write_wifi_command("set sy c p off\r\n", 5);
 	
 }

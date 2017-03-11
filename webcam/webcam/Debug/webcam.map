@@ -5446,8 +5446,6 @@ Discarded input sections
                 0x00000000        0x4 src/main.o
  .bss.cpu_irq_prev_interrupt_state
                 0x00000000        0x1 src/main.o
- .bss.placeholder
-                0x00000000        0x1 src/main.o
  .debug_macro   0x00000000      0x898 src/main.o
  .debug_macro   0x00000000      0x16d src/main.o
  .debug_macro   0x00000000      0x652 src/main.o
@@ -6797,7 +6795,7 @@ OUTPUT(webcam.elf elf32-littlearm)
  .comment       0x00000059       0x5a src/ASF/sam/utils/syscalls/gcc/syscalls.o
  .comment       0x00000059       0x5a src/main.o
 
-.debug_info     0x00000000     0xc648
+.debug_info     0x00000000     0xc639
  .debug_info    0x00000000      0x944 src/ASF/sam/drivers/tc/tc.o
  .debug_info    0x00000944      0x2d2 src/ASF/sam/drivers/wdt/wdt.o
  .debug_info    0x00000c16      0x134 src/ASF/common/services/delay/sam/cycle_counter.o
@@ -6808,17 +6806,17 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_info    0x00004d60     0x1100 src/ov2640.o
  .debug_info    0x00005e60      0x385 src/ov2640_table_registers.o
  .debug_info    0x000061e5      0x685 src/timer_interface.o
- .debug_info    0x0000686a     0x11af src/wifi.o
- .debug_info    0x00007a19      0x6bd src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_info    0x000080d6     0x1378 src/ASF/sam/drivers/pio/pio.o
- .debug_info    0x0000944e     0x10cf src/ASF/sam/drivers/pmc/pmc.o
- .debug_info    0x0000a51d      0xcb9 src/ASF/common/boards/user_board/init.o
- .debug_info    0x0000b1d6      0x696 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_info    0x0000b86c      0x46d src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_info    0x0000bcd9      0x435 src/ASF/sam/utils/syscalls/gcc/syscalls.o
- .debug_info    0x0000c10e      0x53a src/main.o
+ .debug_info    0x0000686a     0x11b2 src/wifi.o
+ .debug_info    0x00007a1c      0x6bd src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_info    0x000080d9     0x1378 src/ASF/sam/drivers/pio/pio.o
+ .debug_info    0x00009451     0x10cf src/ASF/sam/drivers/pmc/pmc.o
+ .debug_info    0x0000a520      0xcb9 src/ASF/common/boards/user_board/init.o
+ .debug_info    0x0000b1d9      0x696 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_info    0x0000b86f      0x46d src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_info    0x0000bcdc      0x435 src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_info    0x0000c111      0x528 src/main.o
 
-.debug_abbrev   0x00000000     0x20f1
+.debug_abbrev   0x00000000     0x211a
  .debug_abbrev  0x00000000      0x158 src/ASF/sam/drivers/tc/tc.o
  .debug_abbrev  0x00000158      0x101 src/ASF/sam/drivers/wdt/wdt.o
  .debug_abbrev  0x00000259       0x9d src/ASF/common/services/delay/sam/cycle_counter.o
@@ -6829,15 +6827,15 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_abbrev  0x00000b79      0x254 src/ov2640.o
  .debug_abbrev  0x00000dcd       0xd4 src/ov2640_table_registers.o
  .debug_abbrev  0x00000ea1      0x1ad src/timer_interface.o
- .debug_abbrev  0x0000104e      0x30c src/wifi.o
- .debug_abbrev  0x0000135a      0x1e6 src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_abbrev  0x00001540      0x1cf src/ASF/sam/drivers/pio/pio.o
- .debug_abbrev  0x0000170f      0x20d src/ASF/sam/drivers/pmc/pmc.o
- .debug_abbrev  0x0000191c      0x2e7 src/ASF/common/boards/user_board/init.o
- .debug_abbrev  0x00001c03      0x15f src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_abbrev  0x00001d62       0xf5 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_abbrev  0x00001e57      0x120 src/ASF/sam/utils/syscalls/gcc/syscalls.o
- .debug_abbrev  0x00001f77      0x17a src/main.o
+ .debug_abbrev  0x0000104e      0x335 src/wifi.o
+ .debug_abbrev  0x00001383      0x1e6 src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_abbrev  0x00001569      0x1cf src/ASF/sam/drivers/pio/pio.o
+ .debug_abbrev  0x00001738      0x20d src/ASF/sam/drivers/pmc/pmc.o
+ .debug_abbrev  0x00001945      0x2e7 src/ASF/common/boards/user_board/init.o
+ .debug_abbrev  0x00001c2c      0x15f src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_abbrev  0x00001d8b       0xf5 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_abbrev  0x00001e80      0x120 src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_abbrev  0x00001fa0      0x17a src/main.o
 
 .debug_loc      0x00000000     0x7192
  .debug_loc     0x00000000      0x844 src/ASF/sam/drivers/tc/tc.o
@@ -6983,28 +6981,28 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_macro   0x0000733c      0x678 src/main.o
  .debug_macro   0x000079b4       0x10 src/main.o
 
-.debug_line     0x00000000     0xef04
+.debug_line     0x00000000     0xef03
  .debug_line    0x00000000      0xba1 src/ASF/sam/drivers/tc/tc.o
  .debug_line    0x00000ba1      0xa4e src/ASF/sam/drivers/wdt/wdt.o
  .debug_line    0x000015ef      0xa02 src/ASF/common/services/delay/sam/cycle_counter.o
  .debug_line    0x00001ff1      0xb03 src/ASF/sam/drivers/pio/pio_handler.o
  .debug_line    0x00002af4      0xc45 src/ASF/sam/drivers/twi/twi.o
  .debug_line    0x00003739      0xfd0 src/ASF/sam/drivers/usart/usart.o
- .debug_line    0x00004709     0x1039 src/camera.o
- .debug_line    0x00005742      0xe7c src/ov2640.o
- .debug_line    0x000065be      0xbb0 src/ov2640_table_registers.o
- .debug_line    0x0000716e      0xf0c src/timer_interface.o
- .debug_line    0x0000807a     0x10de src/wifi.o
- .debug_line    0x00009158      0xc75 src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_line    0x00009dcd      0xe1b src/ASF/sam/drivers/pio/pio.o
- .debug_line    0x0000abe8      0xff9 src/ASF/sam/drivers/pmc/pmc.o
- .debug_line    0x0000bbe1      0xf96 src/ASF/common/boards/user_board/init.o
- .debug_line    0x0000cb77      0x819 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_line    0x0000d390      0x858 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_line    0x0000dbe8      0x3da src/ASF/sam/utils/syscalls/gcc/syscalls.o
- .debug_line    0x0000dfc2      0xf42 src/main.o
+ .debug_line    0x00004709     0x1038 src/camera.o
+ .debug_line    0x00005741      0xe7c src/ov2640.o
+ .debug_line    0x000065bd      0xbb0 src/ov2640_table_registers.o
+ .debug_line    0x0000716d      0xf0c src/timer_interface.o
+ .debug_line    0x00008079     0x10de src/wifi.o
+ .debug_line    0x00009157      0xc75 src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_line    0x00009dcc      0xe1b src/ASF/sam/drivers/pio/pio.o
+ .debug_line    0x0000abe7      0xff9 src/ASF/sam/drivers/pmc/pmc.o
+ .debug_line    0x0000bbe0      0xf96 src/ASF/common/boards/user_board/init.o
+ .debug_line    0x0000cb76      0x819 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_line    0x0000d38f      0x858 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_line    0x0000dbe7      0x3da src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_line    0x0000dfc1      0xf42 src/main.o
 
-.debug_str      0x00000000    0x4e9b8
+.debug_str      0x00000000    0x4e9ac
  .debug_str     0x00000000    0x46eda src/ASF/sam/drivers/tc/tc.o
                               0x4721c (size before relaxing)
  .debug_str     0x00046eda      0x135 src/ASF/sam/drivers/wdt/wdt.o
@@ -7041,8 +7039,8 @@ OUTPUT(webcam.elf elf32-littlearm)
                               0x37fa9 (size before relaxing)
  .debug_str     0x0004e220      0x74e src/ASF/sam/utils/syscalls/gcc/syscalls.o
                                0x69d9 (size before relaxing)
- .debug_str     0x0004e96e       0x4a src/main.o
-                              0x4b311 (size before relaxing)
+ .debug_str     0x0004e96e       0x3e src/main.o
+                              0x4b305 (size before relaxing)
 
 .debug_frame    0x00000000     0x3ed8
  .debug_frame   0x00000000      0x3a8 src/ASF/sam/drivers/tc/tc.o
@@ -7575,7 +7573,6 @@ pio_set_writeprotect                              src/ASF/sam/drivers/pio/pio.o
 pio_sync_output_write                             src/ASF/sam/drivers/pio/pio.o
 pio_toggle_pin                                    src/ASF/sam/drivers/pio/pio.o
 pio_toggle_pin_group                              src/ASF/sam/drivers/pio/pio.o
-placeholder                                       src/main.o
 pmc_clr_fast_startup_input                        src/ASF/sam/drivers/pmc/pmc.o
 pmc_disable_all_pck                               src/ASF/sam/drivers/pmc/pmc.o
 pmc_disable_all_periph_clk                        src/ASF/sam/drivers/pmc/pmc.o

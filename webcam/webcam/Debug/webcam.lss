@@ -17,23 +17,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .comment      00000059  00000000  00000000  000208ae  2**0
                   CONTENTS, READONLY
-  7 .debug_info   0000c648  00000000  00000000  00020907  2**0
+  7 .debug_info   0000c639  00000000  00000000  00020907  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 000020f1  00000000  00000000  0002cf4f  2**0
+  8 .debug_abbrev 0000211a  00000000  00000000  0002cf40  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    00007192  00000000  00000000  0002f040  2**0
+  9 .debug_loc    00007192  00000000  00000000  0002f05a  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_aranges 00000c98  00000000  00000000  000361d2  2**0
+ 10 .debug_aranges 00000c98  00000000  00000000  000361ec  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000bc0  00000000  00000000  00036e6a  2**0
+ 11 .debug_ranges 00000bc0  00000000  00000000  00036e84  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_macro  000079c4  00000000  00000000  00037a2a  2**0
+ 12 .debug_macro  000079c4  00000000  00000000  00037a44  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_line   0000ef04  00000000  00000000  0003f3ee  2**0
+ 13 .debug_line   0000ef03  00000000  00000000  0003f408  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    0004e9b8  00000000  00000000  0004e2f2  2**0
+ 14 .debug_str    0004e9ac  00000000  00000000  0004e30b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_frame  00003ed8  00000000  00000000  0009ccac  2**2
+ 15 .debug_frame  00003ed8  00000000  00000000  0009ccb8  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -2242,6 +2242,7 @@ void start_capture(void)
 
 /**
  *  \brief Finds image len.
+	Returns a uint32_t for the length
  */
 uint32_t find_image_len(void) {
   401020:	b480      	push	{r7}
@@ -2257,8 +2258,8 @@ uint32_t find_image_len(void) {
   40102c:	687b      	ldr	r3, [r7, #4]
   40102e:	3302      	adds	r3, #2
   401030:	607b      	str	r3, [r7, #4]
-/**
  *  \brief Finds image len.
+	Returns a uint32_t for the length
  */
 uint32_t find_image_len(void) {
 	uint16_t *reading_ptr =  image_dest_buffer_ptr;
@@ -2335,7 +2336,6 @@ uint32_t find_image_len(void) {
   401084:	687b      	ldr	r3, [r7, #4]
   401086:	3302      	adds	r3, #2
   401088:	607b      	str	r3, [r7, #4]
-	//end_of_image_ptr = reading_ptr;
 	return (uint32_t) (((uint8_t*) reading_ptr) - ((uint8_t*) image_dest_buffer_ptr));
   40108a:	687b      	ldr	r3, [r7, #4]
   40108c:	4a03      	ldr	r2, [pc, #12]	; (40109c <find_image_len+0x7c>)
@@ -3942,7 +3942,7 @@ void write_wifi_command(char* comm, uint8_t cnt){
 00401c38 <write_image_usart>:
 
 /**
- *  \brief Writes image to file.
+ *  \brief Writes image to file on the wifi chip.
  */
 void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
   401c38:	b580      	push	{r7, lr}
@@ -4016,11 +4016,11 @@ void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
   401cb4:	00400ae1 	.word	0x00400ae1
 
 00401cb8 <blink_LED>:
-	sprintf(templated_command, "fcr batman.txt %d\r\n", num_bytes);
-	usart_write_line(BOARD_USART, templated_command);
-	usart_write_line(BOARD_USART, message);
-}
-
+/**
+ *  \brief Blinks a defined LED_PIN.
+	Delays, switches, delays, switches, delays
+	Total time is 3x ms_blink
+ */
 void blink_LED(int ms_blink){
   401cb8:	b5f0      	push	{r4, r5, r6, r7, lr}
   401cba:	b083      	sub	sp, #12
@@ -4214,6 +4214,9 @@ void blink_LED(int ms_blink){
 
 00401e7c <setup_wifi>:
 
+/**
+ *  \brief Sets up wifi chip on new network.
+ */
 void setup_wifi(void){
   401e7c:	e92d 4bf0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, fp, lr}
   401e80:	b082      	sub	sp, #8
@@ -4226,23 +4229,23 @@ void setup_wifi(void){
   401e88:	2300      	movs	r3, #0
   401e8a:	603b      	str	r3, [r7, #0]
 	
-	write_wifi_command("setup web\r\n", 2000);
+	write_wifi_command("setup web\r\n", 2000);	// command wifi chip to setup
   401e8c:	21d0      	movs	r1, #208	; 0xd0
   401e8e:	482b      	ldr	r0, [pc, #172]	; (401f3c <setup_wifi+0xc0>)
   401e90:	4b2b      	ldr	r3, [pc, #172]	; (401f40 <setup_wifi+0xc4>)
   401e92:	4798      	blx	r3
 			
-	while(!connected){
+	while(!connected){		// waits a long time for the user to connect to the chip and join a network
   401e94:	e046      	b.n	401f24 <setup_wifi+0xa8>
 				
-		connected = strstr(input_buffer, "[Associated]\r\n");
+		connected = strstr(input_buffer, "[Associated]\r\n");	// check for connection
   401e96:	492b      	ldr	r1, [pc, #172]	; (401f44 <setup_wifi+0xc8>)
   401e98:	482b      	ldr	r0, [pc, #172]	; (401f48 <setup_wifi+0xcc>)
   401e9a:	4b2c      	ldr	r3, [pc, #176]	; (401f4c <setup_wifi+0xd0>)
   401e9c:	4798      	blx	r3
   401e9e:	4603      	mov	r3, r0
   401ea0:	607b      	str	r3, [r7, #4]
-		if (seconds > 1500) {
+		if (seconds > 1500) {	// blink debug LED quickly after a while
   401ea2:	683b      	ldr	r3, [r7, #0]
   401ea4:	f240 52dc 	movw	r2, #1500	; 0x5dc
   401ea8:	4293      	cmp	r3, r2
@@ -4300,9 +4303,9 @@ void setup_wifi(void){
 	int connected = 0;
 	int seconds = 0;
 	
-	write_wifi_command("setup web\r\n", 2000);
+	write_wifi_command("setup web\r\n", 2000);	// command wifi chip to setup
 			
-	while(!connected){
+	while(!connected){		// waits a long time for the user to connect to the chip and join a network
   401f24:	687b      	ldr	r3, [r7, #4]
   401f26:	2b00      	cmp	r3, #0
   401f28:	d0b5      	beq.n	401e96 <setup_wifi+0x1a>
@@ -4311,7 +4314,7 @@ void setup_wifi(void){
 		seconds++;
 	}
 			
-	wifi_setup_flag = false;
+	wifi_setup_flag = false;	// turn off setup flag
   401f2a:	4b0d      	ldr	r3, [pc, #52]	; (401f60 <setup_wifi+0xe4>)
   401f2c:	2200      	movs	r2, #0
   401f2e:	601a      	str	r2, [r3, #0]
@@ -4334,6 +4337,9 @@ void setup_wifi(void){
 
 00401f64 <configure_wifi>:
 
+/**
+ *  \brief Wrapper function for wifi module configuration.
+ */
 void configure_wifi(){
   401f64:	b580      	push	{r7, lr}
   401f66:	af00      	add	r7, sp, #0
@@ -4362,12 +4368,15 @@ void configure_wifi(){
 
 00401f94 <reboot_wifi>:
 
+/**
+ *  \brief Reboots the wifi chip.
+ */
 void reboot_wifi(){
   401f94:	e92d 4bf0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, fp, lr}
   401f98:	b082      	sub	sp, #8
   401f9a:	af00      	add	r7, sp, #0
 	
-	write_wifi_command("reboot\r\n", 10);
+	write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
   401f9c:	210a      	movs	r1, #10
   401f9e:	4834      	ldr	r0, [pc, #208]	; (402070 <reboot_wifi+0xdc>)
   401fa0:	4b34      	ldr	r3, [pc, #208]	; (402074 <reboot_wifi+0xe0>)
@@ -4380,19 +4389,19 @@ void reboot_wifi(){
   401fa8:	2300      	movs	r3, #0
   401faa:	603b      	str	r3, [r7, #0]
 	
-	wifi_setup_flag = false;
+	wifi_setup_flag = false;		// resets the wifi setup flag
   401fac:	4b32      	ldr	r3, [pc, #200]	; (402078 <reboot_wifi+0xe4>)
   401fae:	2200      	movs	r2, #0
   401fb0:	601a      	str	r2, [r3, #0]
 		
-	while(!associated){
+	while(!associated){				// waits for association
   401fb2:	e04a      	b.n	40204a <reboot_wifi+0xb6>
-		if(wifi_setup_flag) {
+		if(wifi_setup_flag) {		// listens for wifi setup flag (should be pressed shortly after power)
   401fb4:	4b30      	ldr	r3, [pc, #192]	; (402078 <reboot_wifi+0xe4>)
   401fb6:	681b      	ldr	r3, [r3, #0]
   401fb8:	2b00      	cmp	r3, #0
   401fba:	d001      	beq.n	401fc0 <reboot_wifi+0x2c>
-			setup_wifi();
+			setup_wifi();			// sets up wifi on new network
   401fbc:	4b2f      	ldr	r3, [pc, #188]	; (40207c <reboot_wifi+0xe8>)
   401fbe:	4798      	blx	r3
 		}
@@ -4460,9 +4469,9 @@ void reboot_wifi(){
 	int associated = 0;
 	int seconds = 0;
 	
-	wifi_setup_flag = false;
+	wifi_setup_flag = false;		// resets the wifi setup flag
 		
-	while(!associated){
+	while(!associated){				// waits for association
   40204a:	687b      	ldr	r3, [r7, #4]
   40204c:	2b00      	cmp	r3, #0
   40204e:	d0b1      	beq.n	401fb4 <reboot_wifi+0x20>
@@ -4476,7 +4485,7 @@ void reboot_wifi(){
   402052:	2200      	movs	r2, #0
   402054:	601a      	str	r2, [r3, #0]
 	
-	write_wifi_command("set sy c e off\r\n", 5);	
+	write_wifi_command("set sy c e off\r\n", 5);	// resets a couple of system parameters in case they were changed
   402056:	2105      	movs	r1, #5
   402058:	4811      	ldr	r0, [pc, #68]	; (4020a0 <reboot_wifi+0x10c>)
   40205a:	4b06      	ldr	r3, [pc, #24]	; (402074 <reboot_wifi+0xe0>)
@@ -6396,6 +6405,7 @@ void board_init(void)
   402ec2:	4b45      	ldr	r3, [pc, #276]	; (402fd8 <board_init+0x120>)
   402ec4:	4798      	blx	r3
 		
+	// initialize test LED pin
 	gpio_configure_pin(LED_PIN, LED_FLAGS);
   402ec6:	f04f 5180 	mov.w	r1, #268435456	; 0x10000000
   402eca:	2013      	movs	r0, #19
@@ -6406,8 +6416,6 @@ void board_init(void)
   402ed4:	2013      	movs	r0, #19
   402ed6:	4b41      	ldr	r3, [pc, #260]	; (402fdc <board_init+0x124>)
   402ed8:	4798      	blx	r3
-	
-	/* Set output direction on the given LED IOPORTs */
 	ioport_set_pin_dir(LED_PIN, IOPORT_DIR_OUTPUT);
   402eda:	2101      	movs	r1, #1
   402edc:	2013      	movs	r0, #19
@@ -6419,8 +6427,7 @@ void board_init(void)
   402ee6:	4b3f      	ldr	r3, [pc, #252]	; (402fe4 <board_init+0x12c>)
   402ee8:	4798      	blx	r3
 	
-	
-	// configure MCU RTS as a gpio and drive it low
+	// initialize MCU RTS as a gpio and drive it low
 	gpio_configure_pin(RTS_LOW, RTS_LOW_FLAGS);
   402eea:	f04f 5180 	mov.w	r1, #268435456	; 0x10000000
   402eee:	2007      	movs	r0, #7
@@ -6441,80 +6448,75 @@ void board_init(void)
   402f08:	2007      	movs	r0, #7
   402f0a:	4b36      	ldr	r3, [pc, #216]	; (402fe4 <board_init+0x12c>)
   402f0c:	4798      	blx	r3
-	
-	gpio_configure_pin(CAM_RST, CAM_RST_FLAGS);
-  402f0e:	f04f 5180 	mov.w	r1, #268435456	; 0x10000000
-  402f12:	2014      	movs	r0, #20
-  402f14:	4b31      	ldr	r3, [pc, #196]	; (402fdc <board_init+0x124>)
-  402f16:	4798      	blx	r3
-	ioport_set_pin_dir(CAM_RST, IOPORT_DIR_OUTPUT);
-  402f18:	2101      	movs	r1, #1
-  402f1a:	2014      	movs	r0, #20
-  402f1c:	4b30      	ldr	r3, [pc, #192]	; (402fe0 <board_init+0x128>)
-  402f1e:	4798      	blx	r3
-	ioport_set_pin_level(CAM_RST, false);
-  402f20:	2100      	movs	r1, #0
-  402f22:	2014      	movs	r0, #20
-  402f24:	4b2f      	ldr	r3, [pc, #188]	; (402fe4 <board_init+0x12c>)
-  402f26:	4798      	blx	r3
 
-	// configure network status pin
+	// initialize network status pin
 	gpio_configure_pin(NET_PIN, NET_PIN_FLAGS);
-  402f28:	492f      	ldr	r1, [pc, #188]	; (402fe8 <board_init+0x130>)
-  402f2a:	2021      	movs	r0, #33	; 0x21
+  402f0e:	4936      	ldr	r1, [pc, #216]	; (402fe8 <board_init+0x130>)
+  402f10:	2021      	movs	r0, #33	; 0x21
+  402f12:	4b32      	ldr	r3, [pc, #200]	; (402fdc <board_init+0x124>)
+  402f14:	4798      	blx	r3
+	ioport_set_pin_dir(NET_PIN, IOPORT_DIR_INPUT);
+  402f16:	2100      	movs	r1, #0
+  402f18:	2021      	movs	r0, #33	; 0x21
+  402f1a:	4b31      	ldr	r3, [pc, #196]	; (402fe0 <board_init+0x128>)
+  402f1c:	4798      	blx	r3
+	ioport_set_pin_mode(NET_PIN, IOPORT_MODE_PULLUP);
+  402f1e:	2108      	movs	r1, #8
+  402f20:	2021      	movs	r0, #33	; 0x21
+  402f22:	4b32      	ldr	r3, [pc, #200]	; (402fec <board_init+0x134>)
+  402f24:	4798      	blx	r3
+	
+	// initialize USART pins
+	gpio_configure_pin(PIN_USART0_RXD_IDX, PIN_USART0_RXD_FLAGS);
+  402f26:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
+  402f2a:	2005      	movs	r0, #5
   402f2c:	4b2b      	ldr	r3, [pc, #172]	; (402fdc <board_init+0x124>)
   402f2e:	4798      	blx	r3
-	ioport_set_pin_dir(NET_PIN, IOPORT_DIR_INPUT);
-  402f30:	2100      	movs	r1, #0
-  402f32:	2021      	movs	r0, #33	; 0x21
-  402f34:	4b2a      	ldr	r3, [pc, #168]	; (402fe0 <board_init+0x128>)
-  402f36:	4798      	blx	r3
-	ioport_set_pin_mode(NET_PIN, IOPORT_MODE_PULLUP);
-  402f38:	2108      	movs	r1, #8
-  402f3a:	2021      	movs	r0, #33	; 0x21
-  402f3c:	4b2b      	ldr	r3, [pc, #172]	; (402fec <board_init+0x134>)
-  402f3e:	4798      	blx	r3
-
-	gpio_configure_pin(PIN_PCK1, PIN_PCK1_FLAGS);
-  402f40:	f04f 5180 	mov.w	r1, #268435456	; 0x10000000
-  402f44:	2011      	movs	r0, #17
-  402f46:	4b25      	ldr	r3, [pc, #148]	; (402fdc <board_init+0x124>)
-  402f48:	4798      	blx	r3
-	gpio_configure_pin(TWI0_DATA_GPIO, TWI0_DATA_FLAGS);
-  402f4a:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
-  402f4e:	2003      	movs	r0, #3
-  402f50:	4b22      	ldr	r3, [pc, #136]	; (402fdc <board_init+0x124>)
-  402f52:	4798      	blx	r3
-	gpio_configure_pin(TWI0_CLK_GPIO, TWI0_CLK_FLAGS);
-  402f54:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
-  402f58:	2004      	movs	r0, #4
-  402f5a:	4b20      	ldr	r3, [pc, #128]	; (402fdc <board_init+0x124>)
-  402f5c:	4798      	blx	r3
-	///* Configure UART pins */
-	//#ifdef CONF_BOARD_UART_CONSOLE
-	//gpio_configure_group(PINS_UART_PIO, PINS_UART, PINS_UART_FLAGS);
-	//#endif
-	
-	gpio_configure_pin(PIN_USART0_RXD_IDX, PIN_USART0_RXD_FLAGS);
-  402f5e:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
-  402f62:	2005      	movs	r0, #5
-  402f64:	4b1d      	ldr	r3, [pc, #116]	; (402fdc <board_init+0x124>)
-  402f66:	4798      	blx	r3
 	gpio_configure_pin(PIN_USART0_TXD_IDX, PIN_USART0_TXD_FLAGS);
-  402f68:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
-  402f6c:	2006      	movs	r0, #6
-  402f6e:	4b1b      	ldr	r3, [pc, #108]	; (402fdc <board_init+0x124>)
-  402f70:	4798      	blx	r3
+  402f30:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
+  402f34:	2006      	movs	r0, #6
+  402f36:	4b29      	ldr	r3, [pc, #164]	; (402fdc <board_init+0x124>)
+  402f38:	4798      	blx	r3
 	gpio_configure_pin(PIN_USART0_CTS_IDX, PIN_USART0_CTS_FLAGS);
-  402f72:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
-  402f76:	2008      	movs	r0, #8
-  402f78:	4b18      	ldr	r3, [pc, #96]	; (402fdc <board_init+0x124>)
-  402f7a:	4798      	blx	r3
-	//gpio_configure_pin(PIN_USART0_RTS_IDX, PIN_USART0_RTS_FLAGS);
+  402f3a:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
+  402f3e:	2008      	movs	r0, #8
+  402f40:	4b26      	ldr	r3, [pc, #152]	; (402fdc <board_init+0x124>)
+  402f42:	4798      	blx	r3
+	//gpio_configure_pin(PIN_USART0_RTS_IDX, PIN_USART0_RTS_FLAGS);	// don't configure RTS pin as RTS
 	
-	//gpio_configure_pin(OV_SW_OVT_GPIO, OV_SW_OVT_FLAGS);
-	//gpio_configure_pin(OV_RST_GPIO, OV_RST_FLAGS);
-	//gpio_configure_pin(OV_FSIN_GPIO, OV_FSIN_FLAGS);
+	// initialize camera communication pins
+	gpio_configure_pin(PIN_PCK1, PIN_PCK1_FLAGS);
+  402f44:	f04f 5180 	mov.w	r1, #268435456	; 0x10000000
+  402f48:	2011      	movs	r0, #17
+  402f4a:	4b24      	ldr	r3, [pc, #144]	; (402fdc <board_init+0x124>)
+  402f4c:	4798      	blx	r3
+	gpio_configure_pin(TWI0_DATA_GPIO, TWI0_DATA_FLAGS);
+  402f4e:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
+  402f52:	2003      	movs	r0, #3
+  402f54:	4b21      	ldr	r3, [pc, #132]	; (402fdc <board_init+0x124>)
+  402f56:	4798      	blx	r3
+	gpio_configure_pin(TWI0_CLK_GPIO, TWI0_CLK_FLAGS);
+  402f58:	f04f 6100 	mov.w	r1, #134217728	; 0x8000000
+  402f5c:	2004      	movs	r0, #4
+  402f5e:	4b1f      	ldr	r3, [pc, #124]	; (402fdc <board_init+0x124>)
+  402f60:	4798      	blx	r3
+	gpio_configure_pin(CAM_RST, CAM_RST_FLAGS);
+  402f62:	f04f 5180 	mov.w	r1, #268435456	; 0x10000000
+  402f66:	2014      	movs	r0, #20
+  402f68:	4b1c      	ldr	r3, [pc, #112]	; (402fdc <board_init+0x124>)
+  402f6a:	4798      	blx	r3
+	ioport_set_pin_dir(CAM_RST, IOPORT_DIR_OUTPUT);
+  402f6c:	2101      	movs	r1, #1
+  402f6e:	2014      	movs	r0, #20
+  402f70:	4b1b      	ldr	r3, [pc, #108]	; (402fe0 <board_init+0x128>)
+  402f72:	4798      	blx	r3
+	ioport_set_pin_level(CAM_RST, false);
+  402f74:	2100      	movs	r1, #0
+  402f76:	2014      	movs	r0, #20
+  402f78:	4b1a      	ldr	r3, [pc, #104]	; (402fe4 <board_init+0x12c>)
+  402f7a:	4798      	blx	r3
+	
+	// initialize camera data transmission pins
 	gpio_configure_pin(OV_HSYNC_GPIO, OV_HSYNC_FLAGS);
   402f7c:	2171      	movs	r1, #113	; 0x71
   402f7e:	2010      	movs	r0, #16
@@ -7096,11 +7098,11 @@ static inline uint32_t sysclk_get_cpu_hz(void)
   4033ec:	004033c1 	.word	0x004033c1
 
 004033f0 <send_image>:
-uint8_t placeholder = 0;
+#include "timer_interface.h"
 
-
-
-
+/**
+ *  \brief Sends image to the wifi chip
+ */
 void send_image(void){
   4033f0:	b5f0      	push	{r4, r5, r6, r7, lr}
   4033f2:	b083      	sub	sp, #12
@@ -7165,7 +7167,6 @@ void send_image(void){
   40346a:	4b08      	ldr	r3, [pc, #32]	; (40348c <send_image+0x9c>)
   40346c:	4798      	blx	r3
 	
-	
 }
   40346e:	bf00      	nop
   403470:	370c      	adds	r7, #12
@@ -7180,12 +7181,15 @@ void send_image(void){
   40348c:	20000001 	.word	0x20000001
 
 00403490 <message_streams>:
-
+/**
+ *  \brief Messages all connected streams to refresh their images.
+ */
 void message_streams(void){
   403490:	b5f0      	push	{r4, r5, r6, r7, lr}
   403492:	b091      	sub	sp, #68	; 0x44
   403494:	af00      	add	r7, sp, #0
-	uint8_t* token = 0;
+	
+	uint8_t* token = 0;	// token for string parsing
   403496:	2300      	movs	r3, #0
   403498:	63fb      	str	r3, [r7, #60]	; 0x3c
 
@@ -7247,7 +7251,7 @@ void message_streams(void){
   403512:	4798      	blx	r3
   403514:	63f8      	str	r0, [r7, #60]	; 0x3c
 				
-	/* walk through other tokens */
+	/* walk through other tokens, sending a message to each */
 	while(token != NULL)
   403516:	e01d      	b.n	403554 <message_streams+0xc4>
 	{
@@ -7292,7 +7296,7 @@ void message_streams(void){
 	token = strtok(input_buffer, "#");
 	token = strtok(NULL, "#");
 				
-	/* walk through other tokens */
+	/* walk through other tokens, sending a message to each */
 	while(token != NULL)
   403554:	6bfb      	ldr	r3, [r7, #60]	; 0x3c
   403556:	2b00      	cmp	r3, #0
@@ -7328,15 +7332,13 @@ int main (void)
 {
   403598:	e92d 4ff8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, sl, fp, lr}
   40359c:	af00      	add	r7, sp, #0
+	// system level initialization calls
 	sysclk_init();
   40359e:	4b35      	ldr	r3, [pc, #212]	; (403674 <main+0xdc>)
   4035a0:	4798      	blx	r3
-	
-	board_init();
+	board_init();	
   4035a2:	4b35      	ldr	r3, [pc, #212]	; (403678 <main+0xe0>)
   4035a4:	4798      	blx	r3
-	
-	// timer configuration
 	configure_tc();
   4035a6:	4b35      	ldr	r3, [pc, #212]	; (40367c <main+0xe4>)
   4035a8:	4798      	blx	r3
@@ -7347,38 +7349,33 @@ int main (void)
   4035b0:	4798      	blx	r3
 	
 	// Custom configuration calls
-	configure_wifi();
+	configure_wifi();		// configures and initializes wifi module
   4035b2:	4b35      	ldr	r3, [pc, #212]	; (403688 <main+0xf0>)
   4035b4:	4798      	blx	r3
-			
-	// set up camera	
-	configure_camera();
+	configure_camera();		// configures and initializes camera module
   4035b6:	4b35      	ldr	r3, [pc, #212]	; (40368c <main+0xf4>)
   4035b8:	4798      	blx	r3
-	
-	reboot_wifi();
+	reboot_wifi();			// reboots the wifi chip (takes several seconds)
   4035ba:	4b35      	ldr	r3, [pc, #212]	; (403690 <main+0xf8>)
   4035bc:	4798      	blx	r3
 
-	
-
 	while(1) {
-		if(wifi_setup_flag) {
+		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
   4035be:	4b35      	ldr	r3, [pc, #212]	; (403694 <main+0xfc>)
   4035c0:	681b      	ldr	r3, [r3, #0]
   4035c2:	2b00      	cmp	r3, #0
   4035c4:	d001      	beq.n	4035ca <main+0x32>
-			setup_wifi();
+			setup_wifi();		// the wifi chip tries to reassociate to a new network
   4035c6:	4b34      	ldr	r3, [pc, #208]	; (403698 <main+0x100>)
   4035c8:	4798      	blx	r3
 		}
 		
-		write_wifi_command("get wl n s\r\n", 1);
+		write_wifi_command("get wl n s\r\n", 1);	// queries for the connection status
   4035ca:	2101      	movs	r1, #1
   4035cc:	4833      	ldr	r0, [pc, #204]	; (40369c <main+0x104>)
   4035ce:	4b34      	ldr	r3, [pc, #208]	; (4036a0 <main+0x108>)
   4035d0:	4798      	blx	r3
-		if(strstr(input_buffer, "2"))
+		if(strstr(input_buffer, "2"))				// if connected (2)
   4035d2:	2132      	movs	r1, #50	; 0x32
   4035d4:	4833      	ldr	r0, [pc, #204]	; (4036a4 <main+0x10c>)
   4035d6:	4b34      	ldr	r3, [pc, #208]	; (4036a8 <main+0x110>)
@@ -7387,13 +7384,12 @@ int main (void)
   4035dc:	2b00      	cmp	r3, #0
   4035de:	d0ee      	beq.n	4035be <main+0x26>
 		{
-			// have network
-			write_wifi_command("poll all\r\n", 2);
+			write_wifi_command("poll all\r\n", 2);	// poll for connections
   4035e0:	2102      	movs	r1, #2
   4035e2:	4832      	ldr	r0, [pc, #200]	; (4036ac <main+0x114>)
   4035e4:	4b2e      	ldr	r3, [pc, #184]	; (4036a0 <main+0x108>)
   4035e6:	4798      	blx	r3
-			if(!strstr(input_buffer, "None"))
+			if(!strstr(input_buffer, "None"))		// if there are any streams
   4035e8:	4931      	ldr	r1, [pc, #196]	; (4036b0 <main+0x118>)
   4035ea:	482e      	ldr	r0, [pc, #184]	; (4036a4 <main+0x10c>)
   4035ec:	4b31      	ldr	r3, [pc, #196]	; (4036b4 <main+0x11c>)
@@ -7402,19 +7398,18 @@ int main (void)
   4035f2:	2b00      	cmp	r3, #0
   4035f4:	d106      	bne.n	403604 <main+0x6c>
 			{
-				// have open stream
-				start_capture();
+				start_capture();		// capture the image to internal memory
   4035f6:	4b30      	ldr	r3, [pc, #192]	; (4036b8 <main+0x120>)
   4035f8:	4798      	blx	r3
-				send_image();
+				send_image();			// send the image to the wifi chip
   4035fa:	4b30      	ldr	r3, [pc, #192]	; (4036bc <main+0x124>)
   4035fc:	4798      	blx	r3
-				message_streams();
+				message_streams();		// send a message to all connected streams to refresh their image
   4035fe:	4b30      	ldr	r3, [pc, #192]	; (4036c0 <main+0x128>)
   403600:	4798      	blx	r3
   403602:	e7dc      	b.n	4035be <main+0x26>
 			} else {
-				delay_ms(1000);
+				delay_ms(1000);			// otherwise, delay a second
   403604:	4b2f      	ldr	r3, [pc, #188]	; (4036c4 <main+0x12c>)
   403606:	4798      	blx	r3
   403608:	4603      	mov	r3, r0

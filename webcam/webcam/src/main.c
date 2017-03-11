@@ -25,11 +25,10 @@
 #include "camera.h"
 #include "ov2640.h"
 #include "timer_interface.h"
-uint8_t placeholder = 0;
 
-
-
-
+/**
+ *  \brief Sends image to the wifi chip
+ */
 void send_image(void){
 	
 	uint32_t im_length;
@@ -42,11 +41,13 @@ void send_image(void){
 				
 	delay_ms(50);
 	
-	
 }
-
+/**
+ *  \brief Messages all connected streams to refresh their images.
+ */
 void message_streams(void){
-	uint8_t* token = 0;
+	
+	uint8_t* token = 0;	// token for string parsing
 
 	write_wifi_command("list\r\n", 2);
 	delay_ms(50);
@@ -55,7 +56,7 @@ void message_streams(void){
 	token = strtok(input_buffer, "#");
 	token = strtok(NULL, "#");
 				
-	/* walk through other tokens */
+	/* walk through other tokens, sending a message to each */
 	while(token != NULL)
 	{
 		token = strtok(NULL, "#");
@@ -71,42 +72,33 @@ void message_streams(void){
 
 int main (void)
 {
+	// system level initialization calls
 	sysclk_init();
-	
-	board_init();
-	
-	// timer configuration
+	board_init();	
 	configure_tc();
 	tc_start(TC0, 0);
 	
 	// Custom configuration calls
-	configure_wifi();
-			
-	// set up camera	
-	configure_camera();
-	
-	reboot_wifi();
-
-	
+	configure_wifi();		// configures and initializes wifi module
+	configure_camera();		// configures and initializes camera module
+	reboot_wifi();			// reboots the wifi chip (takes several seconds)
 
 	while(1) {
-		if(wifi_setup_flag) {
-			setup_wifi();
+		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
+			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
 		
-		write_wifi_command("get wl n s\r\n", 1);
-		if(strstr(input_buffer, "2"))
+		write_wifi_command("get wl n s\r\n", 1);	// queries for the connection status
+		if(strstr(input_buffer, "2"))				// if connected (2)
 		{
-			// have network
-			write_wifi_command("poll all\r\n", 2);
-			if(!strstr(input_buffer, "None"))
+			write_wifi_command("poll all\r\n", 2);	// poll for connections
+			if(!strstr(input_buffer, "None"))		// if there are any streams
 			{
-				// have open stream
-				start_capture();
-				send_image();
-				message_streams();
+				start_capture();		// capture the image to internal memory
+				send_image();			// send the image to the wifi chip
+				message_streams();		// send a message to all connected streams to refresh their image
 			} else {
-				delay_ms(1000);
+				delay_ms(1000);			// otherwise, delay a second
 			}
 		}
 	}
