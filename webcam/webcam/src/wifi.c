@@ -209,7 +209,7 @@ void blink_LED(int ms_blink){
 	delay_ms(ms_blink);
 }
 
-void wifi_setup(void){
+void setup_wifi(void){
 	
 	int connected = 0;
 	int seconds = 0;
@@ -227,4 +227,39 @@ void wifi_setup(void){
 	}
 			
 	wifi_setup_flag = false;
+}
+
+void configure_wifi(){
+	configure_usart();
+	configure_command_complete();
+	configure_web_setup();	
+	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
+}
+
+void reboot_wifi(){
+	
+	write_wifi_command("reboot\r\n", 10);
+	
+	int associated = 0;
+	int seconds = 0;
+	
+	wifi_setup_flag = false;
+		
+	while(!associated){
+		if(wifi_setup_flag) {
+			setup_wifi();
+		}
+		associated = strstr(input_buffer, "[Associated]\r\n");
+		if (seconds > 100){
+			blink_LED(50);
+		}
+		delay_ms(200);
+		seconds++;
+	}
+	
+	buffer_index = 0;
+	
+	write_wifi_command("set sy c e off\r\n", 5);	
+	write_wifi_command("set sy c p off\r\n", 5);
+	
 }

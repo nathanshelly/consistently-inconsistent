@@ -30,7 +30,7 @@ uint8_t placeholder = 0;
 int main (void)
 {
 	sysclk_init();
-	wdt_disable(WDT);
+	
 	board_init();
 	
 	// timer configuration
@@ -38,42 +38,18 @@ int main (void)
 	tc_start(TC0, 0);
 	
 	// Custom configuration calls
-	configure_usart();
-	configure_command_complete();
-	configure_web_setup();	
-	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
+	configure_wifi();
 			
 	// set up camera	
-	init_camera();
 	configure_camera();
 	
-	write_wifi_command("reboot\r\n", 10);
-	
-	int associated = 0;
-	int seconds = 0;
+	reboot_wifi();
+
 	uint8_t* token = 0;
-	wifi_setup_flag = false;
-		
-	while(!associated){
-		if(wifi_setup_flag) {
-			wifi_setup();
-		}
-		associated = strstr(input_buffer, "[Associated]\r\n");
-		if (seconds > 100){
-			blink_LED(50);
-		}
-		delay_ms(200);
-		seconds++;
-	}
-	
-	buffer_index = 0;
-	
-	write_wifi_command("set sy c e off\r\n", 5);	
-	write_wifi_command("set sy c p off\r\n", 5);
 
 	while(1) {
 		if(wifi_setup_flag) {
-			wifi_setup();
+			setup_wifi();
 		}
 		
 		write_wifi_command("get wl n s\r\n", 1);

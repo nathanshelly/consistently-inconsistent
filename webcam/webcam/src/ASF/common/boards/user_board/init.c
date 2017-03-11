@@ -19,6 +19,9 @@ void board_init(void)
 	 * for, e.g., the I/O pins. The initialization can rely on application-
 	 * specific board configuration, found in conf_board.h.
 	 */
+	
+	wdt_disable(WDT);
+	
 	ioport_init();
 		
 	gpio_configure_pin(LED_PIN, LED_FLAGS);

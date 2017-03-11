@@ -37,7 +37,9 @@ void write_wifi_command(char* comm, uint8_t cnt);
 void write_image_usart(void);
 void print_to_file(char* message, int num_bytes);
 void blink_LED(int ms_blink);
-void wifi_setup(void);
+void setup_wifi(void);
+void configure_wifi(void);
+void reboot_wifi(void);
 
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0

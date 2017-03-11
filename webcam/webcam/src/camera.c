@@ -106,6 +106,7 @@ void init_camera(void){
  */	
 void configure_camera(void)
 {
+	init_camera();
 	/* ov2640 Initialization */
 	// First, make sure reg 0xFF=1
 	const uint8_t cont_reg_val = 1;
