@@ -34,7 +34,7 @@ void configure_command_complete(void);
 void handler_web_setup(uint32_t ul_id, uint32_t ul_mask);
 void configure_web_setup(void);
 void write_wifi_command(char* comm, uint8_t cnt);
-void write_image_usart(void);
+void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length);
 void print_to_file(char* message, int num_bytes);
 void blink_LED(int ms_blink);
 void setup_wifi(void);

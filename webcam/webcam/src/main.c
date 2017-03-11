@@ -27,6 +27,48 @@
 #include "timer_interface.h"
 uint8_t placeholder = 0;
 
+
+
+
+void send_image(void){
+	
+	uint32_t im_length;
+	
+	im_length = find_image_len();
+	if (im_length)
+	{
+		write_image_usart(start_of_image_ptr, im_length);
+	}
+				
+	delay_ms(50);
+	
+	
+}
+
+void message_streams(void){
+	uint8_t* token = 0;
+
+	write_wifi_command("list\r\n", 2);
+	delay_ms(50);
+				
+	/* throw out first two tokens */
+	token = strtok(input_buffer, "#");
+	token = strtok(NULL, "#");
+				
+	/* walk through other tokens */
+	while(token != NULL)
+	{
+		token = strtok(NULL, "#");
+		if(strstr(token, "WEBS"))
+		{
+			char* templated_command[15];
+			sprintf(templated_command, "write %c 1\r\n", token[1]);
+			write_wifi_command(templated_command, 2);
+			write_wifi_command("0", 2);
+		}
+	}
+}
+
 int main (void)
 {
 	sysclk_init();
@@ -45,7 +87,7 @@ int main (void)
 	
 	reboot_wifi();
 
-	uint8_t* token = 0;
+	
 
 	while(1) {
 		if(wifi_setup_flag) {
@@ -59,33 +101,10 @@ int main (void)
 			write_wifi_command("poll all\r\n", 2);
 			if(!strstr(input_buffer, "None"))
 			{
-				// have open streams
+				// have open stream
 				start_capture();
-				if (find_image_len())
-				{
-					write_image_usart();
-				}
-				
-				delay_ms(50);
-				write_wifi_command("list\r\n", 2);
-				delay_ms(50);
-				
-				/* throw out first two tokens */
-				token = strtok(input_buffer, "#");
-				token = strtok(NULL, "#");
-				
-				/* walk through other tokens */
-				while(token != NULL)
-				{
-					token = strtok(NULL, "#");
-					if(strstr(token, "WEBS"))
-					{
-						char* templated_command[15];
-						sprintf(templated_command, "write %c 1\r\n", token[1]);
-						write_wifi_command(templated_command, 2);
-						write_wifi_command("0", 2);
-					}
-				}
+				send_image();
+				message_streams();
 			} else {
 				delay_ms(1000);
 			}

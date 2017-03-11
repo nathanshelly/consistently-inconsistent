@@ -180,7 +180,7 @@ void write_wifi_command(char* comm, uint8_t cnt){
 /**
  *  \brief Writes image to file.
  */
-void write_image_usart(void){
+void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
 	// will have already checked if image is valid
 	write_wifi_command("fde image.jpg\r\n", 2);
 	char* templated_command[35];
@@ -189,7 +189,7 @@ void write_image_usart(void){
 	
 	for (int i = 0; i < image_length; i++)
 	{
-		usart_putchar(BOARD_USART, (uint32_t) ((uint8_t*) start_of_image_ptr)[i]);
+		usart_putchar(BOARD_USART, (uint32_t) start_of_image_ptr[i]);
 	}
 }
 

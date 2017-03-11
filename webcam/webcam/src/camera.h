@@ -15,11 +15,11 @@
 
 #define CAM_BUFFER_SIZE					100000
 
-uint32_t image_length;
+//uint32_t image_length;
 volatile uint32_t vsync_rising_edge_flag;
 uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE];
-uint16_t *start_of_image_ptr;
-uint16_t *end_of_image_ptr;
+uint8_t *start_of_image_ptr;
+//uint16_t *end_of_image_ptr;
 
 void handler_vsync(uint32_t ul_id, uint32_t ul_mask);
 void configure_vsync(void);
@@ -29,7 +29,7 @@ void init_camera(void);
 void configure_camera(void);
 uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size);
 void start_capture(void);
-uint8_t find_image_len(void);
+uint32_t find_image_len(void);
 
 /** OV_VSYNC pin definition */
 #define OV_VSYNC_GPIO                  PIO_PA15_IDX
