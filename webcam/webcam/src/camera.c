@@ -16,7 +16,7 @@ uint32_t image_length = 0;
  * \brief Handler for vertical synchronisation using by the OV2640 image
  * sensor.
  */
-void vsync_handler(uint32_t ul_id, uint32_t ul_mask)
+void handler_vsync(uint32_t ul_id, uint32_t ul_mask)
 {
 	unused(ul_id);
 	unused(ul_mask);
@@ -27,12 +27,12 @@ void vsync_handler(uint32_t ul_id, uint32_t ul_mask)
 /**
  * \brief Intialize Vsync_Handler.
  */
-void init_vsync_interrupts(void)
+void configure_vsync(void)
 {
 	/* Initialize PIO interrupt handler, see PIO definition in conf_board.h
 	**/
 	pio_handler_set(OV_VSYNC_PIO, OV_VSYNC_ID, OV_VSYNC_MASK,
-			OV_VSYNC_TYPE, vsync_handler);
+			OV_VSYNC_TYPE, handler_vsync);
 
 	/* Enable PIO controller IRQs */
 	NVIC_EnableIRQ((IRQn_Type) OV_VSYNC_ID);
@@ -63,7 +63,7 @@ void configure_twi(void)
 /**
  * \brief Configuration and initialization of parallel capture.
  */
-void pio_capture_init(Pio *p_pio, uint32_t ul_id){	
+void init_pio_capture(Pio *p_pio, uint32_t ul_id){	
 	/* Enable periphral clock */
 	pmc_enable_periph_clk(ul_id);
 
@@ -88,8 +88,8 @@ void pio_capture_init(Pio *p_pio, uint32_t ul_id){
 void init_camera(void){	
 	pmc_enable_pllbck(7, 0x1, 1); /* PLLA work at 96 Mhz */
 
-	init_vsync_interrupts();
-	pio_capture_init(OV_DATA_BUS_PIO, OV_DATA_BUS_ID);
+	configure_vsync();
+	init_pio_capture(OV_DATA_BUS_PIO, OV_DATA_BUS_ID);
 	
 	/* Init PCK1 to work at 24 Mhz - 96/4=24 Mhz */
 	PMC->PMC_PCK[1] = (PMC_PCK_PRES_CLK_4 | PMC_PCK_CSS_PLLB_CLK);
@@ -136,7 +136,7 @@ void configure_camera(void)
  * \param p_uc_buf Buffer address where captured data must be stored.
  * \param ul_size Data frame size.
  */
-uint8_t pio_capture_to_buffer(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size)
+uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size)
 {
 	/* Check if the first PDC bank is free */
 	if ((p_pio->PIO_RCR == 0) && (p_pio->PIO_RNCR == 0)) {
@@ -175,7 +175,7 @@ void start_capture(void)
 
 	/* Capture data and send it to external SRAM memory thanks to PDC
 	 * feature */
-	if(pio_capture_to_buffer(OV_DATA_BUS_PIO, image_dest_buffer_ptr, CAM_BUFFER_SIZE/4)){
+	if(capture_pio(OV_DATA_BUS_PIO, image_dest_buffer_ptr, CAM_BUFFER_SIZE/4)){
 	}else {
 	}
 

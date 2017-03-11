@@ -25,16 +25,16 @@ volatile uint32_t data_recieved;
 volatile uint32_t wifi_setup_flag;
 volatile uint32_t received_byte_wifi;
 
-void WIFI_USART_Handler(void);
+void handler_usart(void);
 //void process_incoming_byte(uint8_t inByte);
-void configure_usart_wifi(void);
-void wifi_command_response_handler(uint32_t ul_id, uint32_t ul_mask);
+void configure_usart(void);
+void handler_command_complete(uint32_t ul_id, uint32_t ul_mask);
 //void process_data_wifi(void);
-void configure_wifi_comm_pin(void);
-void wifi_web_setup_handler(uint32_t ul_id, uint32_t ul_mask);
-void configure_wifi_web_setup_pin(void);
+void configure_command_complete(void);
+void handler_web_setup(uint32_t ul_id, uint32_t ul_mask);
+void configure_web_setup(void);
 void write_wifi_command(char* comm, uint8_t cnt);
-void write_image_to_file(void);
+void write_image_usart(void);
 void print_to_file(char* message, int num_bytes);
 void blink_LED(int ms_blink);
 void wifi_setup(void);
@@ -42,7 +42,7 @@ void wifi_setup(void);
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0
 #define BOARD_USART_BAUDRATE		115200
-#define WIFI_USART_Handler			USART0_Handler
+#define handler_usart			USART0_Handler
 #define USART_IRQn					USART0_IRQn
 
 #define WIFI_COMM_PIN_MSK			PIO_PB0

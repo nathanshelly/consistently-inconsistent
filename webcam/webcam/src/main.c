@@ -38,14 +38,13 @@ int main (void)
 	tc_start(TC0, 0);
 	
 	// Custom configuration calls
-	configure_usart_wifi();
-	configure_wifi_comm_pin();
-	configure_wifi_web_setup_pin();	
+	configure_usart();
+	configure_command_complete();
+	configure_web_setup();	
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
 			
 	// set up camera	
 	init_camera();
-	blink_LED(250);
 	configure_camera();
 	
 	write_wifi_command("reboot\r\n", 10);
@@ -88,7 +87,7 @@ int main (void)
 				start_capture();
 				if (find_image_len())
 				{
-					write_image_to_file();
+					write_image_usart();
 				}
 				
 				delay_ms(50);

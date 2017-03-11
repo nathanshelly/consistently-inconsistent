@@ -23,7 +23,7 @@ volatile uint32_t received_byte_wifi = 0;
  * another transfer if the desired bps has not been met yet.
  *
  */
-void WIFI_USART_Handler(void)
+void handler_usart(void)
 {	
 	uint8_t recieved_char_flag = 0;
 	uint32_t ul_status;
@@ -49,7 +49,7 @@ void WIFI_USART_Handler(void)
 /**
  *  Configure board USART communication with PC or other terminal.
  */
-void configure_usart_wifi(void)
+void configure_usart(void)
 {
 	static uint32_t ul_sysclk;
 	const sam_usart_opt_t usart_console_settings = {
@@ -87,7 +87,7 @@ void configure_usart_wifi(void)
 /**
  *  \brief Command response handler for wifi.
  */
-void wifi_command_response_handler(uint32_t ul_id, uint32_t ul_mask) {
+void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
 	ioport_toggle_pin_level(LED_PIN);
@@ -100,7 +100,7 @@ void wifi_command_response_handler(uint32_t ul_id, uint32_t ul_mask) {
 /**
  *  \brief Configures communication pin for wifi.
  */
-void configure_wifi_comm_pin(void){
+void configure_command_complete(void){
 	// do something here
 	// just configuring a rising edge interrupt on whichever pin
 	// we set as the wifi command pin
@@ -114,7 +114,7 @@ void configure_wifi_comm_pin(void){
 	
 	pio_set_debounce_filter(WIFI_COMM_PIO, WIFI_COMM_PIN_MSK, 10);
 	
-	pio_handler_set(WIFI_COMM_PIO, WIFI_COMM_ID, WIFI_COMM_PIN_MSK, WIFI_COMM_ATTR, wifi_command_response_handler);
+	pio_handler_set(WIFI_COMM_PIO, WIFI_COMM_ID, WIFI_COMM_PIN_MSK, WIFI_COMM_ATTR, handler_command_complete);
 	
 	NVIC_EnableIRQ((IRQn_Type)WIFI_COMM_ID);
 	
@@ -125,7 +125,7 @@ void configure_wifi_comm_pin(void){
 /**
  *  \brief Handler for setting up wifi.
  */
-void wifi_web_setup_handler(uint32_t ul_id, uint32_t ul_mask) {
+void handler_web_setup(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
 
@@ -135,7 +135,7 @@ void wifi_web_setup_handler(uint32_t ul_id, uint32_t ul_mask) {
 /**
  *  \brief Configures wifi setup pin.
  */
-void configure_wifi_web_setup_pin(void){
+void configure_web_setup(void){
 	// Configuration of a button to initiate web setup
 	// Pin is PB14
 	//pio_configure_pin(GPIO_WIFI_RESET_PB, GPIO_WIFI_RESET_PB_FLAGS);
@@ -151,7 +151,7 @@ void configure_wifi_web_setup_pin(void){
 
 	/* Initialize PIO interrupt handler, see PIO definition in conf_board.h */
 	pio_handler_set(WIFI_SETUP_PIO, WIFI_SETUP_ID, WIFI_SETUP_MASK,
-			WIFI_SETUP_ATTR, wifi_web_setup_handler);
+			WIFI_SETUP_ATTR, handler_web_setup);
 			
 	/* Enable PIO controller IRQs. */
 	NVIC_EnableIRQ((IRQn_Type) WIFI_SETUP_ID);
@@ -180,7 +180,7 @@ void write_wifi_command(char* comm, uint8_t cnt){
 /**
  *  \brief Writes image to file.
  */
-void write_image_to_file(void){
+void write_image_usart(void){
 	// will have already checked if image is valid
 	write_wifi_command("fde image.jpg\r\n", 2);
 	char* templated_command[35];

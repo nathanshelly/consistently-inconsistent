@@ -21,13 +21,13 @@ uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE];
 uint16_t *start_of_image_ptr;
 uint16_t *end_of_image_ptr;
 
-void vsync_handler(uint32_t ul_id, uint32_t ul_mask);
-void init_vsync_interrupts(void);
-void pio_capture_init(Pio *p_pio, uint32_t ul_id);
+void handler_vsync(uint32_t ul_id, uint32_t ul_mask);
+void configure_vsync(void);
+void init_pio_capture(Pio *p_pio, uint32_t ul_id);
 void configure_twi(void);
 void init_camera(void);
 void configure_camera(void);
-uint8_t pio_capture_to_buffer(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size);
+uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size);
 void start_capture(void);
 uint8_t find_image_len(void);
 
@@ -54,7 +54,7 @@ uint8_t find_image_len(void);
 #define BOARD_TWI_IRQn		           TWI0_IRQn
 
 /* TWI clock frequency in Hz (400KHz) */
-#define TWI_CLK							(400000UL)
+#define TWI_CLK							(100000UL)
 
 /** OV Data Bus pins */
 #define OV_DATA_BUS_D2                 PIO_PA24_IDX
