@@ -8,6 +8,8 @@ src\ASF\sam\drivers\tc\tc.c
 
 src\ASF\sam\drivers\wdt\wdt.c
 
+src\microphone.c
+
 src\ASF\common\services\delay\sam\cycle_counter.c
 
 src\ASF\sam\drivers\pio\pio_handler.c

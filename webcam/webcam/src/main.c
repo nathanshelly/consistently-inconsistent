@@ -23,6 +23,7 @@
 #include <asf.h>
 #include "wifi.h"
 #include "camera.h"
+#include "microphone.h"
 #include "ov2640.h"
 #include "timer_interface.h"
 
@@ -128,17 +129,23 @@ int main (void)
 	
 	// Custom configuration calls
 	configure_wifi();		// configures and initializes wifi module
-	configure_camera();		// configures and initializes camera module
-	reboot_wifi();			// reboots the wifi chip (takes several seconds)
+	//configure_camera();		// configures and initializes camera module
+	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
 
+	char *samples_data;
+	uint32_t tr = 440;
+	uint32_t sr = 800;
+
+	samples_data = generate_spoof(440);
 	while(1) {
 		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
 
-		start_capture();		// capture the image to internal memory
+		//start_capture();		// capture the image to internal memory
 		//post_test();
-		post_image();			// send the image to the wifi chip
+		//post_image();			// send the image to the wifi chip
+		send_data(samples_data);
 	}
 	return 0;
 }
