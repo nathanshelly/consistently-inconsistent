@@ -34,6 +34,7 @@ void handler_web_setup(uint32_t ul_id, uint32_t ul_mask);
 void configure_web_setup(void);
 void write_wifi_command(char* comm, uint8_t cnt);
 void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length);
+void post_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length);
 void print_to_file(char* message, int num_bytes);
 void blink_LED(int ms_blink);
 void setup_wifi(void);
@@ -44,7 +45,7 @@ void reboot_wifi(void);
 
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0
-#define BOARD_USART_BAUDRATE		115200
+#define BOARD_USART_BAUDRATE		921600
 #define handler_usart				USART0_Handler
 #define USART_IRQn					USART0_IRQn
 

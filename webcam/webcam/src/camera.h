@@ -13,7 +13,7 @@
 #include "conf_board.h"
 #include "conf_clock.h"
 
-#define CAM_BUFFER_SIZE					100000
+#define CAM_BUFFER_SIZE					20000
 
 // variable declarations
 volatile uint32_t vsync_rising_edge_flag;

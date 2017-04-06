@@ -39,9 +39,57 @@ void send_image(void){
 		write_image_usart(start_of_image_ptr, im_length);
 	}
 				
-	delay_ms(50);
-	
+	delay_ms(50);	
 }
+
+/**
+ * \brief Posts image to server
+**/
+void post_image(void) {
+	uint32_t im_length;
+	
+	im_length = find_image_len();
+	if(im_length) {
+		post_image_usart(start_of_image_ptr, im_length);
+	}
+
+	//delay_ms(50);
+}
+
+/**
+ * \brief Testing posting
+**/
+void post_test(void) {
+	write_wifi_command("close all\r\n", 2);
+	write_wifi_command("http_post -o https://bigbrothersees.me/post_test application/json\r\n", 2);
+	write_wifi_command("http_add_header 0 message-type test\r\n", 2);
+	
+	char* templated_command[35];
+	sprintf(templated_command, "write 0 %d\r\n", 15);
+	usart_write_line(BOARD_USART, templated_command);
+	
+	usart_putchar(BOARD_USART, '{');
+	usart_putchar(BOARD_USART, '\"');
+	usart_putchar(BOARD_USART, 'd');
+	usart_putchar(BOARD_USART, 'a');
+	usart_putchar(BOARD_USART, 't');
+	usart_putchar(BOARD_USART, 'a');
+	usart_putchar(BOARD_USART, '\"');
+	usart_putchar(BOARD_USART, ':');
+	usart_putchar(BOARD_USART, '\"');
+
+	usart_putchar(BOARD_USART, 'd');
+	usart_putchar(BOARD_USART, 'a');
+	usart_putchar(BOARD_USART, 't');
+	usart_putchar(BOARD_USART, 'a');
+
+	usart_putchar(BOARD_USART, '\"');
+	usart_putchar(BOARD_USART, '}');
+
+	write_wifi_command("http_read_status 0\r\n", 2);
+}
+
+
 /**
  *  \brief Messages all connected streams to refresh their images.
  */
@@ -50,7 +98,7 @@ void message_streams(void){
 	uint8_t* token = 0;	// token for string parsing
 
 	write_wifi_command("list\r\n", 2);
-	delay_ms(50);
+	//delay_ms(50);
 				
 	/* throw out first two tokens */
 	token = strtok(input_buffer, "#");
@@ -87,20 +135,10 @@ int main (void)
 		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
-		
-		write_wifi_command("get wl n s\r\n", 1);	// queries for the connection status
-		if(strstr(input_buffer, "2"))				// if connected (2)
-		{
-			write_wifi_command("poll all\r\n", 2);	// poll for connections
-			if(!strstr(input_buffer, "None"))		// if there are any streams
-			{
-				start_capture();		// capture the image to internal memory
-				send_image();			// send the image to the wifi chip
-				message_streams();		// send a message to all connected streams to refresh their image
-			} else {
-				delay_ms(1000);			// otherwise, delay a second
-			}
-		}
+
+		start_capture();		// capture the image to internal memory
+		//post_test();
+		post_image();			// send the image to the wifi chip
 	}
 	return 0;
 }

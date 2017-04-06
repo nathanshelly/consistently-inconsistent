@@ -168,13 +168,14 @@ void write_wifi_command(char* comm, uint8_t cnt){
 	usart_write_line(BOARD_USART, comm);
 	
 	timeout_counter = 0;
+	cnt = cnt*20;
 	while(timeout_counter < cnt && !data_recieved) {
 		// leave long
-		delay_ms(200);
+		delay_ms(10);
 		timeout_counter++;
 	}
 	
-	delay_ms(100);
+	//delay_ms(100);
 }
 
 /**
@@ -191,6 +192,42 @@ void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
 	{
 		usart_putchar(BOARD_USART, (uint32_t) start_of_image_ptr[i]);
 	}
+}
+
+/**
+ *  \brief Writes image to file on the wifi chip.
+ */
+void post_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
+	// will have already checked if image is valid
+	write_wifi_command("close all\r\n", 2);
+	write_wifi_command("http_post -o https://bigbrothersees.me/post_image application/json\r\n", 2);
+	write_wifi_command("http_add_header 0 message-type image-bin\r\n", 2);
+	
+	// this is temporary, change back
+	//image_length = 10;
+
+	char* templated_command[35];
+	sprintf(templated_command, "write 0 %d\r\n", image_length);
+	usart_write_line(BOARD_USART, templated_command);
+	
+	//usart_putchar(BOARD_USART, '{');
+	//usart_putchar(BOARD_USART, '\"');
+	//usart_putchar(BOARD_USART, 'd');
+	//usart_putchar(BOARD_USART, 'a');
+	//usart_putchar(BOARD_USART, 't');
+	//usart_putchar(BOARD_USART, 'a');
+	//usart_putchar(BOARD_USART, '\"');
+	//usart_putchar(BOARD_USART, ':');
+	//usart_putchar(BOARD_USART, '\"');
+	
+	for (int i = 0; i < image_length; i++)
+	{
+		usart_putchar(BOARD_USART, start_of_image_ptr[i]);
+	}
+	
+	//usart_putchar(BOARD_USART, '\"');
+	//usart_putchar(BOARD_USART, '}');
+	write_wifi_command("http_read_status 0\r\n", 2);
 }
 
 /**
