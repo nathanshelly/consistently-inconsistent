@@ -35,11 +35,13 @@ void configure_web_setup(void);
 void write_wifi_command(char* comm, uint8_t cnt);
 void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length);
 void post_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length);
+void post_audio_usart(uint8_t *audio_data_ptr, uint32_t num_samples);
 void print_to_file(char* message, int num_bytes);
 void blink_LED(int ms_blink);
 void setup_wifi(void);
 void configure_wifi(void);
 void reboot_wifi(void);
+void safe_mode_recovery(void);
 
 // Usart communication definitions
 

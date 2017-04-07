@@ -130,12 +130,10 @@ int main (void)
 	// Custom configuration calls
 	configure_wifi();		// configures and initializes wifi module
 	//configure_camera();		// configures and initializes camera module
-	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
+	reboot_wifi();			// reboots the wifi chip (takes several seconds)
 
-	char *samples_data;
-	uint32_t tr = 440;
-	uint32_t sr = 800;
-
+	uint16_t *samples_data;
+	
 	samples_data = generate_spoof(440);
 	while(1) {
 		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
@@ -145,7 +143,8 @@ int main (void)
 		//start_capture();		// capture the image to internal memory
 		//post_test();
 		//post_image();			// send the image to the wifi chip
-		send_data(samples_data);
+		send_data_ws(samples_data);
+		//post_audio_usart((uint8_t *) samples_data, 2000);
 	}
 	return 0;
 }

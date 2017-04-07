@@ -90,7 +90,9 @@ void configure_usart(void)
 void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
-	ioport_toggle_pin_level(LED_PIN);
+	//ioport_toggle_pin_level(LED_PIN);
+	
+	delay_ms(50);
 	
 	input_buffer[buffer_index] = 0;
 	data_recieved = 1;
@@ -215,6 +217,50 @@ void post_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
 	write_wifi_command("http_read_status 0\r\n", 2);
 }
 
+uint8_t parse_stream_handle(void){
+	// call right after opening the stream to get the handle used
+	
+	uint8_t opened = 0;
+	uint8_t handle;
+	
+	opened = strstr(input_buffer, "Opened");
+	
+	if(opened){
+		handle = input_buffer[10]; // this is wrong
+		if(handle >= 48 && handle < 58){
+			return handle - '0';
+		}
+		else{
+			return -1;
+		}
+	}else{
+		return -1;
+	}
+	
+}
+
+void post_audio_usart(uint8_t *audio_data_ptr, uint32_t num_samples){
+	
+	uint8_t handle;
+
+	write_wifi_command("close all\r\n", 2);
+	write_wifi_command("http_post -o https://bigbrothersees.me/post_image application/json\r\n", 2);
+	//delay_ms(50);
+	//handle = parse_stream_handle();
+	write_wifi_command("http_add_header 0 message-type audio-bin\r\n", 2);
+	
+	char* templated_command[35];
+	sprintf(templated_command, "write 0 %d\r\n", num_samples);
+	usart_write_line(BOARD_USART, templated_command);
+	
+	for (int i = 0; i < num_samples; i++)
+	{
+		usart_putchar(BOARD_USART, audio_data_ptr[i]);
+	}
+	
+	write_wifi_command("http_read_status 0\r\n", 2);
+}
+
 /**
  *  \brief Prints a message to a text file with a static name.
 	Need to pass number of bytes in the message
@@ -272,6 +318,15 @@ void configure_wifi(){
 	configure_command_complete();
 	configure_web_setup();	
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
+}
+
+void safe_mode_recovery(){
+	
+	write_wifi_command("get system.safemode.status\r\n",2);
+	write_wifi_command("faults_print\r\n",2);
+	write_wifi_command("faults_reset\r\n",2);
+	write_wifi_command("faults_print\r\n",2);
+	write_wifi_command("reboot\r\n",2);
 }
 
 /**

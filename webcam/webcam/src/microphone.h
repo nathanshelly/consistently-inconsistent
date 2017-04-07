@@ -17,7 +17,7 @@
 #define NUMBER_OF_SAMPLES 1000
 // uint8_t input_buffer[BUFFER_SIZE];
 
-char *generate_spoof(int tone_frequency);
-void send_data(uint8_t *samples_data);
+uint16_t *generate_spoof(uint32_t tone_frequency);
+void send_data_ws(uint16_t *samples_data);
 
 #endif /* MICROPHONE_H_ */
