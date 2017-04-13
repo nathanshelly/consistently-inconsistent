@@ -4,6 +4,8 @@
 
 src\ASF\sam\drivers\pdc\pdc.c
 
+src\ASF\sam\drivers\ssc\ssc.c
+
 src\ASF\sam\drivers\tc\tc.c
 
 src\ASF\sam\drivers\wdt\wdt.c

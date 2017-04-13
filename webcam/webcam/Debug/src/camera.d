@@ -122,7 +122,7 @@ src/camera.d src/camera.o: ../src/camera.c ../src/camera.h ../src/asf.h \
  ../src/ASF/common/services/ioport/ioport.h \
  ../src/ASF/common/services/ioport/sam/ioport_pio.h \
  ../src/ASF/sam/drivers/pdc/pdc.h ../src/ASF/sam/drivers/pmc/sleep.h \
- ../src/ASF/sam/drivers/tc/tc.h \
+ ../src/ASF/sam/drivers/ssc/ssc.h ../src/ASF/sam/drivers/tc/tc.h \
  ../src/ASF/common/services/twi/sam_twi/twi_master.h \
  ../src/ASF/sam/drivers/twi/twi.h \
  ../src/ASF/common/services/twi/sam_twi/twi_slave.h \
@@ -398,6 +398,8 @@ c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\arm-no
 ../src/ASF/sam/drivers/pdc/pdc.h:
 
 ../src/ASF/sam/drivers/pmc/sleep.h:
+
+../src/ASF/sam/drivers/ssc/ssc.h:
 
 ../src/ASF/sam/drivers/tc/tc.h:
 

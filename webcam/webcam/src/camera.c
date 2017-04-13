@@ -183,11 +183,6 @@ void start_capture(void)
 			PIO_PCIMR_RXBUFF)) {
 	}
 
-	//last_elements[0] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-4];
-	//last_elements[1] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-3];
-	//last_elements[2] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-2];
-	//last_elements[3] = image_dest_buffer_ptr[CAM_BUFFER_SIZE-1];
-
 	/* Disable pio capture*/
 	pio_capture_disable(OV_DATA_BUS_PIO);
 

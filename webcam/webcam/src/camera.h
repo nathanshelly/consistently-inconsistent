@@ -31,7 +31,7 @@ uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size);
 void start_capture(void);
 uint32_t find_image_len(void);
 
-/** OV_VSYNC pin definition */
+///** OV_VSYNC pin definition */
 #define OV_VSYNC_GPIO                  PIO_PA15_IDX
 #define OV_VSYNC_FLAGS                 (PIO_PULLUP | PIO_IT_RISE_EDGE)
 #define OV_VSYNC_MASK                  PIO_PA15
@@ -40,6 +40,9 @@ uint32_t find_image_len(void);
 #define OV_VSYNC_TYPE                  PIO_PULLUP
 #define OV_DATA_BUS_PIO                PIOA
 #define OV_DATA_BUS_ID                 ID_PIOA
+
+/** MIC_WORD_STROBE */
+#define MIC_WORD_STROBE
 
 /** OV_HSYNC pin definition */
 #define OV_HSYNC_GPIO                  PIO_PA16_IDX
