@@ -17,23 +17,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .comment      00000059  00000000  00000000  00020462  2**0
                   CONTENTS, READONLY
-  7 .debug_info   00013ddd  00000000  00000000  000204bb  2**0
+  7 .debug_info   00013ee6  00000000  00000000  000204bb  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00002922  00000000  00000000  00034298  2**0
+  8 .debug_abbrev 00002922  00000000  00000000  000343a1  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    00006f16  00000000  00000000  00036bba  2**0
+  9 .debug_loc    00006f18  00000000  00000000  00036cc3  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_aranges 00000c00  00000000  00000000  0003dad0  2**0
+ 10 .debug_aranges 00000c00  00000000  00000000  0003dbdb  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000b60  00000000  00000000  0003e6d0  2**0
+ 11 .debug_ranges 00000b60  00000000  00000000  0003e7db  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_macro  000063ce  00000000  00000000  0003f230  2**0
+ 12 .debug_macro  000063ce  00000000  00000000  0003f33b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_line   0000d643  00000000  00000000  000455fe  2**0
+ 13 .debug_line   0000d643  00000000  00000000  00045709  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    0004f512  00000000  00000000  00052c41  2**0
+ 14 .debug_str    0004f518  00000000  00000000  00052d4c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_frame  00003608  00000000  00000000  000a2154  2**2
+ 15 .debug_frame  00003608  00000000  00000000  000a2264  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -1250,44 +1250,44 @@ static inline uint32_t sysclk_get_cpu_hz(void)
   40070a:	bd80      	pop	{r7, pc}
   40070c:	004006e1 	.word	0x004006e1
 
-00400710 <do_it>:
+00400710 <i2s_capture>:
 
 /** Receive index. */
 uint32_t i2s_buf_index = 0;
 
 
-void do_it(void){
+void i2s_capture(void){
   400710:	b580      	push	{r7, lr}
   400712:	af00      	add	r7, sp, #0
 	
 	i2s_rec_done = 0;
-  400714:	4b0a      	ldr	r3, [pc, #40]	; (400740 <do_it+0x30>)
+  400714:	4b0a      	ldr	r3, [pc, #40]	; (400740 <i2s_capture+0x30>)
   400716:	2200      	movs	r2, #0
   400718:	701a      	strb	r2, [r3, #0]
 	i2s_buf_index = 0;
-  40071a:	4b0a      	ldr	r3, [pc, #40]	; (400744 <do_it+0x34>)
+  40071a:	4b0a      	ldr	r3, [pc, #40]	; (400744 <i2s_capture+0x34>)
   40071c:	2200      	movs	r2, #0
   40071e:	601a      	str	r2, [r3, #0]
 	
 	ssc_enable_interrupt(SSC, SSC_IDR_RXRDY);
   400720:	2110      	movs	r1, #16
   400722:	f04f 2040 	mov.w	r0, #1073758208	; 0x40004000
-  400726:	4b08      	ldr	r3, [pc, #32]	; (400748 <do_it+0x38>)
+  400726:	4b08      	ldr	r3, [pc, #32]	; (400748 <i2s_capture+0x38>)
   400728:	4798      	blx	r3
 	
-	while (! i2s_rec_done){
+	while (!i2s_rec_done){
   40072a:	bf00      	nop
-  40072c:	4b04      	ldr	r3, [pc, #16]	; (400740 <do_it+0x30>)
+  40072c:	4b04      	ldr	r3, [pc, #16]	; (400740 <i2s_capture+0x30>)
   40072e:	781b      	ldrb	r3, [r3, #0]
   400730:	b2db      	uxtb	r3, r3
   400732:	2b00      	cmp	r3, #0
-  400734:	d0fa      	beq.n	40072c <do_it+0x1c>
+  400734:	d0fa      	beq.n	40072c <i2s_capture+0x1c>
 		
 	}
 	
 	blink_LED(100);
   400736:	2064      	movs	r0, #100	; 0x64
-  400738:	4b04      	ldr	r3, [pc, #16]	; (40074c <do_it+0x3c>)
+  400738:	4b04      	ldr	r3, [pc, #16]	; (40074c <i2s_capture+0x3c>)
   40073a:	4798      	blx	r3
 	
 }
@@ -1363,7 +1363,7 @@ void SSC_Handler(void)
 
 void configure_i2s(void){
   4007b8:	b590      	push	{r4, r7, lr}
-  4007ba:	b085      	sub	sp, #20
+  4007ba:	b093      	sub	sp, #76	; 0x4c
   4007bc:	af02      	add	r7, sp, #8
  * \param p_ssc Pointer to an SSC instance.
  * \param ul_bitrate Desired bit clock.
@@ -1381,27 +1381,27 @@ void configure_i2s(void){
 	uint32_t ul_mck = sysclk_get_cpu_hz();
   4007cc:	4b17      	ldr	r3, [pc, #92]	; (40082c <configure_i2s+0x74>)
   4007ce:	4798      	blx	r3
-  4007d0:	6078      	str	r0, [r7, #4]
+  4007d0:	63f8      	str	r0, [r7, #60]	; 0x3c
 	
 	if (!ssc_set_clock_divider(SSC, SSC_BIT_RATE, ul_mck) == SSC_RC_YES){
-  4007d2:	687a      	ldr	r2, [r7, #4]
-  4007d4:	f44f 11fa 	mov.w	r1, #2048000	; 0x1f4000
+  4007d2:	6bfa      	ldr	r2, [r7, #60]	; 0x3c
+  4007d4:	f44f 217a 	mov.w	r1, #1024000	; 0xfa000
   4007d8:	f04f 2040 	mov.w	r0, #1073758208	; 0x40004000
   4007dc:	4b14      	ldr	r3, [pc, #80]	; (400830 <configure_i2s+0x78>)
   4007de:	4798      	blx	r3
   4007e0:	4603      	mov	r3, r0
   4007e2:	2b00      	cmp	r3, #0
   4007e4:	d11a      	bne.n	40081c <configure_i2s+0x64>
- *
- * \param ul_cks Source clock selection while working in SSC_I2S_SLAVE_IN mode.
- * \param ul_ch_mode Channel mode, stereo or mono.
- * \param ul_datlen Data length for one channel.
- */
-	ssc_i2s_set_receiver(SSC, SSC_I2S_MASTER_IN, SSC_RCMR_CKS_TK, SSC_AUDIO_MONO_LEFT, OVER_SAMPLE_RATE);
-  4007e6:	2340      	movs	r3, #64	; 0x40
+	//rx_data_frame_option.ul_fsedge = SSC_TFMR_FSEDGE_POSITIVE;
+	///* Configure the SSC receiver. */
+	//ssc_set_receiver(SSC, &rx_clk_option, &rx_data_frame_option);
+	//
+	// is2 setup
+	ssc_i2s_set_receiver(SSC, SSC_I2S_MASTER_IN, SSC_RCMR_CKS_RK, SSC_AUDIO_STERO, 32);
+  4007e6:	2320      	movs	r3, #32
   4007e8:	9300      	str	r3, [sp, #0]
-  4007ea:	2301      	movs	r3, #1
-  4007ec:	2201      	movs	r2, #1
+  4007ea:	2303      	movs	r3, #3
+  4007ec:	2202      	movs	r2, #2
   4007ee:	2102      	movs	r1, #2
   4007f0:	f04f 2040 	mov.w	r0, #1073758208	; 0x40004000
   4007f4:	4c0f      	ldr	r4, [pc, #60]	; (400834 <configure_i2s+0x7c>)
@@ -1439,7 +1439,7 @@ void configure_i2s(void){
   40081c:	bf00      	nop
 
 }
-  40081e:	370c      	adds	r7, #12
+  40081e:	3744      	adds	r7, #68	; 0x44
   400820:	46bd      	mov	sp, r7
   400822:	bd90      	pop	{r4, r7, pc}
   400824:	00401aa9 	.word	0x00401aa9
@@ -5567,7 +5567,7 @@ int main (void)
 	//configure_wifi();		// configures and initializes wifi module
 	//configure_camera();		// configures and initializes camera module
 	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
-
+	
 
 	configure_i2s();
   4021b8:	4b0a      	ldr	r3, [pc, #40]	; (4021e4 <main+0x44>)
@@ -5585,7 +5585,7 @@ int main (void)
   4021c6:	4798      	blx	r3
 		}
 
-		do_it();
+		i2s_capture();
   4021c8:	4b09      	ldr	r3, [pc, #36]	; (4021f0 <main+0x50>)
   4021ca:	4798      	blx	r3
 		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 

@@ -7141,8 +7141,9 @@ LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/arm/arm-gnu-toolchain/bin
                 0x004006e0       0x1c src/microphone.o
  .text.sysclk_get_cpu_hz
                 0x004006fc       0x14 src/microphone.o
- .text.do_it    0x00400710       0x40 src/microphone.o
-                0x00400710                do_it
+ .text.i2s_capture
+                0x00400710       0x40 src/microphone.o
+                0x00400710                i2s_capture
  .text.SSC_Handler
                 0x00400750       0x68 src/microphone.o
                 0x00400750                SSC_Handler
@@ -7635,23 +7636,23 @@ OUTPUT(webcam.elf elf32-littlearm)
  .comment       0x00000059       0x5a src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
  .comment       0x00000059       0x5a src/main.o
 
-.debug_info     0x00000000    0x13ddd
+.debug_info     0x00000000    0x13ee6
  .debug_info    0x00000000     0x1731 src/ASF/sam/drivers/ssc/ssc.o
  .debug_info    0x00001731     0x1249 src/ASF/sam/drivers/tc/tc.o
  .debug_info    0x0000297a      0xbd7 src/ASF/sam/drivers/wdt/wdt.o
- .debug_info    0x00003551     0x1827 src/microphone.o
- .debug_info    0x00004d78      0xa39 src/ASF/common/services/delay/sam/cycle_counter.o
- .debug_info    0x000057b1     0x179e src/ASF/sam/drivers/pio/pio_handler.o
- .debug_info    0x00006f4f     0x1e84 src/ASF/sam/drivers/usart/usart.o
- .debug_info    0x00008dd3     0x102c src/timer_interface.o
- .debug_info    0x00009dff     0x1fbb src/wifi.o
- .debug_info    0x0000bdba     0x11e3 src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_info    0x0000cf9d     0x1d81 src/ASF/sam/drivers/pio/pio.o
- .debug_info    0x0000ed1e     0x19cc src/ASF/sam/drivers/pmc/pmc.o
- .debug_info    0x000106ea     0x16f1 src/ASF/common/boards/user_board/init.o
- .debug_info    0x00011ddb      0x6e9 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_info    0x000124c4      0x45c src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_info    0x00012920     0x14bd src/main.o
+ .debug_info    0x00003551     0x1930 src/microphone.o
+ .debug_info    0x00004e81      0xa39 src/ASF/common/services/delay/sam/cycle_counter.o
+ .debug_info    0x000058ba     0x179e src/ASF/sam/drivers/pio/pio_handler.o
+ .debug_info    0x00007058     0x1e84 src/ASF/sam/drivers/usart/usart.o
+ .debug_info    0x00008edc     0x102c src/timer_interface.o
+ .debug_info    0x00009f08     0x1fbb src/wifi.o
+ .debug_info    0x0000bec3     0x11e3 src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_info    0x0000d0a6     0x1d81 src/ASF/sam/drivers/pio/pio.o
+ .debug_info    0x0000ee27     0x19cc src/ASF/sam/drivers/pmc/pmc.o
+ .debug_info    0x000107f3     0x16f1 src/ASF/common/boards/user_board/init.o
+ .debug_info    0x00011ee4      0x6e9 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_info    0x000125cd      0x45c src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_info    0x00012a29     0x14bd src/main.o
 
 .debug_abbrev   0x00000000     0x2922
  .debug_abbrev  0x00000000      0x291 src/ASF/sam/drivers/ssc/ssc.o
@@ -7671,22 +7672,22 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_abbrev  0x00002536      0x102 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
  .debug_abbrev  0x00002638      0x2ea src/main.o
 
-.debug_loc      0x00000000     0x6f16
+.debug_loc      0x00000000     0x6f18
  .debug_loc     0x00000000      0xd94 src/ASF/sam/drivers/ssc/ssc.o
  .debug_loc     0x00000d94      0x844 src/ASF/sam/drivers/tc/tc.o
  .debug_loc     0x000015d8      0x228 src/ASF/sam/drivers/wdt/wdt.o
- .debug_loc     0x00001800      0x392 src/microphone.o
- .debug_loc     0x00001b92      0x364 src/ASF/sam/drivers/pio/pio_handler.o
- .debug_loc     0x00001ef6     0x17d4 src/ASF/sam/drivers/usart/usart.o
- .debug_loc     0x000036ca      0x1b0 src/timer_interface.o
- .debug_loc     0x0000387a      0x704 src/wifi.o
- .debug_loc     0x00003f7e      0x4ac src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_loc     0x0000442a     0x1174 src/ASF/sam/drivers/pio/pio.o
- .debug_loc     0x0000559e     0x1450 src/ASF/sam/drivers/pmc/pmc.o
- .debug_loc     0x000069ee      0x1bc src/ASF/common/boards/user_board/init.o
- .debug_loc     0x00006baa       0x64 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_loc     0x00006c0e       0xe4 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_loc     0x00006cf2      0x224 src/main.o
+ .debug_loc     0x00001800      0x394 src/microphone.o
+ .debug_loc     0x00001b94      0x364 src/ASF/sam/drivers/pio/pio_handler.o
+ .debug_loc     0x00001ef8     0x17d4 src/ASF/sam/drivers/usart/usart.o
+ .debug_loc     0x000036cc      0x1b0 src/timer_interface.o
+ .debug_loc     0x0000387c      0x704 src/wifi.o
+ .debug_loc     0x00003f80      0x4ac src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_loc     0x0000442c     0x1174 src/ASF/sam/drivers/pio/pio.o
+ .debug_loc     0x000055a0     0x1450 src/ASF/sam/drivers/pmc/pmc.o
+ .debug_loc     0x000069f0      0x1bc src/ASF/common/boards/user_board/init.o
+ .debug_loc     0x00006bac       0x64 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_loc     0x00006c10       0xe4 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_loc     0x00006cf4      0x224 src/main.o
 
 .debug_aranges  0x00000000      0xc00
  .debug_aranges
@@ -7813,39 +7814,39 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_line    0x0000bdf5      0x858 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
  .debug_line    0x0000c64d      0xff6 src/main.o
 
-.debug_str      0x00000000    0x4f512
+.debug_str      0x00000000    0x4f518
  .debug_str     0x00000000    0x47b0b src/ASF/sam/drivers/ssc/ssc.o
                               0x47ec3 (size before relaxing)
  .debug_str     0x00047b0b      0x369 src/ASF/sam/drivers/tc/tc.o
                               0x47a66 (size before relaxing)
  .debug_str     0x00047e74      0x135 src/ASF/sam/drivers/wdt/wdt.o
                               0x47802 (size before relaxing)
- .debug_str     0x00047fa9     0x379c src/microphone.o
-                              0x4b322 (size before relaxing)
- .debug_str     0x0004b745       0x35 src/ASF/common/services/delay/sam/cycle_counter.o
+ .debug_str     0x00047fa9     0x37a2 src/microphone.o
+                              0x4b3e8 (size before relaxing)
+ .debug_str     0x0004b74b       0x35 src/ASF/common/services/delay/sam/cycle_counter.o
                               0x4787b (size before relaxing)
- .debug_str     0x0004b77a      0x48a src/ASF/sam/drivers/pio/pio_handler.o
+ .debug_str     0x0004b780      0x48a src/ASF/sam/drivers/pio/pio_handler.o
                               0x4820b (size before relaxing)
- .debug_str     0x0004bc04      0x7d2 src/ASF/sam/drivers/usart/usart.o
+ .debug_str     0x0004bc0a      0x7d2 src/ASF/sam/drivers/usart/usart.o
                               0x48100 (size before relaxing)
- .debug_str     0x0004c3d6       0x70 src/timer_interface.o
+ .debug_str     0x0004c3dc       0x70 src/timer_interface.o
                               0x4a436 (size before relaxing)
- .debug_str     0x0004c446      0x65a src/wifi.o
+ .debug_str     0x0004c44c      0x65a src/wifi.o
                               0x4b0b9 (size before relaxing)
- .debug_str     0x0004caa0      0x382 src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_str     0x0004caa6      0x382 src/ASF/common/services/clock/sam4s/sysclk.o
                               0x493cf (size before relaxing)
- .debug_str     0x0004ce22      0x48d src/ASF/sam/drivers/pio/pio.o
+ .debug_str     0x0004ce28      0x48d src/ASF/sam/drivers/pio/pio.o
                               0x4831b (size before relaxing)
- .debug_str     0x0004d2af      0x58d src/ASF/sam/drivers/pmc/pmc.o
+ .debug_str     0x0004d2b5      0x58d src/ASF/sam/drivers/pmc/pmc.o
                               0x4816a (size before relaxing)
- .debug_str     0x0004d83c       0xee src/ASF/common/boards/user_board/init.o
+ .debug_str     0x0004d842       0xee src/ASF/common/boards/user_board/init.o
                               0x4ab1d (size before relaxing)
- .debug_str     0x0004d92a      0x428 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_str     0x0004d930      0x428 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
                               0x3833e (size before relaxing)
- .debug_str     0x0004dd52       0xb9 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_str     0x0004dd58       0xb9 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
                               0x380dd (size before relaxing)
- .debug_str     0x0004de0b     0x1707 src/main.o
-                              0x4c97c (size before relaxing)
+ .debug_str     0x0004de11     0x1707 src/main.o
+                              0x4c982 (size before relaxing)
 
 .debug_frame    0x00000000     0x3608
  .debug_frame   0x00000000      0x5f8 src/ASF/sam/drivers/ssc/ssc.o
@@ -8302,8 +8303,6 @@ data_recieved                                     src/wifi.o
                                                   src/ASF/common/boards/user_board/init.o
                                                   src/camera.o
                                                   src/microphone.o
-do_it                                             src/microphone.o
-                                                  src/main.o
 errno                                             c:/program files (x86)/atmel/studio/7.0/toolchain/arm/arm-gnu-toolchain/bin/../lib/gcc/arm-none-eabi/6.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m\libc.a(lib_a-reent.o)
                                                   c:/program files (x86)/atmel/studio/7.0/toolchain/arm/arm-gnu-toolchain/bin/../lib/gcc/arm-none-eabi/6.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m\libc.a(lib_a-sbrkr.o)
 exception_table                                   src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
@@ -8324,6 +8323,8 @@ handler_vsync                                     src/camera.o
 handler_web_setup                                 src/wifi.o
 hardware_init_hook                                c:/program files (x86)/atmel/studio/7.0/toolchain/arm/arm-gnu-toolchain/bin/../lib/gcc/arm-none-eabi/6.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/crt0.o
 i2s_buf_index                                     src/microphone.o
+i2s_capture                                       src/microphone.o
+                                                  src/main.o
 i2s_rec_buf                                       src/microphone.o
 i2s_rec_done                                      src/microphone.o
 image_dest_buffer_ptr                             src/camera.o

@@ -131,7 +131,7 @@ int main (void)
 	//configure_wifi();		// configures and initializes wifi module
 	//configure_camera();		// configures and initializes camera module
 	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
-
+	
 
 	configure_i2s();
 
@@ -141,7 +141,7 @@ int main (void)
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
 
-		do_it();
+		i2s_capture();
 
 		//start_capture();		// capture the image to internal memory
 		//post_test();
