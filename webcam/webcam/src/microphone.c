@@ -8,13 +8,13 @@
 uint16_t wave_samples[NUMBER_OF_SAMPLES] = {0};
 	
 /** Receiver buffer content. */
-uint32_t i2s_rec_buf[NUMBER_OF_SAMPLES];
+volatile uint32_t i2s_rec_buf[NUMBER_OF_SAMPLES] = {0};
 
 /** Receive done flag. */
 volatile uint8_t i2s_rec_done = 0;
 
 /** Receive index. */
-uint32_t i2s_buf_index = 0;
+volatile uint32_t i2s_buf_index = 0;
 
 
 void i2s_capture(void){
@@ -66,35 +66,13 @@ void configure_i2s(void){
 	ssc_reset(SSC);
 	uint32_t ul_mck = sysclk_get_cpu_hz();
 	
-	if (!ssc_set_clock_divider(SSC, SSC_BIT_RATE, ul_mck) == SSC_RC_YES){
+	if (ssc_set_clock_divider(SSC, SSC_BIT_RATE, ul_mck) != SSC_RC_YES){
 		return 1;
 	}
 	
-	// ssc setup
-	
-	clock_opt_t rx_clk_option;
-	data_frame_opt_t rx_data_frame_option;
-	///* Receiver clock mode configuration. */
-	//rx_clk_option.ul_cks = SSC_RCMR_CKS_RK;
-	//rx_clk_option.ul_cko = SSC_RCMR_CKO_NONE;
-	//rx_clk_option.ul_cki = 0;
-	//rx_clk_option.ul_ckg = 0;
-	//rx_clk_option.ul_period = 0;
-	//rx_clk_option.ul_sttdly = 0;
-	//rx_clk_option.ul_start_sel = SSC_RCMR_START_RF_EDGE;
-	///* Receiver frame mode configuration. */
-	//rx_data_frame_option.ul_datlen = 24;
-	//rx_data_frame_option.ul_msbf = SSC_TFMR_MSBF;
-	//rx_data_frame_option.ul_datnb = 15;
-	//rx_data_frame_option.ul_fslen = 15;
-	//rx_data_frame_option.ul_fslen_ext = 15;
-	//rx_data_frame_option.ul_fsos = SSC_RFMR_FSOS_TOGGLING;
-	//rx_data_frame_option.ul_fsedge = SSC_TFMR_FSEDGE_POSITIVE;
-	///* Configure the SSC receiver. */
-	//ssc_set_receiver(SSC, &rx_clk_option, &rx_data_frame_option);
-	//
 	// is2 setup
-	ssc_i2s_set_receiver(SSC, SSC_I2S_MASTER_IN, SSC_RCMR_CKS_RK, SSC_AUDIO_STERO, 32);
+	//ssc_i2s_set_receiver(SSC, SSC_I2S_MASTER_IN, SSC_RCMR_CKS_RK, SSC_AUDIO_STERO, 32);
+	set_receiver();
 
 	/* Enable the tx and rx function. */
 	ssc_enable_rx(SSC);
@@ -109,6 +87,54 @@ void configure_i2s(void){
 	NVIC_SetPriority(SSC_IRQn, SSC_IRQ_PRIO);
 	NVIC_EnableIRQ(SSC_IRQn);
 
+}
+
+/**
+ * \brief Setup for I2S receiver.
+ *
+ * \note If working in master mode, the divided clock needs to be configured before
+ * calling this function according to the sample rate and ul_datlen field.
+ *
+ * \param p_ssc Pointer to an SSC instance.
+ * \param ul_mode Working mode, SSC_I2S_MASTER_IN or SSC_I2S_SLAVE_IN.
+ * \param ul_cks Source clock selection while working in SSC_I2S_SLAVE_IN mode.
+ * \param ul_ch_mode Channel mode, stereo or mono.
+ * \param ul_datlen Data length for one channel.
+ */
+void set_receiver() {
+	clock_opt_t rx_clk_option;
+	data_frame_opt_t rx_data_frame_option;
+	/* Receiver clock mode configuration. */
+	
+	// TCMR?
+	rx_clk_option.ul_cks = SSC_RCMR_CKS_RK;
+	rx_clk_option.ul_cko = SSC_RCMR_CKO_NONE;
+	rx_clk_option.ul_cki = 0;
+	rx_clk_option.ul_ckg = 0;
+	rx_clk_option.ul_period = 0;
+	rx_clk_option.ul_sttdly = 0;
+	
+	// test falling vs rising here
+	rx_clk_option.ul_start_sel = SSC_RCMR_START_RF_EDGE;
+	//rx_clk_option.ul_start_sel = SSC_RCMR_START_RF_RISING;
+	
+	/* Receiver frame mode configuration. */
+	// 23? we have 24 data bits
+	rx_data_frame_option.ul_datlen = 23;
+	
+	rx_data_frame_option.ul_msbf = SSC_TFMR_MSBF;
+	
+	// why 15? try as 0 and 1
+	rx_data_frame_option.ul_datnb = 1;
+	
+	rx_data_frame_option.ul_fslen = 15;
+	rx_data_frame_option.ul_fslen_ext = 1;
+	
+	rx_data_frame_option.ul_fsos = SSC_RFMR_FSOS_TOGGLING;
+	rx_data_frame_option.ul_fsedge = SSC_TFMR_FSEDGE_POSITIVE;
+	/* Configure the SSC receiver. */
+	ssc_set_receiver(SSC, &rx_clk_option, &rx_data_frame_option);
+	
 }
 
 

@@ -21,6 +21,7 @@ uint16_t *generate_spoof(uint32_t tone_frequency);
 void send_data_ws(uint16_t *samples_data);
 void i2s_capture();
 void configure_i2s();
+void set_receiver();
 
 /** The SSC interrupt IRQ priority. */
 #define SSC_IRQ_PRIO           4
