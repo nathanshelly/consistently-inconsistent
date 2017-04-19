@@ -133,7 +133,8 @@ int main (void)
 	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
 	
 
-	configure_i2s();
+	//configure_i2s();
+	run_ssc_test();
 
 	//uint16_t *samples_data = generate_spoof(440);
 	while(1) {
@@ -141,7 +142,7 @@ int main (void)
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
 
-		i2s_capture();
+		//i2s_capture();
 
 		//start_capture();		// capture the image to internal memory
 		//post_test();

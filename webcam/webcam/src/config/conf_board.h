@@ -73,11 +73,11 @@
 //! [tc_define_irq_handler]
 
 // LED Definitions
-#define LED_PIN    PIO_PA19_IDX
+#define LED_PIN    PIO_PA9_IDX
 #define LED_FLAGS   (PIO_PERIPH_B | PIO_DEFAULT)
 #define LED_CHANNEL //PWM_CHANNEL_0
 
-#define LED0_GPIO     (PIO_PA19_IDX)
+#define LED0_GPIO     (PIO_PA9_IDX)
 #define LED0_FLAGS    (PIO_OUTPUT_1 | PIO_DEFAULT)
 #define LED0_ACTIVE_LEVEL 0
 

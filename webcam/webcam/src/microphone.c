@@ -61,6 +61,7 @@ void configure_i2s(void){
  * \param ul_bitrate Desired bit clock.
  * \param ul_mck MCK clock.
 */
+
 	/* Initialize the SSC module and work in loop mode. */
 	pmc_enable_periph_clk(ID_SSC);
 	ssc_reset(SSC);
@@ -71,8 +72,8 @@ void configure_i2s(void){
 	}
 	
 	// is2 setup
-	//ssc_i2s_set_receiver(SSC, SSC_I2S_MASTER_IN, SSC_RCMR_CKS_RK, SSC_AUDIO_STERO, 32);
-	set_receiver();
+	ssc_i2s_set_receiver(SSC, SSC_I2S_MASTER_IN, SSC_RCMR_CKS_RK, SSC_AUDIO_STERO, 32);
+	//set_receiver();
 
 	/* Enable the tx and rx function. */
 	ssc_enable_rx(SSC);
@@ -86,7 +87,86 @@ void configure_i2s(void){
 	NVIC_ClearPendingIRQ(SSC_IRQn);
 	NVIC_SetPriority(SSC_IRQn, SSC_IRQ_PRIO);
 	NVIC_EnableIRQ(SSC_IRQn);
+}
 
+void run_ssc_test(void)
+{
+	uint32_t ul_mck;
+	clock_opt_t tx_clk_option;
+	clock_opt_t rx_clk_option;
+	data_frame_opt_t rx_data_frame_option;
+	data_frame_opt_t tx_data_frame_option;
+
+	/* Initialize the local variable. */
+	ul_mck = 0;
+	memset((uint8_t *)&rx_clk_option, 0, sizeof(clock_opt_t));
+	memset((uint8_t *)&rx_data_frame_option, 0, sizeof(data_frame_opt_t));
+	memset((uint8_t *)&tx_clk_option, 0, sizeof(clock_opt_t));
+	memset((uint8_t *)&tx_data_frame_option, 0, sizeof(data_frame_opt_t));
+
+	/* Initialize the SSC module and work in loop mode. */
+	pmc_enable_periph_clk(ID_SSC);
+	ssc_reset(SSC);
+	ul_mck = sysclk_get_cpu_hz();
+	ssc_set_clock_divider(SSC, SSC_BIT_RATE, ul_mck);
+
+	/* Transmitter clock mode configuration. */
+	tx_clk_option.ul_cks = SSC_TCMR_CKS_MCK;
+	tx_clk_option.ul_cko = SSC_TCMR_CKO_CONTINUOUS;
+	tx_clk_option.ul_cki = 0;
+	tx_clk_option.ul_ckg = 0;
+	tx_clk_option.ul_start_sel = SSC_TCMR_START_CONTINUOUS;
+	tx_clk_option.ul_sttdly = 0;
+	tx_clk_option.ul_period = 0;
+	/* Transmitter frame mode configuration. */
+	tx_data_frame_option.ul_datlen = BIT_LEN_PER_CHANNEL - 1;
+	tx_data_frame_option.ul_msbf = SSC_TFMR_MSBF;
+	tx_data_frame_option.ul_datnb = 0;
+	tx_data_frame_option.ul_fslen = 0;
+	tx_data_frame_option.ul_fslen_ext = 0;
+	tx_data_frame_option.ul_fsos = SSC_TFMR_FSOS_TOGGLING;
+	tx_data_frame_option.ul_fsedge = SSC_TFMR_FSEDGE_POSITIVE;
+	/* Configure the SSC transmitter. */
+	ssc_set_transmitter(SSC, &tx_clk_option, &tx_data_frame_option);
+
+	/* Receiver clock mode configuration. */
+	rx_clk_option.ul_cks = SSC_RCMR_CKS_RK;
+	rx_clk_option.ul_cko = SSC_RCMR_CKO_NONE;
+	rx_clk_option.ul_cki = 0;
+	rx_clk_option.ul_ckg = 0;
+	rx_clk_option.ul_start_sel = SSC_RCMR_START_RF_EDGE;
+	rx_clk_option.ul_sttdly = 0;
+	rx_clk_option.ul_period = 0;
+	/* Receiver frame mode configuration. */
+	rx_data_frame_option.ul_datlen = BIT_LEN_PER_CHANNEL - 1;
+	rx_data_frame_option.ul_msbf = SSC_TFMR_MSBF;
+	rx_data_frame_option.ul_datnb = 0;
+	rx_data_frame_option.ul_fslen = 0;
+	rx_data_frame_option.ul_fslen_ext = 0;
+	rx_data_frame_option.ul_fsos = SSC_TFMR_FSOS_NONE;
+	rx_data_frame_option.ul_fsedge = SSC_TFMR_FSEDGE_POSITIVE;
+	/* Configure the SSC receiver. */
+	ssc_set_receiver(SSC, &rx_clk_option, &rx_data_frame_option);
+
+	/* Enable the loop mode. */
+	ssc_set_loop_mode(SSC);
+
+	/* Enable the tx and rx function. */
+	ssc_enable_rx(SSC);
+	//ssc_enable_tx(SSC);
+
+	/* Configure the RX interrupt. */
+	ssc_enable_interrupt(SSC, SSC_IER_RXRDY);
+
+	/* Enable SSC interrupt line from the core */
+	NVIC_DisableIRQ(SSC_IRQn);
+	NVIC_ClearPendingIRQ(SSC_IRQn);
+	NVIC_SetPriority(SSC_IRQn, SSC_IRQ_PRIO);
+	NVIC_EnableIRQ(SSC_IRQn);
+
+	while(1) {
+		// busy wait forever
+	}
 }
 
 /**

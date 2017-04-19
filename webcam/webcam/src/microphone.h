@@ -22,12 +22,16 @@ void send_data_ws(uint16_t *samples_data);
 void i2s_capture();
 void configure_i2s();
 void set_receiver();
+void run_ssc_test();
 
 /** The SSC interrupt IRQ priority. */
 #define SSC_IRQ_PRIO           4
 
 #define OVER_SAMPLE_RATE			32
 #define SAMPLE_RATE					32000
-#define SSC_BIT_RATE				(OVER_SAMPLE_RATE * SAMPLE_RATE)
+//#define SSC_BIT_RATE				(OVER_SAMPLE_RATE * SAMPLE_RATE)
+#define SSC_BIT_RATE				(8 * 8000)
+
+#define BIT_LEN_PER_CHANNEL			8
 
 #endif /* MICROPHONE_H_ */

@@ -89,7 +89,7 @@ typedef struct {
 	uint32_t ul_datnb;
 	//! Frame Sync. length should be 0 to 15.
 	uint32_t ul_fslen;
-	//! Frame Sync. length extension field, should be 0 to 15.
+	//! Frame Sync. length extension field, should be 0 to 15.	
 	uint32_t ul_fslen_ext;
 	//! Frame Sync. output selection.
 	//! For receiver configuration, one of SSC_RFMR_FSOS_NONE, SSC_RFMR_FSOS_NEGATIVE, SSC_RFMR_FSOS_POSITIVE,
