@@ -7,216 +7,117 @@
 #include "microphone.h"
 uint16_t wave_samples[NUMBER_OF_SAMPLES] = {0};
 	
-/** Receiver buffer content. */
-volatile uint32_t i2s_rec_buf[NUMBER_OF_SAMPLES] = {0};
+/** Receiver buffer for multisampling. */
+volatile uint16_t multisample_buf[MULTISAMPLE_SIZE] = {0};
+	
+/** Audio buffer */
+volatile uint32_t rec_buff[NUMBER_OF_SAMPLES] = {0};
 
 /** Receive done flag. */
-volatile uint8_t i2s_rec_done = 0;
+volatile uint8_t rec_done = 0;
 
 /** Receive index. */
-volatile uint32_t i2s_buf_index = 0;
+volatile uint32_t buf_index = 0;
 
 
-void i2s_capture(void){
+void ADC_setup(void){
+	pmc_enable_periph_clk(ID_ADC);
 	
-	i2s_rec_done = 0;
-	i2s_buf_index = 0;
+	uint32_t ADC_clk = 6000000;
 	
-	ssc_enable_interrupt(SSC, SSC_IDR_RXRDY);
+	// ADC clk = 6Mhz, prescaler = 9 because MCK = 120MHz
+	adc_init(ADC, sysclk_get_cpu_hz(), ADC_clk, ADC_STARTUP_TIME_4);
 	
-	while (!i2s_rec_done){
-		
-	}
+	adc_configure_timing(ADC, TRACKING_TIME, ADC_SETTLING_TIME_3, TRANSFER_PERIOD);
 	
-	blink_LED(100);
+	adc_configure_trigger(ADC, ADC_TRIG_SW, 0);
+
+	//adc_check(ADC, sysclk_get_cpu_hz());
+
+	/* Enable channel for potentiometer. */
+	adc_enable_channel(ADC, ADC_CHANNEL_8);
+
+	/* Enable ADC interrupt. */
+	NVIC_EnableIRQ(ADC_IRQn);
+	
+	adc_start(ADC);
+	
+	adc_read_buffer(ADC, multisample_buf, MULTISAMPLE_SIZE);
 	
 }
 
-/**
- * \brief Synchronous Serial Controller Handler.
- *
- */
-void SSC_Handler(void)
+void audio_capture(void){
+	rec_done = 0;
+	buf_index = 0;
+	
+	adc_enable_interrupt(ADC, ADC_ISR_RXBUFF);
+	
+	while (!rec_done){
+		blink_LED(200);
+	}
+	
+	adc_disable_interrupt(ADC,ADC_ISR_RXBUFF);
+}
+
+static uint32_t adc_read_buffer(Adc * pADC, int16_t * multisample_buffer, uint32_t multisample_buffer_size)
 {
-	uint32_t ul_data;
-	ssc_get_status(SSC);
+	/* Check if the first PDC bank is free. */
+	if ((pADC->ADC_RCR == 0) && (pADC->ADC_RNCR == 0)) {
+		pADC->ADC_RPR = (uint32_t) multisample_buffer;
+		pADC->ADC_RCR = multisample_buffer_size;
+		pADC->ADC_PTCR = ADC_PTCR_RXTEN;
 
-	ssc_read(SSC, &ul_data);
-	i2s_rec_buf[i2s_buf_index++] = ul_data;
-
-	if (NUMBER_OF_SAMPLES == i2s_buf_index) {
-		i2s_rec_done = 1;
-		ssc_disable_interrupt(SSC, SSC_IDR_RXRDY);
-	}
-}
-
-
-void configure_i2s(void){
-	
-	
-	/**
- * \brief Set up clock.
- *
- * \param p_ssc Pointer to an SSC instance.
- * \param ul_bitrate Desired bit clock.
- * \param ul_mck MCK clock.
-*/
-
-	/* Initialize the SSC module and work in loop mode. */
-	pmc_enable_periph_clk(ID_SSC);
-	ssc_reset(SSC);
-	uint32_t ul_mck = sysclk_get_cpu_hz();
-	
-	if (ssc_set_clock_divider(SSC, SSC_BIT_RATE, ul_mck) != SSC_RC_YES){
 		return 1;
-	}
-	
-	// is2 setup
-	ssc_i2s_set_receiver(SSC, SSC_I2S_MASTER_IN, SSC_RCMR_CKS_RK, SSC_AUDIO_STERO, 32);
-	//set_receiver();
+		} else {	/* Check if the second PDC bank is free. */
+		if (pADC->ADC_RNCR == 0) {
+			pADC->ADC_RNPR = (uint32_t) multisample_buffer;
+			pADC->ADC_RNCR = multisample_buffer_size;
 
-	/* Enable the tx and rx function. */
-	ssc_enable_rx(SSC);
-	//ssc_enable_tx(SSC);
-
-	/* Configure the RX interrupt. */
-	//ssc_enable_interrupt(SSC, SSC_IER_RXRDY);
-
-	/* Enable SSC interrupt line from the core */
-	NVIC_DisableIRQ(SSC_IRQn);
-	NVIC_ClearPendingIRQ(SSC_IRQn);
-	NVIC_SetPriority(SSC_IRQn, SSC_IRQ_PRIO);
-	NVIC_EnableIRQ(SSC_IRQn);
-}
-
-void run_ssc_test(void)
-{
-	uint32_t ul_mck;
-	clock_opt_t tx_clk_option;
-	clock_opt_t rx_clk_option;
-	data_frame_opt_t rx_data_frame_option;
-	data_frame_opt_t tx_data_frame_option;
-
-	/* Initialize the local variable. */
-	ul_mck = 0;
-	memset((uint8_t *)&rx_clk_option, 0, sizeof(clock_opt_t));
-	memset((uint8_t *)&rx_data_frame_option, 0, sizeof(data_frame_opt_t));
-	memset((uint8_t *)&tx_clk_option, 0, sizeof(clock_opt_t));
-	memset((uint8_t *)&tx_data_frame_option, 0, sizeof(data_frame_opt_t));
-
-	/* Initialize the SSC module and work in loop mode. */
-	pmc_enable_periph_clk(ID_SSC);
-	ssc_reset(SSC);
-	ul_mck = sysclk_get_cpu_hz();
-	ssc_set_clock_divider(SSC, SSC_BIT_RATE, ul_mck);
-
-	/* Transmitter clock mode configuration. */
-	tx_clk_option.ul_cks = SSC_TCMR_CKS_MCK;
-	tx_clk_option.ul_cko = SSC_TCMR_CKO_CONTINUOUS;
-	tx_clk_option.ul_cki = 0;
-	tx_clk_option.ul_ckg = 0;
-	tx_clk_option.ul_start_sel = SSC_TCMR_START_CONTINUOUS;
-	tx_clk_option.ul_sttdly = 0;
-	tx_clk_option.ul_period = 0;
-	/* Transmitter frame mode configuration. */
-	tx_data_frame_option.ul_datlen = BIT_LEN_PER_CHANNEL - 1;
-	tx_data_frame_option.ul_msbf = SSC_TFMR_MSBF;
-	tx_data_frame_option.ul_datnb = 0;
-	tx_data_frame_option.ul_fslen = 0;
-	tx_data_frame_option.ul_fslen_ext = 0;
-	tx_data_frame_option.ul_fsos = SSC_TFMR_FSOS_TOGGLING;
-	tx_data_frame_option.ul_fsedge = SSC_TFMR_FSEDGE_POSITIVE;
-	/* Configure the SSC transmitter. */
-	ssc_set_transmitter(SSC, &tx_clk_option, &tx_data_frame_option);
-
-	/* Receiver clock mode configuration. */
-	rx_clk_option.ul_cks = SSC_RCMR_CKS_RK;
-	rx_clk_option.ul_cko = SSC_RCMR_CKO_NONE;
-	rx_clk_option.ul_cki = 0;
-	rx_clk_option.ul_ckg = 0;
-	rx_clk_option.ul_start_sel = SSC_RCMR_START_RF_EDGE;
-	rx_clk_option.ul_sttdly = 0;
-	rx_clk_option.ul_period = 0;
-	/* Receiver frame mode configuration. */
-	rx_data_frame_option.ul_datlen = BIT_LEN_PER_CHANNEL - 1;
-	rx_data_frame_option.ul_msbf = SSC_TFMR_MSBF;
-	rx_data_frame_option.ul_datnb = 0;
-	rx_data_frame_option.ul_fslen = 0;
-	rx_data_frame_option.ul_fslen_ext = 0;
-	rx_data_frame_option.ul_fsos = SSC_TFMR_FSOS_NONE;
-	rx_data_frame_option.ul_fsedge = SSC_TFMR_FSEDGE_POSITIVE;
-	/* Configure the SSC receiver. */
-	ssc_set_receiver(SSC, &rx_clk_option, &rx_data_frame_option);
-
-	/* Enable the loop mode. */
-	ssc_set_loop_mode(SSC);
-
-	/* Enable the tx and rx function. */
-	ssc_enable_rx(SSC);
-	//ssc_enable_tx(SSC);
-
-	/* Configure the RX interrupt. */
-	ssc_enable_interrupt(SSC, SSC_IER_RXRDY);
-
-	/* Enable SSC interrupt line from the core */
-	NVIC_DisableIRQ(SSC_IRQn);
-	NVIC_ClearPendingIRQ(SSC_IRQn);
-	NVIC_SetPriority(SSC_IRQn, SSC_IRQ_PRIO);
-	NVIC_EnableIRQ(SSC_IRQn);
-
-	while(1) {
-		// busy wait forever
+			return 1;
+			} else {
+			return 0;
+		}
 	}
 }
+
 
 /**
- * \brief Setup for I2S receiver.
- *
- * \note If working in master mode, the divided clock needs to be configured before
- * calling this function according to the sample rate and ul_datlen field.
- *
- * \param p_ssc Pointer to an SSC instance.
- * \param ul_mode Working mode, SSC_I2S_MASTER_IN or SSC_I2S_SLAVE_IN.
- * \param ul_cks Source clock selection while working in SSC_I2S_SLAVE_IN mode.
- * \param ul_ch_mode Channel mode, stereo or mono.
- * \param ul_datlen Data length for one channel.
+ * \brief ADC interrupt handler.
  */
-void set_receiver() {
-	clock_opt_t rx_clk_option;
-	data_frame_opt_t rx_data_frame_option;
-	/* Receiver clock mode configuration. */
-	
-	// TCMR?
-	rx_clk_option.ul_cks = SSC_RCMR_CKS_RK;
-	rx_clk_option.ul_cko = SSC_RCMR_CKO_NONE;
-	rx_clk_option.ul_cki = 0;
-	rx_clk_option.ul_ckg = 0;
-	rx_clk_option.ul_period = 0;
-	rx_clk_option.ul_sttdly = 0;
-	
-	// test falling vs rising here
-	rx_clk_option.ul_start_sel = SSC_RCMR_START_RF_EDGE;
-	//rx_clk_option.ul_start_sel = SSC_RCMR_START_RF_RISING;
-	
-	/* Receiver frame mode configuration. */
-	// 23? we have 24 data bits
-	rx_data_frame_option.ul_datlen = 23;
-	
-	rx_data_frame_option.ul_msbf = SSC_TFMR_MSBF;
-	
-	// why 15? try as 0 and 1
-	rx_data_frame_option.ul_datnb = 1;
-	
-	rx_data_frame_option.ul_fslen = 15;
-	rx_data_frame_option.ul_fslen_ext = 1;
-	
-	rx_data_frame_option.ul_fsos = SSC_RFMR_FSOS_TOGGLING;
-	rx_data_frame_option.ul_fsedge = SSC_TFMR_FSEDGE_POSITIVE;
-	/* Configure the SSC receiver. */
-	ssc_set_receiver(SSC, &rx_clk_option, &rx_data_frame_option);
-	
-}
+void ADC_Handler(void)
+{
 
+	adc_disable_interrupt(ADC, ADC_ISR_RXBUFF);
+	
+	uint32_t multisample_sum = 0;
+	uint32_t sample_millivolts;
+
+	if ((adc_get_status(ADC) & ADC_ISR_RXBUFF) == ADC_ISR_RXBUFF) {
+
+		/* Multisample */
+		for (int i = 0; i < MULTISAMPLE_SIZE; i++) {
+			multisample_sum += multisample_buf[i];
+		}
+		/* Averaging */
+		uint32_t sample_val = multisample_sum / MULTISAMPLE_SIZE;
+
+		sample_millivolts = sample_val * VOLT_REF / MAX_DIGITAL;
+
+		rec_buff[buf_index++] = sample_millivolts;
+		
+		if(buf_index >= BUFFER_SIZE){
+			rec_done = 1;
+			return;
+		}
+		//f_temp = (float)(l_vol - 800) * 0.37736 + 27.0;
+
+		/* Clear the buffer. */
+		memset(multisample_buf, 0x0, MULTISAMPLE_SIZE);
+		/* Start new pdc transfer. */
+		adc_read_buffer(ADC, multisample_buf, MULTISAMPLE_SIZE);
+	}
+	adc_enable_interrupt(ADC, ADC_ISR_RXBUFF);
+}
 
 // generates sine wave with given number of samples at given frequency
 uint16_t *generate_spoof(uint32_t tone_frequency) {

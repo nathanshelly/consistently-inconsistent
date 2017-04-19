@@ -123,9 +123,11 @@ int main (void)
 {
 	// system level initialization calls
 	sysclk_init();
-	board_init();	
+	board_init();
 	configure_tc();
 	tc_start(TC0, 0);
+	
+	ADC_setup();
 	
 	// Custom configuration calls
 	//configure_wifi();		// configures and initializes wifi module
@@ -134,15 +136,16 @@ int main (void)
 	
 
 	//configure_i2s();
-	run_ssc_test();
 
 	//uint16_t *samples_data = generate_spoof(440);
 	while(1) {
 		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
+		
+		blink_LED(100);
 
-		//i2s_capture();
+		audio_capture();
 
 		//start_capture();		// capture the image to internal memory
 		//post_test();
