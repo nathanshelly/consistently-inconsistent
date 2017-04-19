@@ -1,5 +1,5 @@
 src/wifi.d src/wifi.o: ../src/wifi.c ../src/wifi.h ../src/asf.h \
- ../src/ASF/sam/utils/compiler.h \
+ ../src/ASF/sam/drivers/adc/adc.h ../src/ASF/sam/utils/compiler.h \
  c:\program\ files\ (x86)\atmel\studio\7.0\toolchain\arm\arm-gnu-toolchain\lib\gcc\arm-none-eabi\6.2.1\include\stddef.h \
  ../src/ASF/common/utils/parts.h \
  ../src/ASF/sam/utils/preprocessor/preprocessor.h \
@@ -144,6 +144,8 @@ src/wifi.d src/wifi.o: ../src/wifi.c ../src/wifi.h ../src/asf.h \
 ../src/wifi.h:
 
 ../src/asf.h:
+
+../src/ASF/sam/drivers/adc/adc.h:
 
 ../src/ASF/sam/utils/compiler.h:
 
