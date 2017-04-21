@@ -127,7 +127,11 @@ int main (void)
 	configure_tc();
 	tc_start(TC0, 0);
 	
+<<<<<<< HEAD
 	//ADC_setup();
+=======
+	start_adc();
+>>>>>>> ae4524ff83ec8dbf0c77f79cf4e56b33bfe289b1
 	
 	// Custom configuration calls
 	//configure_wifi();		// configures and initializes wifi module
@@ -139,13 +143,13 @@ int main (void)
 
 	//uint16_t *samples_data = generate_spoof(440);
 	while(1) {
-		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
-			setup_wifi();		// the wifi chip tries to reassociate to a new network
-		}
+		//if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
+		//	setup_wifi();		// the wifi chip tries to reassociate to a new network
+		//}
 		
 		blink_LED(100);
 
-		//audio_capture();
+		capture_audio_segment();
 
 		//start_capture();		// capture the image to internal memory
 		//post_test();
