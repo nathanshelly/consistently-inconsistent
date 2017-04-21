@@ -43,4 +43,28 @@ void ADC_Handler(void);
 
 #define BIT_LEN_PER_CHANNEL			8
 
+/** RD pin definition */
+#define RD_GPIO                  PIO_PA18_IDX
+#define RD_FLAGS                 (PIO_PULLUP | PIO_IT_RISE_EDGE)
+#define RD_MASK                  PIO_PA18
+#define RD_PIO                   PIOA
+#define RD_ID                    ID_PIOA
+#define RD_TYPE                  PIO_PULLUP
+
+/** RF pin definition */
+#define RF_GPIO                  PIO_PA19_IDX
+#define RF_FLAGS                 (PIO_PERIPH_A | PIO_DEFAULT)
+#define RF_MASK                  PIO_PA19
+#define RF_PIO                   PIOA
+#define RF_ID                    ID_PIOA
+#define RF_TYPE                  PIO_PULLUP
+
+/** RK pin definition */
+#define RK_GPIO                  PIO_PA20_IDX
+#define RK_FLAGS                 (PIO_PERIPH_A | PIO_DEFAULT)
+#define RK_MASK                  PIO_PA20
+#define RK_PIO                   PIOA
+#define RK_ID                    ID_PIOA
+#define RK_TYPE                  PIO_PULLUP
+
 #endif /* MICROPHONE_H_ */

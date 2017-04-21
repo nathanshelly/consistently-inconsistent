@@ -12,6 +12,7 @@
 #include <board.h>
 #include <conf_board.h>
 #include "camera.h"
+#include "microphone.h"
 
 void board_init(void)
 {
@@ -66,4 +67,9 @@ void board_init(void)
 	gpio_configure_pin(OV_DATA_BUS_D7, OV_DATA_BUS_FLAGS);
 	gpio_configure_pin(OV_DATA_BUS_D8, OV_DATA_BUS_FLAGS);
 	gpio_configure_pin(OV_DATA_BUS_D9, OV_DATA_BUS_FLAGS);
+	
+	// microphone initialization
+	gpio_configure_pin(RD_GPIO, RD_FLAGS);
+	gpio_configure_pin(RF_GPIO, RF_FLAGS);
+	gpio_configure_pin(RK_GPIO, RK_FLAGS);
 }

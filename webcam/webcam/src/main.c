@@ -127,7 +127,7 @@ int main (void)
 	configure_tc();
 	tc_start(TC0, 0);
 	
-	ADC_setup();
+	//ADC_setup();
 	
 	// Custom configuration calls
 	//configure_wifi();		// configures and initializes wifi module
@@ -135,7 +135,7 @@ int main (void)
 	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
 	
 
-	//configure_i2s();
+	configure_i2s();
 
 	//uint16_t *samples_data = generate_spoof(440);
 	while(1) {
@@ -145,7 +145,7 @@ int main (void)
 		
 		blink_LED(100);
 
-		audio_capture();
+		//audio_capture();
 
 		//start_capture();		// capture the image to internal memory
 		//post_test();
