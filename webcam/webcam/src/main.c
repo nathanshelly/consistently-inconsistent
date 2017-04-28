@@ -28,22 +28,6 @@
 #include "timer_interface.h"
 
 /**
- *  \brief Sends image to the wifi chip
- */
-void send_image(void){
-	
-	uint32_t im_length;
-	
-	im_length = find_image_len();
-	if (im_length)
-	{
-		write_image_usart(start_of_image_ptr, im_length);
-	}
-				
-	delay_ms(50);	
-}
-
-/**
  * \brief Posts image to server
 **/
 void post_image(void) {
@@ -56,40 +40,6 @@ void post_image(void) {
 
 	//delay_ms(50);
 }
-
-/**
- * \brief Testing posting
-**/
-void post_test(void) {
-	write_wifi_command("close all\r\n", 2);
-	write_wifi_command("http_post -o https://bigbrothersees.me/post_test application/json\r\n", 2);
-	write_wifi_command("http_add_header 0 message-type test\r\n", 2);
-	
-	char* templated_command[35];
-	sprintf(templated_command, "write 0 %d\r\n", 15);
-	usart_write_line(BOARD_USART, templated_command);
-	
-	usart_putchar(BOARD_USART, '{');
-	usart_putchar(BOARD_USART, '\"');
-	usart_putchar(BOARD_USART, 'd');
-	usart_putchar(BOARD_USART, 'a');
-	usart_putchar(BOARD_USART, 't');
-	usart_putchar(BOARD_USART, 'a');
-	usart_putchar(BOARD_USART, '\"');
-	usart_putchar(BOARD_USART, ':');
-	usart_putchar(BOARD_USART, '\"');
-
-	usart_putchar(BOARD_USART, 'd');
-	usart_putchar(BOARD_USART, 'a');
-	usart_putchar(BOARD_USART, 't');
-	usart_putchar(BOARD_USART, 'a');
-
-	usart_putchar(BOARD_USART, '\"');
-	usart_putchar(BOARD_USART, '}');
-
-	write_wifi_command("http_read_status 0\r\n", 2);
-}
-
 
 /**
  *  \brief Messages all connected streams to refresh their images.
