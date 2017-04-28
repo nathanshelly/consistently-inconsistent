@@ -17,9 +17,10 @@
 #define AUDIO_BUFFER_SIZE	16000
 #define PACKET_SIZE			200
 
+volatile uint32_t i2s_receive_index;
 volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE];
 
-void i2s_capture(void);
+void start_i2s_capture(void);
 void configure_i2s(void);
 uint16_t modify_data(uint32_t data_to_modify);
 

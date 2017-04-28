@@ -15,10 +15,10 @@
 
 /** All interrupt mask. */
 #define ALL_INTERRUPT_MASK  0xffffffff
-#define BUFFER_SIZE			500
+#define INPUT_BUFFER_SIZE			500
 
 // variable declarations
-volatile uint8_t input_buffer[BUFFER_SIZE];
+volatile uint8_t input_buffer[INPUT_BUFFER_SIZE];
 volatile uint32_t buffer_index;
 volatile uint8_t timeout_counter;
 volatile uint32_t data_recieved;
@@ -40,7 +40,7 @@ void setup_wifi(void);
 void configure_wifi(void);
 void reboot_wifi(void);
 void safe_mode_recovery(void);
-void send_data_ws(uint16_t* samples_data, uint32_t num_samples, uint8_t handle);
+void send_data_ws(uint16_t* samples_data, uint8_t handle);
 uint8_t open_websocket(void);
 
 // Usart communication definitions

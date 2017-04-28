@@ -7,13 +7,16 @@
 
 #include "wifi.h"
 #include "camera.h"
+#include "microphone.h"
 
-volatile uint8_t input_buffer[BUFFER_SIZE] = {0};
+volatile uint8_t input_buffer[INPUT_BUFFER_SIZE] = {0};
 volatile uint32_t buffer_index = 0;
 volatile uint8_t timeout_counter = 0;
 volatile uint32_t data_recieved = 0;
 volatile uint32_t wifi_setup_flag = false;
 volatile uint32_t received_byte_wifi = 0;
+
+volatile uint32_t i2s_send_index = 0;
 
 uint32_t post_counter = 0;
 
@@ -95,9 +98,8 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	
 	delay_ms(50);
 	
-	input_buffer[buffer_index] = 0;
+	//input_buffer[buffer_index] = 0;
 	data_recieved = 1;
-	buffer_index = 0;
 }
 
 /**
@@ -167,6 +169,9 @@ void configure_web_setup(void){
  *  \brief Writes wifi command.
  */
 void write_wifi_command(char* comm, uint8_t cnt){
+	buffer_index = 0;
+	memset(input_buffer, 0, INPUT_BUFFER_SIZE);
+	
 	data_recieved = 0;
 	usart_write_line(BOARD_USART, comm);
 	
@@ -177,8 +182,6 @@ void write_wifi_command(char* comm, uint8_t cnt){
 		delay_ms(10);
 		timeout_counter++;
 	}
-	
-	//delay_ms(100);
 }
 
 /**
@@ -246,19 +249,33 @@ uint8_t open_websocket(void) {
 	return handle;
 }
 
-void send_data_ws(uint16_t* samples_data, uint32_t num_samples, uint8_t handle) {
+void send_data_ws(uint16_t* samples_data, uint8_t handle) {
+	// don't send if there are fewer than PACKET_SIZE samples to send
+	uint32_t end_index = (i2s_send_index*2 + PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
+	
+	if(end_index > (i2s_receive_index*2)) // make sure that the end index isn't in front of the receive index
+		return;
+	
 	uint8_t curr_data_point;
 	
+	// initialize send
+	
 	char* templated_command[20];
-	sprintf(templated_command, "write %d %d\r\n", handle, num_samples);
+	sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE * 2);
 	usart_write_line(BOARD_USART, templated_command);
-		
-	for (int i = 0; i < num_samples; i++)
+	
+	// loop starting at the send index, and end PACKET SIZE later
+	// i is a uint8 index, so everything is multiplied by two
+	// i gets modded inside the loop to wrap around if necessary
+	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (PACKET_SIZE*2); i++)
 	{
-		curr_data_point = ((uint8_t*) samples_data)[i];
 		
+		curr_data_point = ((uint8_t*) samples_data)[i % (AUDIO_BUFFER_SIZE*2)];	
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
+	
+	i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
+
 }
 
 /**
@@ -332,6 +349,7 @@ void safe_mode_recovery(){
  *  \brief Reboots the wifi chip.
  */
 void reboot_wifi() {
+	//write_wifi_command("close all\r\n", 2);
 	write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
 	
 	int associated = 0;

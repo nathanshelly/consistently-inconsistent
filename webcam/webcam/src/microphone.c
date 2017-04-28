@@ -4,26 +4,18 @@
  */ 
 #include "microphone.h"
 
+/** Receive index. */
+volatile uint32_t i2s_receive_index = 0;
+
 /** Receiver buffer content. */
 volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE] = {0};
+	
+volatile uint8_t capture_toggle = 0;
 
-/** Receive done flag. */
-volatile uint8_t i2s_rec_done = 0;
-
-/** Receive index. */
-volatile uint32_t i2s_buf_index = 0;
-
-void i2s_capture(void){
-	i2s_rec_done = 0;
-	i2s_buf_index = 0;
-
-	ssc_enable_interrupt(SSC, SSC_IDR_RXRDY);	
-	while (!i2s_rec_done) {}
-}
+void start_i2s_capture(void){ ssc_enable_interrupt(SSC, SSC_IDR_RXRDY); }
 
 /**
  * \brief Synchronous Serial Controller Handler.
- *
  */
 void SSC_Handler(void)
 {
@@ -31,18 +23,15 @@ void SSC_Handler(void)
 	ssc_get_status(SSC);
 	ssc_read(SSC, &ul_data);
 	
-	i2s_rec_buf[i2s_buf_index++] = modify_data(ul_data);
+	if(!(capture_toggle++ % 2))
+		i2s_rec_buf[i2s_receive_index++] = modify_data(ul_data);
 
-	if (AUDIO_BUFFER_SIZE == i2s_buf_index) {
-		i2s_rec_done = 1;
-		ssc_disable_interrupt(SSC, SSC_IDR_RXRDY);
-	}
+	if (i2s_receive_index >= AUDIO_BUFFER_SIZE)
+		i2s_receive_index = 0;
 }
 
-uint16_t modify_data(uint32_t data_to_modify) {
-	// get rid of zero padding and tristated signal
-	return (uint16_t) (data_to_modify >> 16);
-}
+// get rid of zero padding and tristated signal
+uint16_t modify_data(uint32_t data_to_modify) { return (uint16_t) (data_to_modify >> 16); }
 
 /**
  * \brief Set up clock.
