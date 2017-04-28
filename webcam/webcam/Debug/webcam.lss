@@ -17,23 +17,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .comment      00000059  00000000  00000000  000209e6  2**0
                   CONTENTS, READONLY
-  7 .debug_info   000145bb  00000000  00000000  00020a3f  2**0
+  7 .debug_info   000145a1  00000000  00000000  00020a3f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00002ac1  00000000  00000000  00034ffa  2**0
+  8 .debug_abbrev 00002ac1  00000000  00000000  00034fe0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    000070a8  00000000  00000000  00037abb  2**0
+  9 .debug_loc    000070a8  00000000  00000000  00037aa1  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_aranges 00000c30  00000000  00000000  0003eb63  2**0
+ 10 .debug_aranges 00000c30  00000000  00000000  0003eb49  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000b80  00000000  00000000  0003f793  2**0
+ 11 .debug_ranges 00000b80  00000000  00000000  0003f779  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_macro  00006a19  00000000  00000000  00040313  2**0
+ 12 .debug_macro  00006a19  00000000  00000000  000402f9  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_line   0000da59  00000000  00000000  00046d2c  2**0
+ 13 .debug_line   0000da59  00000000  00000000  00046d12  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    0004fe1d  00000000  00000000  00054785  2**0
+ 14 .debug_str    0004fe17  00000000  00000000  0005476b  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_frame  00004048  00000000  00000000  000a45a4  2**2
+ 15 .debug_frame  00004048  00000000  00000000  000a4584  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -3060,7 +3060,7 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	//ioport_toggle_pin_level(LED_PIN);
 	
 	delay_ms(50);
-  40114a:	4b1b      	ldr	r3, [pc, #108]	; (4011b8 <handler_command_complete+0x78>)
+  40114a:	4b1f      	ldr	r3, [pc, #124]	; (4011c8 <handler_command_complete+0x88>)
   40114c:	4798      	blx	r3
   40114e:	4603      	mov	r3, r0
   401150:	4619      	mov	r1, r3
@@ -3088,549 +3088,550 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
   40118c:	eb42 0604 	adc.w	r6, r2, r4
   401190:	4628      	mov	r0, r5
   401192:	4631      	mov	r1, r6
-  401194:	4c09      	ldr	r4, [pc, #36]	; (4011bc <handler_command_complete+0x7c>)
+  401194:	4c0d      	ldr	r4, [pc, #52]	; (4011cc <handler_command_complete+0x8c>)
   401196:	f243 62b0 	movw	r2, #14000	; 0x36b0
   40119a:	f04f 0300 	mov.w	r3, #0
   40119e:	47a0      	blx	r4
   4011a0:	4603      	mov	r3, r0
   4011a2:	460c      	mov	r4, r1
   4011a4:	4618      	mov	r0, r3
-  4011a6:	4b06      	ldr	r3, [pc, #24]	; (4011c0 <handler_command_complete+0x80>)
+  4011a6:	4b0a      	ldr	r3, [pc, #40]	; (4011d0 <handler_command_complete+0x90>)
   4011a8:	4798      	blx	r3
 	
-	//input_buffer[buffer_index] = 0;
+	input_buffer[buffer_index] = 0;
+  4011aa:	4b0a      	ldr	r3, [pc, #40]	; (4011d4 <handler_command_complete+0x94>)
+  4011ac:	681b      	ldr	r3, [r3, #0]
+  4011ae:	4a0a      	ldr	r2, [pc, #40]	; (4011d8 <handler_command_complete+0x98>)
+  4011b0:	2100      	movs	r1, #0
+  4011b2:	54d1      	strb	r1, [r2, r3]
 	data_recieved = 1;
-  4011aa:	4b06      	ldr	r3, [pc, #24]	; (4011c4 <handler_command_complete+0x84>)
-  4011ac:	2201      	movs	r2, #1
-  4011ae:	601a      	str	r2, [r3, #0]
+  4011b4:	4b09      	ldr	r3, [pc, #36]	; (4011dc <handler_command_complete+0x9c>)
+  4011b6:	2201      	movs	r2, #1
+  4011b8:	601a      	str	r2, [r3, #0]
+	buffer_index = 0;
+  4011ba:	4b06      	ldr	r3, [pc, #24]	; (4011d4 <handler_command_complete+0x94>)
+  4011bc:	2200      	movs	r2, #0
+  4011be:	601a      	str	r2, [r3, #0]
 }
-  4011b0:	bf00      	nop
-  4011b2:	370c      	adds	r7, #12
-  4011b4:	46bd      	mov	sp, r7
-  4011b6:	bdf0      	pop	{r4, r5, r6, r7, pc}
-  4011b8:	00400f89 	.word	0x00400f89
-  4011bc:	00402bc1 	.word	0x00402bc1
-  4011c0:	20000001 	.word	0x20000001
-  4011c4:	20008958 	.word	0x20008958
+  4011c0:	bf00      	nop
+  4011c2:	370c      	adds	r7, #12
+  4011c4:	46bd      	mov	sp, r7
+  4011c6:	bdf0      	pop	{r4, r5, r6, r7, pc}
+  4011c8:	00400f89 	.word	0x00400f89
+  4011cc:	00402bc1 	.word	0x00402bc1
+  4011d0:	20000001 	.word	0x20000001
+  4011d4:	20008950 	.word	0x20008950
+  4011d8:	2000875c 	.word	0x2000875c
+  4011dc:	20008958 	.word	0x20008958
 
-004011c8 <configure_command_complete>:
+004011e0 <configure_command_complete>:
 
 /**
  *  \brief Configures communication pin for wifi.
  */
 void configure_command_complete(void){
-  4011c8:	b590      	push	{r4, r7, lr}
-  4011ca:	b083      	sub	sp, #12
-  4011cc:	af02      	add	r7, sp, #8
+  4011e0:	b590      	push	{r4, r7, lr}
+  4011e2:	b083      	sub	sp, #12
+  4011e4:	af02      	add	r7, sp, #8
 	// we set as the wifi command pin
 	// we should be able to do this
 	
 	//configure button from the button project?
 	
 	pmc_enable_periph_clk(WIFI_COMM_ID); // put these definitions in wifi.h
-  4011ce:	200c      	movs	r0, #12
-  4011d0:	4b0e      	ldr	r3, [pc, #56]	; (40120c <configure_command_complete+0x44>)
-  4011d2:	4798      	blx	r3
+  4011e6:	200c      	movs	r0, #12
+  4011e8:	4b0e      	ldr	r3, [pc, #56]	; (401224 <configure_command_complete+0x44>)
+  4011ea:	4798      	blx	r3
 	// see which pins we used
 	// just the rising edge option
 	
 	pio_set_debounce_filter(WIFI_COMM_PIO, WIFI_COMM_PIN_MSK, 10);
-  4011d4:	220a      	movs	r2, #10
-  4011d6:	2101      	movs	r1, #1
-  4011d8:	480d      	ldr	r0, [pc, #52]	; (401210 <configure_command_complete+0x48>)
-  4011da:	4b0e      	ldr	r3, [pc, #56]	; (401214 <configure_command_complete+0x4c>)
-  4011dc:	4798      	blx	r3
+  4011ec:	220a      	movs	r2, #10
+  4011ee:	2101      	movs	r1, #1
+  4011f0:	480d      	ldr	r0, [pc, #52]	; (401228 <configure_command_complete+0x48>)
+  4011f2:	4b0e      	ldr	r3, [pc, #56]	; (40122c <configure_command_complete+0x4c>)
+  4011f4:	4798      	blx	r3
 	
 	pio_handler_set(WIFI_COMM_PIO, WIFI_COMM_ID, WIFI_COMM_PIN_MSK, WIFI_COMM_ATTR, handler_command_complete);
-  4011de:	4b0e      	ldr	r3, [pc, #56]	; (401218 <configure_command_complete+0x50>)
-  4011e0:	9300      	str	r3, [sp, #0]
-  4011e2:	2370      	movs	r3, #112	; 0x70
-  4011e4:	2201      	movs	r2, #1
-  4011e6:	210c      	movs	r1, #12
-  4011e8:	4809      	ldr	r0, [pc, #36]	; (401210 <configure_command_complete+0x48>)
-  4011ea:	4c0c      	ldr	r4, [pc, #48]	; (40121c <configure_command_complete+0x54>)
-  4011ec:	47a0      	blx	r4
+  4011f6:	4b0e      	ldr	r3, [pc, #56]	; (401230 <configure_command_complete+0x50>)
+  4011f8:	9300      	str	r3, [sp, #0]
+  4011fa:	2370      	movs	r3, #112	; 0x70
+  4011fc:	2201      	movs	r2, #1
+  4011fe:	210c      	movs	r1, #12
+  401200:	4809      	ldr	r0, [pc, #36]	; (401228 <configure_command_complete+0x48>)
+  401202:	4c0c      	ldr	r4, [pc, #48]	; (401234 <configure_command_complete+0x54>)
+  401204:	47a0      	blx	r4
 	
 	NVIC_EnableIRQ((IRQn_Type)WIFI_COMM_ID);
-  4011ee:	200c      	movs	r0, #12
-  4011f0:	4b0b      	ldr	r3, [pc, #44]	; (401220 <configure_command_complete+0x58>)
-  4011f2:	4798      	blx	r3
+  401206:	200c      	movs	r0, #12
+  401208:	4b0b      	ldr	r3, [pc, #44]	; (401238 <configure_command_complete+0x58>)
+  40120a:	4798      	blx	r3
 	
 	pio_enable_interrupt(WIFI_COMM_PIO, WIFI_COMM_PIN_MSK);
-  4011f4:	2101      	movs	r1, #1
-  4011f6:	4806      	ldr	r0, [pc, #24]	; (401210 <configure_command_complete+0x48>)
-  4011f8:	4b0a      	ldr	r3, [pc, #40]	; (401224 <configure_command_complete+0x5c>)
-  4011fa:	4798      	blx	r3
+  40120c:	2101      	movs	r1, #1
+  40120e:	4806      	ldr	r0, [pc, #24]	; (401228 <configure_command_complete+0x48>)
+  401210:	4b0a      	ldr	r3, [pc, #40]	; (40123c <configure_command_complete+0x5c>)
+  401212:	4798      	blx	r3
 	data_recieved = 0;
-  4011fc:	4b0a      	ldr	r3, [pc, #40]	; (401228 <configure_command_complete+0x60>)
-  4011fe:	2200      	movs	r2, #0
-  401200:	601a      	str	r2, [r3, #0]
+  401214:	4b0a      	ldr	r3, [pc, #40]	; (401240 <configure_command_complete+0x60>)
+  401216:	2200      	movs	r2, #0
+  401218:	601a      	str	r2, [r3, #0]
 }
-  401202:	bf00      	nop
-  401204:	3704      	adds	r7, #4
-  401206:	46bd      	mov	sp, r7
-  401208:	bd90      	pop	{r4, r7, pc}
-  40120a:	bf00      	nop
-  40120c:	004023e5 	.word	0x004023e5
-  401210:	400e1000 	.word	0x400e1000
-  401214:	00401ccf 	.word	0x00401ccf
-  401218:	00401141 	.word	0x00401141
-  40121c:	00400911 	.word	0x00400911
-  401220:	00400ec9 	.word	0x00400ec9
-  401224:	00401f63 	.word	0x00401f63
-  401228:	20008958 	.word	0x20008958
+  40121a:	bf00      	nop
+  40121c:	3704      	adds	r7, #4
+  40121e:	46bd      	mov	sp, r7
+  401220:	bd90      	pop	{r4, r7, pc}
+  401222:	bf00      	nop
+  401224:	004023e5 	.word	0x004023e5
+  401228:	400e1000 	.word	0x400e1000
+  40122c:	00401ccf 	.word	0x00401ccf
+  401230:	00401141 	.word	0x00401141
+  401234:	00400911 	.word	0x00400911
+  401238:	00400ec9 	.word	0x00400ec9
+  40123c:	00401f63 	.word	0x00401f63
+  401240:	20008958 	.word	0x20008958
 
-0040122c <handler_web_setup>:
+00401244 <handler_web_setup>:
 
 /**
  *  \brief Handler for setting up wifi.
  */
 void handler_web_setup(uint32_t ul_id, uint32_t ul_mask) {
-  40122c:	b480      	push	{r7}
-  40122e:	b083      	sub	sp, #12
-  401230:	af00      	add	r7, sp, #0
-  401232:	6078      	str	r0, [r7, #4]
-  401234:	6039      	str	r1, [r7, #0]
+  401244:	b480      	push	{r7}
+  401246:	b083      	sub	sp, #12
+  401248:	af00      	add	r7, sp, #0
+  40124a:	6078      	str	r0, [r7, #4]
+  40124c:	6039      	str	r1, [r7, #0]
 	unused(ul_id);
 	unused(ul_mask);
 
 	wifi_setup_flag = true;
-  401236:	4b04      	ldr	r3, [pc, #16]	; (401248 <handler_web_setup+0x1c>)
-  401238:	2201      	movs	r2, #1
-  40123a:	601a      	str	r2, [r3, #0]
+  40124e:	4b04      	ldr	r3, [pc, #16]	; (401260 <handler_web_setup+0x1c>)
+  401250:	2201      	movs	r2, #1
+  401252:	601a      	str	r2, [r3, #0]
 }
-  40123c:	bf00      	nop
-  40123e:	370c      	adds	r7, #12
-  401240:	46bd      	mov	sp, r7
-  401242:	bc80      	pop	{r7}
-  401244:	4770      	bx	lr
-  401246:	bf00      	nop
-  401248:	2000895c 	.word	0x2000895c
+  401254:	bf00      	nop
+  401256:	370c      	adds	r7, #12
+  401258:	46bd      	mov	sp, r7
+  40125a:	bc80      	pop	{r7}
+  40125c:	4770      	bx	lr
+  40125e:	bf00      	nop
+  401260:	2000895c 	.word	0x2000895c
 
-0040124c <configure_web_setup>:
+00401264 <configure_web_setup>:
 
 /**
  *  \brief Configures wifi setup pin.
  */
 void configure_web_setup(void){
-  40124c:	b590      	push	{r4, r7, lr}
-  40124e:	b083      	sub	sp, #12
-  401250:	af02      	add	r7, sp, #8
+  401264:	b590      	push	{r4, r7, lr}
+  401266:	b083      	sub	sp, #12
+  401268:	af02      	add	r7, sp, #8
 	
 	///* Set direction and pullup on the given button IOPORT */
 	//ioport_set_pin_dir(GPIO_WIFI_RESET_PB, IOPORT_DIR_INPUT);
 	//ioport_set_pin_mode(GPIO_WIFI_RESET_PB, IOPORT_MODE_PULLUP);
 	/* Configure PIO clock. */
 	pmc_enable_periph_clk(WIFI_SETUP_ID);
-  401252:	200c      	movs	r0, #12
-  401254:	4b0e      	ldr	r3, [pc, #56]	; (401290 <configure_web_setup+0x44>)
-  401256:	4798      	blx	r3
+  40126a:	200c      	movs	r0, #12
+  40126c:	4b0e      	ldr	r3, [pc, #56]	; (4012a8 <configure_web_setup+0x44>)
+  40126e:	4798      	blx	r3
 
 	/* Adjust PIO debounce filter using a 10 Hz filter. */
 	pio_set_debounce_filter(WIFI_SETUP_PIO, WIFI_SETUP_MASK, 10);
-  401258:	220a      	movs	r2, #10
-  40125a:	f44f 4180 	mov.w	r1, #16384	; 0x4000
-  40125e:	480d      	ldr	r0, [pc, #52]	; (401294 <configure_web_setup+0x48>)
-  401260:	4b0d      	ldr	r3, [pc, #52]	; (401298 <configure_web_setup+0x4c>)
-  401262:	4798      	blx	r3
+  401270:	220a      	movs	r2, #10
+  401272:	f44f 4180 	mov.w	r1, #16384	; 0x4000
+  401276:	480d      	ldr	r0, [pc, #52]	; (4012ac <configure_web_setup+0x48>)
+  401278:	4b0d      	ldr	r3, [pc, #52]	; (4012b0 <configure_web_setup+0x4c>)
+  40127a:	4798      	blx	r3
 
 	/* Initialize PIO interrupt handler, see PIO definition in conf_board.h */
 	pio_handler_set(WIFI_SETUP_PIO, WIFI_SETUP_ID, WIFI_SETUP_MASK,
-  401264:	4b0d      	ldr	r3, [pc, #52]	; (40129c <configure_web_setup+0x50>)
-  401266:	9300      	str	r3, [sp, #0]
-  401268:	2379      	movs	r3, #121	; 0x79
-  40126a:	f44f 4280 	mov.w	r2, #16384	; 0x4000
-  40126e:	210c      	movs	r1, #12
-  401270:	4808      	ldr	r0, [pc, #32]	; (401294 <configure_web_setup+0x48>)
-  401272:	4c0b      	ldr	r4, [pc, #44]	; (4012a0 <configure_web_setup+0x54>)
-  401274:	47a0      	blx	r4
+  40127c:	4b0d      	ldr	r3, [pc, #52]	; (4012b4 <configure_web_setup+0x50>)
+  40127e:	9300      	str	r3, [sp, #0]
+  401280:	2379      	movs	r3, #121	; 0x79
+  401282:	f44f 4280 	mov.w	r2, #16384	; 0x4000
+  401286:	210c      	movs	r1, #12
+  401288:	4808      	ldr	r0, [pc, #32]	; (4012ac <configure_web_setup+0x48>)
+  40128a:	4c0b      	ldr	r4, [pc, #44]	; (4012b8 <configure_web_setup+0x54>)
+  40128c:	47a0      	blx	r4
 			WIFI_SETUP_ATTR, handler_web_setup);
 			
 	/* Enable PIO controller IRQs. */
 	NVIC_EnableIRQ((IRQn_Type) WIFI_SETUP_ID);
-  401276:	200c      	movs	r0, #12
-  401278:	4b0a      	ldr	r3, [pc, #40]	; (4012a4 <configure_web_setup+0x58>)
-  40127a:	4798      	blx	r3
+  40128e:	200c      	movs	r0, #12
+  401290:	4b0a      	ldr	r3, [pc, #40]	; (4012bc <configure_web_setup+0x58>)
+  401292:	4798      	blx	r3
 
 	/* Enable PIO interrupt lines. */
 	pio_enable_interrupt(WIFI_SETUP_PIO, WIFI_SETUP_MASK);
-  40127c:	f44f 4180 	mov.w	r1, #16384	; 0x4000
-  401280:	4804      	ldr	r0, [pc, #16]	; (401294 <configure_web_setup+0x48>)
-  401282:	4b09      	ldr	r3, [pc, #36]	; (4012a8 <configure_web_setup+0x5c>)
-  401284:	4798      	blx	r3
+  401294:	f44f 4180 	mov.w	r1, #16384	; 0x4000
+  401298:	4804      	ldr	r0, [pc, #16]	; (4012ac <configure_web_setup+0x48>)
+  40129a:	4b09      	ldr	r3, [pc, #36]	; (4012c0 <configure_web_setup+0x5c>)
+  40129c:	4798      	blx	r3
 }
-  401286:	bf00      	nop
-  401288:	3704      	adds	r7, #4
-  40128a:	46bd      	mov	sp, r7
-  40128c:	bd90      	pop	{r4, r7, pc}
-  40128e:	bf00      	nop
-  401290:	004023e5 	.word	0x004023e5
-  401294:	400e1000 	.word	0x400e1000
-  401298:	00401ccf 	.word	0x00401ccf
-  40129c:	0040122d 	.word	0x0040122d
-  4012a0:	00400911 	.word	0x00400911
-  4012a4:	00400ec9 	.word	0x00400ec9
-  4012a8:	00401f63 	.word	0x00401f63
+  40129e:	bf00      	nop
+  4012a0:	3704      	adds	r7, #4
+  4012a2:	46bd      	mov	sp, r7
+  4012a4:	bd90      	pop	{r4, r7, pc}
+  4012a6:	bf00      	nop
+  4012a8:	004023e5 	.word	0x004023e5
+  4012ac:	400e1000 	.word	0x400e1000
+  4012b0:	00401ccf 	.word	0x00401ccf
+  4012b4:	00401245 	.word	0x00401245
+  4012b8:	00400911 	.word	0x00400911
+  4012bc:	00400ec9 	.word	0x00400ec9
+  4012c0:	00401f63 	.word	0x00401f63
 
-004012ac <write_wifi_command>:
+004012c4 <write_wifi_command>:
 
 /**
  *  \brief Writes wifi command.
  */
 void write_wifi_command(char* comm, uint8_t cnt){
-  4012ac:	e92d 48f0 	stmdb	sp!, {r4, r5, r6, r7, fp, lr}
-  4012b0:	b082      	sub	sp, #8
-  4012b2:	af00      	add	r7, sp, #0
-  4012b4:	6078      	str	r0, [r7, #4]
-  4012b6:	460b      	mov	r3, r1
-  4012b8:	70fb      	strb	r3, [r7, #3]
-	buffer_index = 0;
-  4012ba:	4b2d      	ldr	r3, [pc, #180]	; (401370 <write_wifi_command+0xc4>)
-  4012bc:	2200      	movs	r2, #0
-  4012be:	601a      	str	r2, [r3, #0]
-	memset(input_buffer, 0, INPUT_BUFFER_SIZE);
-  4012c0:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
-  4012c4:	2100      	movs	r1, #0
-  4012c6:	482b      	ldr	r0, [pc, #172]	; (401374 <write_wifi_command+0xc8>)
-  4012c8:	4b2b      	ldr	r3, [pc, #172]	; (401378 <write_wifi_command+0xcc>)
-  4012ca:	4798      	blx	r3
-	
+  4012c4:	e92d 48f0 	stmdb	sp!, {r4, r5, r6, r7, fp, lr}
+  4012c8:	b082      	sub	sp, #8
+  4012ca:	af00      	add	r7, sp, #0
+  4012cc:	6078      	str	r0, [r7, #4]
+  4012ce:	460b      	mov	r3, r1
+  4012d0:	70fb      	strb	r3, [r7, #3]
 	data_recieved = 0;
-  4012cc:	4b2b      	ldr	r3, [pc, #172]	; (40137c <write_wifi_command+0xd0>)
-  4012ce:	2200      	movs	r2, #0
-  4012d0:	601a      	str	r2, [r3, #0]
+  4012d2:	4b29      	ldr	r3, [pc, #164]	; (401378 <write_wifi_command+0xb4>)
+  4012d4:	2200      	movs	r2, #0
+  4012d6:	601a      	str	r2, [r3, #0]
 	usart_write_line(BOARD_USART, comm);
-  4012d2:	6879      	ldr	r1, [r7, #4]
-  4012d4:	482a      	ldr	r0, [pc, #168]	; (401380 <write_wifi_command+0xd4>)
-  4012d6:	4b2b      	ldr	r3, [pc, #172]	; (401384 <write_wifi_command+0xd8>)
-  4012d8:	4798      	blx	r3
+  4012d8:	6879      	ldr	r1, [r7, #4]
+  4012da:	4828      	ldr	r0, [pc, #160]	; (40137c <write_wifi_command+0xb8>)
+  4012dc:	4b28      	ldr	r3, [pc, #160]	; (401380 <write_wifi_command+0xbc>)
+  4012de:	4798      	blx	r3
 	
 	timeout_counter = 0;
-  4012da:	4b2b      	ldr	r3, [pc, #172]	; (401388 <write_wifi_command+0xdc>)
-  4012dc:	2200      	movs	r2, #0
-  4012de:	701a      	strb	r2, [r3, #0]
+  4012e0:	4b28      	ldr	r3, [pc, #160]	; (401384 <write_wifi_command+0xc0>)
+  4012e2:	2200      	movs	r2, #0
+  4012e4:	701a      	strb	r2, [r3, #0]
 	cnt = cnt*20;
-  4012e0:	78fb      	ldrb	r3, [r7, #3]
-  4012e2:	461a      	mov	r2, r3
-  4012e4:	0092      	lsls	r2, r2, #2
-  4012e6:	4413      	add	r3, r2
-  4012e8:	009b      	lsls	r3, r3, #2
-  4012ea:	70fb      	strb	r3, [r7, #3]
+  4012e6:	78fb      	ldrb	r3, [r7, #3]
+  4012e8:	461a      	mov	r2, r3
+  4012ea:	0092      	lsls	r2, r2, #2
+  4012ec:	4413      	add	r3, r2
+  4012ee:	009b      	lsls	r3, r3, #2
+  4012f0:	70fb      	strb	r3, [r7, #3]
 	while(timeout_counter < cnt && !data_recieved) {
-  4012ec:	e031      	b.n	401352 <write_wifi_command+0xa6>
+  4012f2:	e031      	b.n	401358 <write_wifi_command+0x94>
 		// leave long
 		delay_ms(10);
-  4012ee:	4b27      	ldr	r3, [pc, #156]	; (40138c <write_wifi_command+0xe0>)
-  4012f0:	4798      	blx	r3
-  4012f2:	4603      	mov	r3, r0
-  4012f4:	4619      	mov	r1, r3
-  4012f6:	f04f 0200 	mov.w	r2, #0
-  4012fa:	460b      	mov	r3, r1
-  4012fc:	4614      	mov	r4, r2
-  4012fe:	00a6      	lsls	r6, r4, #2
-  401300:	ea46 7693 	orr.w	r6, r6, r3, lsr #30
-  401304:	009d      	lsls	r5, r3, #2
-  401306:	462b      	mov	r3, r5
-  401308:	4634      	mov	r4, r6
-  40130a:	185b      	adds	r3, r3, r1
-  40130c:	eb44 0402 	adc.w	r4, r4, r2
-  401310:	18db      	adds	r3, r3, r3
-  401312:	eb44 0404 	adc.w	r4, r4, r4
-  401316:	4619      	mov	r1, r3
-  401318:	4622      	mov	r2, r4
-  40131a:	f243 63af 	movw	r3, #13999	; 0x36af
-  40131e:	f04f 0400 	mov.w	r4, #0
-  401322:	eb11 0b03 	adds.w	fp, r1, r3
-  401326:	eb42 0c04 	adc.w	ip, r2, r4
-  40132a:	4658      	mov	r0, fp
-  40132c:	4661      	mov	r1, ip
-  40132e:	4c18      	ldr	r4, [pc, #96]	; (401390 <write_wifi_command+0xe4>)
-  401330:	f243 62b0 	movw	r2, #14000	; 0x36b0
-  401334:	f04f 0300 	mov.w	r3, #0
-  401338:	47a0      	blx	r4
-  40133a:	4603      	mov	r3, r0
-  40133c:	460c      	mov	r4, r1
-  40133e:	4618      	mov	r0, r3
-  401340:	4b14      	ldr	r3, [pc, #80]	; (401394 <write_wifi_command+0xe8>)
-  401342:	4798      	blx	r3
+  4012f4:	4b24      	ldr	r3, [pc, #144]	; (401388 <write_wifi_command+0xc4>)
+  4012f6:	4798      	blx	r3
+  4012f8:	4603      	mov	r3, r0
+  4012fa:	4619      	mov	r1, r3
+  4012fc:	f04f 0200 	mov.w	r2, #0
+  401300:	460b      	mov	r3, r1
+  401302:	4614      	mov	r4, r2
+  401304:	00a6      	lsls	r6, r4, #2
+  401306:	ea46 7693 	orr.w	r6, r6, r3, lsr #30
+  40130a:	009d      	lsls	r5, r3, #2
+  40130c:	462b      	mov	r3, r5
+  40130e:	4634      	mov	r4, r6
+  401310:	185b      	adds	r3, r3, r1
+  401312:	eb44 0402 	adc.w	r4, r4, r2
+  401316:	18db      	adds	r3, r3, r3
+  401318:	eb44 0404 	adc.w	r4, r4, r4
+  40131c:	4619      	mov	r1, r3
+  40131e:	4622      	mov	r2, r4
+  401320:	f243 63af 	movw	r3, #13999	; 0x36af
+  401324:	f04f 0400 	mov.w	r4, #0
+  401328:	eb11 0b03 	adds.w	fp, r1, r3
+  40132c:	eb42 0c04 	adc.w	ip, r2, r4
+  401330:	4658      	mov	r0, fp
+  401332:	4661      	mov	r1, ip
+  401334:	4c15      	ldr	r4, [pc, #84]	; (40138c <write_wifi_command+0xc8>)
+  401336:	f243 62b0 	movw	r2, #14000	; 0x36b0
+  40133a:	f04f 0300 	mov.w	r3, #0
+  40133e:	47a0      	blx	r4
+  401340:	4603      	mov	r3, r0
+  401342:	460c      	mov	r4, r1
+  401344:	4618      	mov	r0, r3
+  401346:	4b12      	ldr	r3, [pc, #72]	; (401390 <write_wifi_command+0xcc>)
+  401348:	4798      	blx	r3
 		timeout_counter++;
-  401344:	4b10      	ldr	r3, [pc, #64]	; (401388 <write_wifi_command+0xdc>)
-  401346:	781b      	ldrb	r3, [r3, #0]
-  401348:	b2db      	uxtb	r3, r3
-  40134a:	3301      	adds	r3, #1
-  40134c:	b2da      	uxtb	r2, r3
-  40134e:	4b0e      	ldr	r3, [pc, #56]	; (401388 <write_wifi_command+0xdc>)
-  401350:	701a      	strb	r2, [r3, #0]
+  40134a:	4b0e      	ldr	r3, [pc, #56]	; (401384 <write_wifi_command+0xc0>)
+  40134c:	781b      	ldrb	r3, [r3, #0]
+  40134e:	b2db      	uxtb	r3, r3
+  401350:	3301      	adds	r3, #1
+  401352:	b2da      	uxtb	r2, r3
+  401354:	4b0b      	ldr	r3, [pc, #44]	; (401384 <write_wifi_command+0xc0>)
+  401356:	701a      	strb	r2, [r3, #0]
 	while(timeout_counter < cnt && !data_recieved) {
-  401352:	4b0d      	ldr	r3, [pc, #52]	; (401388 <write_wifi_command+0xdc>)
-  401354:	781b      	ldrb	r3, [r3, #0]
-  401356:	b2db      	uxtb	r3, r3
-  401358:	78fa      	ldrb	r2, [r7, #3]
-  40135a:	429a      	cmp	r2, r3
-  40135c:	d903      	bls.n	401366 <write_wifi_command+0xba>
-  40135e:	4b07      	ldr	r3, [pc, #28]	; (40137c <write_wifi_command+0xd0>)
-  401360:	681b      	ldr	r3, [r3, #0]
-  401362:	2b00      	cmp	r3, #0
-  401364:	d0c3      	beq.n	4012ee <write_wifi_command+0x42>
+  401358:	4b0a      	ldr	r3, [pc, #40]	; (401384 <write_wifi_command+0xc0>)
+  40135a:	781b      	ldrb	r3, [r3, #0]
+  40135c:	b2db      	uxtb	r3, r3
+  40135e:	78fa      	ldrb	r2, [r7, #3]
+  401360:	429a      	cmp	r2, r3
+  401362:	d903      	bls.n	40136c <write_wifi_command+0xa8>
+  401364:	4b04      	ldr	r3, [pc, #16]	; (401378 <write_wifi_command+0xb4>)
+  401366:	681b      	ldr	r3, [r3, #0]
+  401368:	2b00      	cmp	r3, #0
+  40136a:	d0c3      	beq.n	4012f4 <write_wifi_command+0x30>
 	}
+	
+	//delay_ms(100);
 }
-  401366:	bf00      	nop
-  401368:	3708      	adds	r7, #8
-  40136a:	46bd      	mov	sp, r7
-  40136c:	e8bd 88f0 	ldmia.w	sp!, {r4, r5, r6, r7, fp, pc}
-  401370:	20008950 	.word	0x20008950
-  401374:	2000875c 	.word	0x2000875c
-  401378:	00402f21 	.word	0x00402f21
-  40137c:	20008958 	.word	0x20008958
-  401380:	40024000 	.word	0x40024000
-  401384:	00400cb5 	.word	0x00400cb5
-  401388:	20008954 	.word	0x20008954
-  40138c:	00400f89 	.word	0x00400f89
-  401390:	00402bc1 	.word	0x00402bc1
-  401394:	20000001 	.word	0x20000001
+  40136c:	bf00      	nop
+  40136e:	3708      	adds	r7, #8
+  401370:	46bd      	mov	sp, r7
+  401372:	e8bd 88f0 	ldmia.w	sp!, {r4, r5, r6, r7, fp, pc}
+  401376:	bf00      	nop
+  401378:	20008958 	.word	0x20008958
+  40137c:	40024000 	.word	0x40024000
+  401380:	00400cb5 	.word	0x00400cb5
+  401384:	20008954 	.word	0x20008954
+  401388:	00400f89 	.word	0x00400f89
+  40138c:	00402bc1 	.word	0x00402bc1
+  401390:	20000001 	.word	0x20000001
 
-00401398 <open_websocket>:
+00401394 <open_websocket>:
 		return -1;
 	}
 	
 }
 
 uint8_t open_websocket(void) {
-  401398:	e92d 4bf0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, fp, lr}
-  40139c:	b084      	sub	sp, #16
-  40139e:	af00      	add	r7, sp, #0
+  401394:	e92d 4bf0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, fp, lr}
+  401398:	b084      	sub	sp, #16
+  40139a:	af00      	add	r7, sp, #0
 	// figure out handle
 	write_wifi_command("close all\r\n", 2);
-  4013a0:	2102      	movs	r1, #2
-  4013a2:	482e      	ldr	r0, [pc, #184]	; (40145c <open_websocket+0xc4>)
-  4013a4:	4b2e      	ldr	r3, [pc, #184]	; (401460 <open_websocket+0xc8>)
-  4013a6:	4798      	blx	r3
+  40139c:	2102      	movs	r1, #2
+  40139e:	482e      	ldr	r0, [pc, #184]	; (401458 <open_websocket+0xc4>)
+  4013a0:	4b2e      	ldr	r3, [pc, #184]	; (40145c <open_websocket+0xc8>)
+  4013a2:	4798      	blx	r3
 	write_wifi_command("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", 2);
-  4013a8:	2102      	movs	r1, #2
-  4013aa:	482e      	ldr	r0, [pc, #184]	; (401464 <open_websocket+0xcc>)
-  4013ac:	4b2c      	ldr	r3, [pc, #176]	; (401460 <open_websocket+0xc8>)
-  4013ae:	4798      	blx	r3
+  4013a4:	2102      	movs	r1, #2
+  4013a6:	482e      	ldr	r0, [pc, #184]	; (401460 <open_websocket+0xcc>)
+  4013a8:	4b2c      	ldr	r3, [pc, #176]	; (40145c <open_websocket+0xc8>)
+  4013aa:	4798      	blx	r3
 
 	int opened = 0;
-  4013b0:	2300      	movs	r3, #0
-  4013b2:	60fb      	str	r3, [r7, #12]
+  4013ac:	2300      	movs	r3, #0
+  4013ae:	60fb      	str	r3, [r7, #12]
 	int handle = 0;
-  4013b4:	2300      	movs	r3, #0
-  4013b6:	607b      	str	r3, [r7, #4]
+  4013b0:	2300      	movs	r3, #0
+  4013b2:	607b      	str	r3, [r7, #4]
 	int seconds = 0;
-  4013b8:	2300      	movs	r3, #0
-  4013ba:	60bb      	str	r3, [r7, #8]
+  4013b4:	2300      	movs	r3, #0
+  4013b6:	60bb      	str	r3, [r7, #8]
 			
 	while(!opened) {			// waits for association
-  4013bc:	e044      	b.n	401448 <open_websocket+0xb0>
+  4013b8:	e044      	b.n	401444 <open_websocket+0xb0>
 		opened = strstr(input_buffer, "[Opened: ");
-  4013be:	492a      	ldr	r1, [pc, #168]	; (401468 <open_websocket+0xd0>)
-  4013c0:	482a      	ldr	r0, [pc, #168]	; (40146c <open_websocket+0xd4>)
-  4013c2:	4b2b      	ldr	r3, [pc, #172]	; (401470 <open_websocket+0xd8>)
-  4013c4:	4798      	blx	r3
-  4013c6:	4603      	mov	r3, r0
-  4013c8:	60fb      	str	r3, [r7, #12]
+  4013ba:	492a      	ldr	r1, [pc, #168]	; (401464 <open_websocket+0xd0>)
+  4013bc:	482a      	ldr	r0, [pc, #168]	; (401468 <open_websocket+0xd4>)
+  4013be:	4b2b      	ldr	r3, [pc, #172]	; (40146c <open_websocket+0xd8>)
+  4013c0:	4798      	blx	r3
+  4013c2:	4603      	mov	r3, r0
+  4013c4:	60fb      	str	r3, [r7, #12]
 		if (seconds > 100){
-  4013ca:	68bb      	ldr	r3, [r7, #8]
-  4013cc:	2b64      	cmp	r3, #100	; 0x64
-  4013ce:	dd02      	ble.n	4013d6 <open_websocket+0x3e>
+  4013c6:	68bb      	ldr	r3, [r7, #8]
+  4013c8:	2b64      	cmp	r3, #100	; 0x64
+  4013ca:	dd02      	ble.n	4013d2 <open_websocket+0x3e>
 			blink_LED(50);
-  4013d0:	2032      	movs	r0, #50	; 0x32
-  4013d2:	4b28      	ldr	r3, [pc, #160]	; (401474 <open_websocket+0xdc>)
-  4013d4:	4798      	blx	r3
+  4013cc:	2032      	movs	r0, #50	; 0x32
+  4013ce:	4b28      	ldr	r3, [pc, #160]	; (401470 <open_websocket+0xdc>)
+  4013d0:	4798      	blx	r3
 		}
 		delay_ms(200);
-  4013d6:	4b28      	ldr	r3, [pc, #160]	; (401478 <open_websocket+0xe0>)
-  4013d8:	4798      	blx	r3
-  4013da:	4603      	mov	r3, r0
-  4013dc:	4619      	mov	r1, r3
-  4013de:	f04f 0200 	mov.w	r2, #0
-  4013e2:	460b      	mov	r3, r1
-  4013e4:	4614      	mov	r4, r2
-  4013e6:	18db      	adds	r3, r3, r3
-  4013e8:	eb44 0404 	adc.w	r4, r4, r4
-  4013ec:	185b      	adds	r3, r3, r1
-  4013ee:	eb44 0402 	adc.w	r4, r4, r2
-  4013f2:	00e6      	lsls	r6, r4, #3
-  4013f4:	ea46 7653 	orr.w	r6, r6, r3, lsr #29
-  4013f8:	00dd      	lsls	r5, r3, #3
-  4013fa:	462b      	mov	r3, r5
-  4013fc:	4634      	mov	r4, r6
-  4013fe:	185b      	adds	r3, r3, r1
-  401400:	eb44 0402 	adc.w	r4, r4, r2
-  401404:	ea4f 09c4 	mov.w	r9, r4, lsl #3
-  401408:	ea49 7953 	orr.w	r9, r9, r3, lsr #29
-  40140c:	ea4f 08c3 	mov.w	r8, r3, lsl #3
-  401410:	4643      	mov	r3, r8
-  401412:	464c      	mov	r4, r9
-  401414:	4619      	mov	r1, r3
-  401416:	4622      	mov	r2, r4
-  401418:	f243 63af 	movw	r3, #13999	; 0x36af
-  40141c:	f04f 0400 	mov.w	r4, #0
-  401420:	eb11 0b03 	adds.w	fp, r1, r3
-  401424:	eb42 0c04 	adc.w	ip, r2, r4
-  401428:	4658      	mov	r0, fp
-  40142a:	4661      	mov	r1, ip
-  40142c:	4c13      	ldr	r4, [pc, #76]	; (40147c <open_websocket+0xe4>)
-  40142e:	f243 62b0 	movw	r2, #14000	; 0x36b0
-  401432:	f04f 0300 	mov.w	r3, #0
-  401436:	47a0      	blx	r4
-  401438:	4603      	mov	r3, r0
-  40143a:	460c      	mov	r4, r1
-  40143c:	4618      	mov	r0, r3
-  40143e:	4b10      	ldr	r3, [pc, #64]	; (401480 <open_websocket+0xe8>)
-  401440:	4798      	blx	r3
+  4013d2:	4b28      	ldr	r3, [pc, #160]	; (401474 <open_websocket+0xe0>)
+  4013d4:	4798      	blx	r3
+  4013d6:	4603      	mov	r3, r0
+  4013d8:	4619      	mov	r1, r3
+  4013da:	f04f 0200 	mov.w	r2, #0
+  4013de:	460b      	mov	r3, r1
+  4013e0:	4614      	mov	r4, r2
+  4013e2:	18db      	adds	r3, r3, r3
+  4013e4:	eb44 0404 	adc.w	r4, r4, r4
+  4013e8:	185b      	adds	r3, r3, r1
+  4013ea:	eb44 0402 	adc.w	r4, r4, r2
+  4013ee:	00e6      	lsls	r6, r4, #3
+  4013f0:	ea46 7653 	orr.w	r6, r6, r3, lsr #29
+  4013f4:	00dd      	lsls	r5, r3, #3
+  4013f6:	462b      	mov	r3, r5
+  4013f8:	4634      	mov	r4, r6
+  4013fa:	185b      	adds	r3, r3, r1
+  4013fc:	eb44 0402 	adc.w	r4, r4, r2
+  401400:	ea4f 09c4 	mov.w	r9, r4, lsl #3
+  401404:	ea49 7953 	orr.w	r9, r9, r3, lsr #29
+  401408:	ea4f 08c3 	mov.w	r8, r3, lsl #3
+  40140c:	4643      	mov	r3, r8
+  40140e:	464c      	mov	r4, r9
+  401410:	4619      	mov	r1, r3
+  401412:	4622      	mov	r2, r4
+  401414:	f243 63af 	movw	r3, #13999	; 0x36af
+  401418:	f04f 0400 	mov.w	r4, #0
+  40141c:	eb11 0b03 	adds.w	fp, r1, r3
+  401420:	eb42 0c04 	adc.w	ip, r2, r4
+  401424:	4658      	mov	r0, fp
+  401426:	4661      	mov	r1, ip
+  401428:	4c13      	ldr	r4, [pc, #76]	; (401478 <open_websocket+0xe4>)
+  40142a:	f243 62b0 	movw	r2, #14000	; 0x36b0
+  40142e:	f04f 0300 	mov.w	r3, #0
+  401432:	47a0      	blx	r4
+  401434:	4603      	mov	r3, r0
+  401436:	460c      	mov	r4, r1
+  401438:	4618      	mov	r0, r3
+  40143a:	4b10      	ldr	r3, [pc, #64]	; (40147c <open_websocket+0xe8>)
+  40143c:	4798      	blx	r3
 		seconds++;
-  401442:	68bb      	ldr	r3, [r7, #8]
-  401444:	3301      	adds	r3, #1
-  401446:	60bb      	str	r3, [r7, #8]
+  40143e:	68bb      	ldr	r3, [r7, #8]
+  401440:	3301      	adds	r3, #1
+  401442:	60bb      	str	r3, [r7, #8]
 	while(!opened) {			// waits for association
-  401448:	68fb      	ldr	r3, [r7, #12]
-  40144a:	2b00      	cmp	r3, #0
-  40144c:	d0b7      	beq.n	4013be <open_websocket+0x26>
+  401444:	68fb      	ldr	r3, [r7, #12]
+  401446:	2b00      	cmp	r3, #0
+  401448:	d0b7      	beq.n	4013ba <open_websocket+0x26>
 	}
 	
 	// should check last thing in input buffer for handle
 	return handle;
-  40144e:	687b      	ldr	r3, [r7, #4]
-  401450:	b2db      	uxtb	r3, r3
+  40144a:	687b      	ldr	r3, [r7, #4]
+  40144c:	b2db      	uxtb	r3, r3
 }
-  401452:	4618      	mov	r0, r3
-  401454:	3710      	adds	r7, #16
-  401456:	46bd      	mov	sp, r7
-  401458:	e8bd 8bf0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, fp, pc}
-  40145c:	00407ac4 	.word	0x00407ac4
-  401460:	004012ad 	.word	0x004012ad
-  401464:	00407b74 	.word	0x00407b74
-  401468:	00407bbc 	.word	0x00407bbc
-  40146c:	2000875c 	.word	0x2000875c
-  401470:	004033cd 	.word	0x004033cd
-  401474:	00401569 	.word	0x00401569
-  401478:	00400f89 	.word	0x00400f89
-  40147c:	00402bc1 	.word	0x00402bc1
-  401480:	20000001 	.word	0x20000001
+  40144e:	4618      	mov	r0, r3
+  401450:	3710      	adds	r7, #16
+  401452:	46bd      	mov	sp, r7
+  401454:	e8bd 8bf0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, fp, pc}
+  401458:	00407ac4 	.word	0x00407ac4
+  40145c:	004012c5 	.word	0x004012c5
+  401460:	00407b74 	.word	0x00407b74
+  401464:	00407bbc 	.word	0x00407bbc
+  401468:	2000875c 	.word	0x2000875c
+  40146c:	004033cd 	.word	0x004033cd
+  401470:	00401569 	.word	0x00401569
+  401474:	00400f89 	.word	0x00400f89
+  401478:	00402bc1 	.word	0x00402bc1
+  40147c:	20000001 	.word	0x20000001
 
-00401484 <send_data_ws>:
+00401480 <send_data_ws>:
 
 void send_data_ws(uint16_t* samples_data, uint8_t handle) {
-  401484:	b590      	push	{r4, r7, lr}
-  401486:	b09b      	sub	sp, #108	; 0x6c
-  401488:	af00      	add	r7, sp, #0
-  40148a:	6078      	str	r0, [r7, #4]
-  40148c:	460b      	mov	r3, r1
-  40148e:	70fb      	strb	r3, [r7, #3]
+  401480:	b590      	push	{r4, r7, lr}
+  401482:	b09b      	sub	sp, #108	; 0x6c
+  401484:	af00      	add	r7, sp, #0
+  401486:	6078      	str	r0, [r7, #4]
+  401488:	460b      	mov	r3, r1
+  40148a:	70fb      	strb	r3, [r7, #3]
 	// don't send if there are fewer than PACKET_SIZE samples to send
 	uint32_t end_index = (i2s_send_index*2 + PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
-  401490:	4b2d      	ldr	r3, [pc, #180]	; (401548 <send_data_ws+0xc4>)
-  401492:	681b      	ldr	r3, [r3, #0]
-  401494:	33c8      	adds	r3, #200	; 0xc8
-  401496:	005b      	lsls	r3, r3, #1
-  401498:	4a2c      	ldr	r2, [pc, #176]	; (40154c <send_data_ws+0xc8>)
-  40149a:	fba2 1203 	umull	r1, r2, r2, r3
-  40149e:	0ad2      	lsrs	r2, r2, #11
-  4014a0:	f44f 41fa 	mov.w	r1, #32000	; 0x7d00
-  4014a4:	fb01 f202 	mul.w	r2, r1, r2
-  4014a8:	1a9b      	subs	r3, r3, r2
-  4014aa:	663b      	str	r3, [r7, #96]	; 0x60
+  40148c:	4b2d      	ldr	r3, [pc, #180]	; (401544 <send_data_ws+0xc4>)
+  40148e:	681b      	ldr	r3, [r3, #0]
+  401490:	33c8      	adds	r3, #200	; 0xc8
+  401492:	005b      	lsls	r3, r3, #1
+  401494:	4a2c      	ldr	r2, [pc, #176]	; (401548 <send_data_ws+0xc8>)
+  401496:	fba2 1203 	umull	r1, r2, r2, r3
+  40149a:	0ad2      	lsrs	r2, r2, #11
+  40149c:	f44f 41fa 	mov.w	r1, #32000	; 0x7d00
+  4014a0:	fb01 f202 	mul.w	r2, r1, r2
+  4014a4:	1a9b      	subs	r3, r3, r2
+  4014a6:	663b      	str	r3, [r7, #96]	; 0x60
 	
 	if(end_index > (i2s_receive_index*2)) // make sure that the end index isn't in front of the receive index
-  4014ac:	4b28      	ldr	r3, [pc, #160]	; (401550 <send_data_ws+0xcc>)
-  4014ae:	681b      	ldr	r3, [r3, #0]
-  4014b0:	005a      	lsls	r2, r3, #1
-  4014b2:	6e3b      	ldr	r3, [r7, #96]	; 0x60
-  4014b4:	429a      	cmp	r2, r3
-  4014b6:	d343      	bcc.n	401540 <send_data_ws+0xbc>
+  4014a8:	4b28      	ldr	r3, [pc, #160]	; (40154c <send_data_ws+0xcc>)
+  4014aa:	681b      	ldr	r3, [r3, #0]
+  4014ac:	005a      	lsls	r2, r3, #1
+  4014ae:	6e3b      	ldr	r3, [r7, #96]	; 0x60
+  4014b0:	429a      	cmp	r2, r3
+  4014b2:	d343      	bcc.n	40153c <send_data_ws+0xbc>
 	uint8_t curr_data_point;
 	
 	// initialize send
 	
 	char* templated_command[20];
 	sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE * 2);
-  4014b8:	78fa      	ldrb	r2, [r7, #3]
-  4014ba:	f107 000c 	add.w	r0, r7, #12
-  4014be:	f44f 73c8 	mov.w	r3, #400	; 0x190
-  4014c2:	4924      	ldr	r1, [pc, #144]	; (401554 <send_data_ws+0xd0>)
-  4014c4:	4c24      	ldr	r4, [pc, #144]	; (401558 <send_data_ws+0xd4>)
-  4014c6:	47a0      	blx	r4
+  4014b4:	78fa      	ldrb	r2, [r7, #3]
+  4014b6:	f107 000c 	add.w	r0, r7, #12
+  4014ba:	f44f 73c8 	mov.w	r3, #400	; 0x190
+  4014be:	4924      	ldr	r1, [pc, #144]	; (401550 <send_data_ws+0xd0>)
+  4014c0:	4c24      	ldr	r4, [pc, #144]	; (401554 <send_data_ws+0xd4>)
+  4014c2:	47a0      	blx	r4
 	usart_write_line(BOARD_USART, templated_command);
-  4014c8:	f107 030c 	add.w	r3, r7, #12
-  4014cc:	4619      	mov	r1, r3
-  4014ce:	4823      	ldr	r0, [pc, #140]	; (40155c <send_data_ws+0xd8>)
-  4014d0:	4b23      	ldr	r3, [pc, #140]	; (401560 <send_data_ws+0xdc>)
-  4014d2:	4798      	blx	r3
+  4014c4:	f107 030c 	add.w	r3, r7, #12
+  4014c8:	4619      	mov	r1, r3
+  4014ca:	4823      	ldr	r0, [pc, #140]	; (401558 <send_data_ws+0xd8>)
+  4014cc:	4b23      	ldr	r3, [pc, #140]	; (40155c <send_data_ws+0xdc>)
+  4014ce:	4798      	blx	r3
 	
 	// loop starting at the send index, and end PACKET SIZE later
 	// i is a uint8 index, so everything is multiplied by two
 	// i gets modded inside the loop to wrap around if necessary
 	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (PACKET_SIZE*2); i++)
-  4014d4:	4b1c      	ldr	r3, [pc, #112]	; (401548 <send_data_ws+0xc4>)
-  4014d6:	681b      	ldr	r3, [r3, #0]
-  4014d8:	005b      	lsls	r3, r3, #1
-  4014da:	667b      	str	r3, [r7, #100]	; 0x64
-  4014dc:	e019      	b.n	401512 <send_data_ws+0x8e>
+  4014d0:	4b1c      	ldr	r3, [pc, #112]	; (401544 <send_data_ws+0xc4>)
+  4014d2:	681b      	ldr	r3, [r3, #0]
+  4014d4:	005b      	lsls	r3, r3, #1
+  4014d6:	667b      	str	r3, [r7, #100]	; 0x64
+  4014d8:	e019      	b.n	40150e <send_data_ws+0x8e>
 	{
 		
 		curr_data_point = ((uint8_t*) samples_data)[i % (AUDIO_BUFFER_SIZE*2)];	
-  4014de:	6e7b      	ldr	r3, [r7, #100]	; 0x64
-  4014e0:	4a1a      	ldr	r2, [pc, #104]	; (40154c <send_data_ws+0xc8>)
-  4014e2:	fb82 1203 	smull	r1, r2, r2, r3
-  4014e6:	12d1      	asrs	r1, r2, #11
-  4014e8:	17da      	asrs	r2, r3, #31
-  4014ea:	1a8a      	subs	r2, r1, r2
-  4014ec:	f44f 41fa 	mov.w	r1, #32000	; 0x7d00
-  4014f0:	fb01 f202 	mul.w	r2, r1, r2
-  4014f4:	1a9a      	subs	r2, r3, r2
-  4014f6:	687b      	ldr	r3, [r7, #4]
-  4014f8:	4413      	add	r3, r2
-  4014fa:	781b      	ldrb	r3, [r3, #0]
-  4014fc:	f887 305f 	strb.w	r3, [r7, #95]	; 0x5f
+  4014da:	6e7b      	ldr	r3, [r7, #100]	; 0x64
+  4014dc:	4a1a      	ldr	r2, [pc, #104]	; (401548 <send_data_ws+0xc8>)
+  4014de:	fb82 1203 	smull	r1, r2, r2, r3
+  4014e2:	12d1      	asrs	r1, r2, #11
+  4014e4:	17da      	asrs	r2, r3, #31
+  4014e6:	1a8a      	subs	r2, r1, r2
+  4014e8:	f44f 41fa 	mov.w	r1, #32000	; 0x7d00
+  4014ec:	fb01 f202 	mul.w	r2, r1, r2
+  4014f0:	1a9a      	subs	r2, r3, r2
+  4014f2:	687b      	ldr	r3, [r7, #4]
+  4014f4:	4413      	add	r3, r2
+  4014f6:	781b      	ldrb	r3, [r3, #0]
+  4014f8:	f887 305f 	strb.w	r3, [r7, #95]	; 0x5f
 		usart_putchar(BOARD_USART, curr_data_point);
-  401500:	f897 305f 	ldrb.w	r3, [r7, #95]	; 0x5f
-  401504:	4619      	mov	r1, r3
-  401506:	4815      	ldr	r0, [pc, #84]	; (40155c <send_data_ws+0xd8>)
-  401508:	4b16      	ldr	r3, [pc, #88]	; (401564 <send_data_ws+0xe0>)
-  40150a:	4798      	blx	r3
+  4014fc:	f897 305f 	ldrb.w	r3, [r7, #95]	; 0x5f
+  401500:	4619      	mov	r1, r3
+  401502:	4815      	ldr	r0, [pc, #84]	; (401558 <send_data_ws+0xd8>)
+  401504:	4b16      	ldr	r3, [pc, #88]	; (401560 <send_data_ws+0xe0>)
+  401506:	4798      	blx	r3
 	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (PACKET_SIZE*2); i++)
-  40150c:	6e7b      	ldr	r3, [r7, #100]	; 0x64
-  40150e:	3301      	adds	r3, #1
-  401510:	667b      	str	r3, [r7, #100]	; 0x64
-  401512:	4b0d      	ldr	r3, [pc, #52]	; (401548 <send_data_ws+0xc4>)
-  401514:	681b      	ldr	r3, [r3, #0]
-  401516:	33c8      	adds	r3, #200	; 0xc8
-  401518:	005a      	lsls	r2, r3, #1
-  40151a:	6e7b      	ldr	r3, [r7, #100]	; 0x64
-  40151c:	429a      	cmp	r2, r3
-  40151e:	d8de      	bhi.n	4014de <send_data_ws+0x5a>
+  401508:	6e7b      	ldr	r3, [r7, #100]	; 0x64
+  40150a:	3301      	adds	r3, #1
+  40150c:	667b      	str	r3, [r7, #100]	; 0x64
+  40150e:	4b0d      	ldr	r3, [pc, #52]	; (401544 <send_data_ws+0xc4>)
+  401510:	681b      	ldr	r3, [r3, #0]
+  401512:	33c8      	adds	r3, #200	; 0xc8
+  401514:	005a      	lsls	r2, r3, #1
+  401516:	6e7b      	ldr	r3, [r7, #100]	; 0x64
+  401518:	429a      	cmp	r2, r3
+  40151a:	d8de      	bhi.n	4014da <send_data_ws+0x5a>
 	}
 	
 	i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
-  401520:	4b09      	ldr	r3, [pc, #36]	; (401548 <send_data_ws+0xc4>)
-  401522:	681b      	ldr	r3, [r3, #0]
-  401524:	f103 02c8 	add.w	r2, r3, #200	; 0xc8
-  401528:	4b08      	ldr	r3, [pc, #32]	; (40154c <send_data_ws+0xc8>)
-  40152a:	fba3 1302 	umull	r1, r3, r3, r2
-  40152e:	0a9b      	lsrs	r3, r3, #10
-  401530:	f44f 517a 	mov.w	r1, #16000	; 0x3e80
-  401534:	fb01 f303 	mul.w	r3, r1, r3
-  401538:	1ad3      	subs	r3, r2, r3
-  40153a:	4a03      	ldr	r2, [pc, #12]	; (401548 <send_data_ws+0xc4>)
-  40153c:	6013      	str	r3, [r2, #0]
-  40153e:	e000      	b.n	401542 <send_data_ws+0xbe>
+  40151c:	4b09      	ldr	r3, [pc, #36]	; (401544 <send_data_ws+0xc4>)
+  40151e:	681b      	ldr	r3, [r3, #0]
+  401520:	f103 02c8 	add.w	r2, r3, #200	; 0xc8
+  401524:	4b08      	ldr	r3, [pc, #32]	; (401548 <send_data_ws+0xc8>)
+  401526:	fba3 1302 	umull	r1, r3, r3, r2
+  40152a:	0a9b      	lsrs	r3, r3, #10
+  40152c:	f44f 517a 	mov.w	r1, #16000	; 0x3e80
+  401530:	fb01 f303 	mul.w	r3, r1, r3
+  401534:	1ad3      	subs	r3, r2, r3
+  401536:	4a03      	ldr	r2, [pc, #12]	; (401544 <send_data_ws+0xc4>)
+  401538:	6013      	str	r3, [r2, #0]
+  40153a:	e000      	b.n	40153e <send_data_ws+0xbe>
 		return;
-  401540:	bf00      	nop
+  40153c:	bf00      	nop
 
 }
-  401542:	376c      	adds	r7, #108	; 0x6c
-  401544:	46bd      	mov	sp, r7
-  401546:	bd90      	pop	{r4, r7, pc}
-  401548:	20008964 	.word	0x20008964
-  40154c:	10624dd3 	.word	0x10624dd3
-  401550:	200009d8 	.word	0x200009d8
-  401554:	00407bc8 	.word	0x00407bc8
-  401558:	00402fbd 	.word	0x00402fbd
-  40155c:	40024000 	.word	0x40024000
-  401560:	00400cb5 	.word	0x00400cb5
-  401564:	00400c85 	.word	0x00400c85
+  40153e:	376c      	adds	r7, #108	; 0x6c
+  401540:	46bd      	mov	sp, r7
+  401542:	bd90      	pop	{r4, r7, pc}
+  401544:	20008964 	.word	0x20008964
+  401548:	10624dd3 	.word	0x10624dd3
+  40154c:	200009d8 	.word	0x200009d8
+  401550:	00407bc8 	.word	0x00407bc8
+  401554:	00402fbd 	.word	0x00402fbd
+  401558:	40024000 	.word	0x40024000
+  40155c:	00400cb5 	.word	0x00400cb5
+  401560:	00400c85 	.word	0x00400c85
+  401564:	00000000 	.word	0x00000000
 
 00401568 <blink_LED>:
 /**
@@ -3929,7 +3930,7 @@ void setup_wifi(void){
   4017e6:	e8bd 8bf0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, fp, pc}
   4017ea:	bf00      	nop
   4017ec:	00407c00 	.word	0x00407c00
-  4017f0:	004012ad 	.word	0x004012ad
+  4017f0:	004012c5 	.word	0x004012c5
   4017f4:	00407c0c 	.word	0x00407c0c
   4017f8:	2000875c 	.word	0x2000875c
   4017fc:	004033cd 	.word	0x004033cd
@@ -3965,8 +3966,8 @@ void configure_wifi(){
   40182c:	bf00      	nop
   40182e:	bd80      	pop	{r7, pc}
   401830:	004010bd 	.word	0x004010bd
-  401834:	004011c9 	.word	0x004011c9
-  401838:	0040124d 	.word	0x0040124d
+  401834:	004011e1 	.word	0x004011e1
+  401838:	00401265 	.word	0x00401265
   40183c:	40024000 	.word	0x40024000
   401840:	00400bed 	.word	0x00400bed
 
@@ -3980,7 +3981,6 @@ void reboot_wifi() {
   401844:	e92d 4bf0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, fp, lr}
   401848:	b082      	sub	sp, #8
   40184a:	af00      	add	r7, sp, #0
-	//write_wifi_command("close all\r\n", 2);
 	write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
   40184c:	210a      	movs	r1, #10
   40184e:	4832      	ldr	r0, [pc, #200]	; (401918 <reboot_wifi+0xd4>)
@@ -4094,7 +4094,7 @@ void reboot_wifi() {
   401912:	46bd      	mov	sp, r7
   401914:	e8bd 8bf0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, fp, pc}
   401918:	00407c5c 	.word	0x00407c5c
-  40191c:	004012ad 	.word	0x004012ad
+  40191c:	004012c5 	.word	0x004012c5
   401920:	2000895c 	.word	0x2000895c
   401924:	0040172d 	.word	0x0040172d
   401928:	00407c0c 	.word	0x00407c0c
@@ -7215,10 +7215,10 @@ int main (void)
   402ba4:	00401815 	.word	0x00401815
   402ba8:	00401845 	.word	0x00401845
   402bac:	004007a9 	.word	0x004007a9
-  402bb0:	00401399 	.word	0x00401399
+  402bb0:	00401395 	.word	0x00401395
   402bb4:	004006f9 	.word	0x004006f9
   402bb8:	200009dc 	.word	0x200009dc
-  402bbc:	00401485 	.word	0x00401485
+  402bbc:	00401481 	.word	0x00401481
 
 00402bc0 <__aeabi_uldivmod>:
   402bc0:	b953      	cbnz	r3, 402bd8 <__aeabi_uldivmod+0x18>

@@ -9,7 +9,7 @@
 #include "camera.h"
 #include "microphone.h"
 
-volatile uint8_t input_buffer[INPUT_BUFFER_SIZE] = {0};
+volatile uint8_t input_buffer[BUFFER_SIZE] = {0};
 volatile uint32_t buffer_index = 0;
 volatile uint8_t timeout_counter = 0;
 volatile uint32_t data_recieved = 0;
@@ -98,8 +98,9 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	
 	delay_ms(50);
 	
-	//input_buffer[buffer_index] = 0;
+	input_buffer[buffer_index] = 0;
 	data_recieved = 1;
+	buffer_index = 0;
 }
 
 /**
@@ -169,9 +170,6 @@ void configure_web_setup(void){
  *  \brief Writes wifi command.
  */
 void write_wifi_command(char* comm, uint8_t cnt){
-	buffer_index = 0;
-	memset(input_buffer, 0, INPUT_BUFFER_SIZE);
-	
 	data_recieved = 0;
 	usart_write_line(BOARD_USART, comm);
 	
@@ -182,6 +180,8 @@ void write_wifi_command(char* comm, uint8_t cnt){
 		delay_ms(10);
 		timeout_counter++;
 	}
+	
+	//delay_ms(100);
 }
 
 /**
@@ -349,7 +349,6 @@ void safe_mode_recovery(){
  *  \brief Reboots the wifi chip.
  */
 void reboot_wifi() {
-	//write_wifi_command("close all\r\n", 2);
 	write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
 	
 	int associated = 0;

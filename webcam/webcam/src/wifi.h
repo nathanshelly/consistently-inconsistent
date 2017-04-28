@@ -15,10 +15,10 @@
 
 /** All interrupt mask. */
 #define ALL_INTERRUPT_MASK  0xffffffff
-#define INPUT_BUFFER_SIZE			500
+#define BUFFER_SIZE			500
 
 // variable declarations
-volatile uint8_t input_buffer[INPUT_BUFFER_SIZE];
+volatile uint8_t input_buffer[BUFFER_SIZE];
 volatile uint32_t buffer_index;
 volatile uint8_t timeout_counter;
 volatile uint32_t data_recieved;
