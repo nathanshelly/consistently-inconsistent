@@ -42,12 +42,14 @@ void setup_wifi(void);
 void configure_wifi(void);
 void reboot_wifi(void);
 void safe_mode_recovery(void);
+void send_data_ws(uint16_t* samples_data, uint32_t num_samples, uint8_t handle);
+uint8_t open_websocket(void);
 
 // Usart communication definitions
 
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0
-#define BOARD_USART_BAUDRATE		921600
+#define BOARD_USART_BAUDRATE		115200 // 921600
 #define handler_usart				USART0_Handler
 #define USART_IRQn					USART0_IRQn
 

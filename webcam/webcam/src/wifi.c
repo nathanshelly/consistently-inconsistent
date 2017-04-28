@@ -15,6 +15,7 @@ volatile uint32_t data_recieved = 0;
 volatile uint32_t wifi_setup_flag = false;
 volatile uint32_t received_byte_wifi = 0;
 
+uint32_t post_counter = 0;
 
 /**
  *  \brief Interrupt handler for USART.
@@ -240,25 +241,68 @@ uint8_t parse_stream_handle(void){
 }
 
 void post_audio_usart(uint8_t *audio_data_ptr, uint32_t num_samples){
-	
 	uint8_t handle;
 
 	write_wifi_command("close all\r\n", 2);
 	write_wifi_command("http_post -o https://bigbrothersees.me/post_image application/json\r\n", 2);
-	//delay_ms(50);
-	//handle = parse_stream_handle();
-	write_wifi_command("http_add_header 0 message-type audio-bin\r\n", 2);
 	
-	char* templated_command[35];
-	sprintf(templated_command, "write 0 %d\r\n", num_samples);
-	usart_write_line(BOARD_USART, templated_command);
-	
-	for (int i = 0; i < num_samples; i++)
-	{
-		usart_putchar(BOARD_USART, audio_data_ptr[i]);
+	if (post_counter > 20) {
+		write_wifi_command("http_add_header 0 message-type audio-term\r\n", 2);
+		post_counter = 0;
+	}
+	else {
+		write_wifi_command("http_add_header 0 message-type audio-bin\r\n", 2);
+		char* templated_command[35];
+		sprintf(templated_command, "write 0 %d\r\n", num_samples);
+		usart_write_line(BOARD_USART, templated_command);
+		
+		for (int i = 0; i < num_samples; i++)
+		{
+			usart_putchar(BOARD_USART, audio_data_ptr[i]);
+		}
+		
+		post_counter++;
 	}
 	
+	//handle = parse_stream_handle();
 	write_wifi_command("http_read_status 0\r\n", 2);
+}
+
+uint8_t open_websocket(void) {
+	// figure out handle
+	write_wifi_command("close all\r\n", 2);
+	write_wifi_command("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", 2);
+
+	int opened = 0;
+	int handle = 0;
+	int seconds = 0;
+			
+	while(!opened) {			// waits for association
+		opened = strstr(input_buffer, "[Opened: ");
+		if (seconds > 100){
+			blink_LED(50);
+		}
+		delay_ms(200);
+		seconds++;
+	}
+	
+	// should check last thing in input buffer for handle
+	return handle;
+}
+
+void send_data_ws(uint16_t* samples_data, uint32_t num_samples, uint8_t handle) {
+	uint8_t curr_point;
+	
+	char* templated_command[35];
+	sprintf(templated_command, "write %d %d\r\n", handle, num_samples); // each sample is 32 bits, 4 bytes
+	usart_write_line(BOARD_USART, templated_command);
+		
+	for (int i = 0; i < num_samples; i++)
+	{
+		curr_point = (uint8_t) samples_data[i];
+		
+		usart_putchar(BOARD_USART, curr_point);
+	}
 }
 
 /**
@@ -321,7 +365,6 @@ void configure_wifi(){
 }
 
 void safe_mode_recovery(){
-	
 	write_wifi_command("get system.safemode.status\r\n",2);
 	write_wifi_command("faults_print\r\n",2);
 	write_wifi_command("faults_reset\r\n",2);
@@ -332,8 +375,7 @@ void safe_mode_recovery(){
 /**
  *  \brief Reboots the wifi chip.
  */
-void reboot_wifi(){
-	
+void reboot_wifi() {
 	write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
 	
 	int associated = 0;
@@ -341,7 +383,7 @@ void reboot_wifi(){
 	
 	wifi_setup_flag = false;		// resets the wifi setup flag
 		
-	while(!associated){				// waits for association
+	while(!associated) {			// waits for association
 		if(wifi_setup_flag) {		// listens for wifi setup flag (should be pressed shortly after power)
 			setup_wifi();			// sets up wifi on new network
 		}
@@ -355,7 +397,7 @@ void reboot_wifi(){
 	
 	buffer_index = 0;
 	
-	write_wifi_command("set sy c e off\r\n", 5);	// resets a couple of system parameters in case they were changed
+	//write_wifi_command("set sy c e off\r\n", 5);	// resets a couple of system parameters in case they were changed
 	write_wifi_command("set sy c p off\r\n", 5);
 	
 }

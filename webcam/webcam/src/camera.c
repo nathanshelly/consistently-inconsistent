@@ -131,7 +131,7 @@ void configure_camera(void)
 /**
  * \brief Capture OV2640 data to a buffer.
  *
- * \param p_pio PIO instance which will capture data from OV2640 iamge sensor.
+ * \param p_pio PIO instance which will capture data from OV2640 image sensor.
  * \param p_uc_buf Buffer address where captured data must be stored.
  * \param ul_size Data frame size.
  */

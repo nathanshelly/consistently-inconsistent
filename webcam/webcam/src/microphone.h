@@ -14,7 +14,7 @@
 #include "wifi.h"
 #include "math.h"
 
-#define NUMBER_OF_SAMPLES 10000
+#define NUMBER_OF_SAMPLES 200
 #define MULTISAMPLE_SIZE 5
 #define VOLT_REF 3300
 #define MAX_DIGITAL 4095
@@ -28,15 +28,16 @@
 /* Transfer Period */
 #define TRANSFER_PERIOD  2
 
-// uint8_t input_buffer[BUFFER_SIZE];
+volatile uint16_t i2s_rec_buf[NUMBER_OF_SAMPLES];
 
 uint16_t *generate_spoof(uint32_t tone_frequency);
-void send_data_ws(uint16_t *samples_data);
 void start_adc(void);
 void capture_audio_segment(void);
 static uint32_t adc_read_buffer(Adc * pADC, int16_t * multisample_buffer, uint32_t multisample_buffer_size);
+uint16_t modify_data(uint32_t data_to_modify);
+void i2s_capture(void);
+void configure_i2s(void);
 void ADC_Handler(void);
-
 
 struct {
 	uint8_t uc_ch_num[NUM_CHANNELS];
@@ -44,14 +45,13 @@ struct {
 	uint16_t us_done;
 } g_adc_sample_data;
 
-
 /** The SSC interrupt IRQ priority. */
 #define SSC_IRQ_PRIO				4
 
-#define OVER_SAMPLE_RATE			32
+#define OVER_SAMPLE_RATE			64
 #define SAMPLE_RATE					32000
-//#define SSC_BIT_RATE				(OVER_SAMPLE_RATE * SAMPLE_RATE)
-#define SSC_BIT_RATE				(8 * 8000)
+#define SSC_BIT_RATE				(OVER_SAMPLE_RATE * SAMPLE_RATE)
+//#define SSC_BIT_RATE				(8 * 8000)
 
 #define BIT_LEN_PER_CHANNEL			8
 

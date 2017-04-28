@@ -87,8 +87,8 @@
 #define RTS_LOW_GPIO_FLAGS	(PIO_OUTPUT_1 | PIO_DEFAULT)
 
 
-#define CAM_RST    PIO_PA20_IDX
-#define CAM_RST_FLAGS (PIO_PERIPH_B | PIO_DEFAULT)
+#define CAM_RST			PIO_PA10_IDX
+#define CAM_RST_FLAGS	(PIO_PERIPH_B | PIO_DEFAULT)
 
 
 // Network Status indication

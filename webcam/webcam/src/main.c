@@ -127,35 +127,26 @@ int main (void)
 	configure_tc();
 	tc_start(TC0, 0);
 	
-<<<<<<< HEAD
-	//ADC_setup();
-=======
-	start_adc();
->>>>>>> ae4524ff83ec8dbf0c77f79cf4e56b33bfe289b1
-	
 	// Custom configuration calls
-	//configure_wifi();		// configures and initializes wifi module
+	configure_wifi();		// configures and initializes wifi module
 	//configure_camera();		// configures and initializes camera module
-	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
+	reboot_wifi();			// reboots the wifi chip (takes several seconds)
 	
+	configure_i2s(); // microphone configuration
+	
+	uint8_t handle = open_websocket();
 
-	configure_i2s();
-
-	//uint16_t *samples_data = generate_spoof(440);
 	while(1) {
 		//if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 		//	setup_wifi();		// the wifi chip tries to reassociate to a new network
 		//}
 		
-		blink_LED(100);
+		i2s_capture();
+		//post_audio_usart((uint8_t *) i2s_rec_buf, 2000);
+		send_data_ws(i2s_rec_buf, NUMBER_OF_SAMPLES * 2, handle);
 
-		capture_audio_segment();
-
-		//start_capture();		// capture the image to internal memory
-		//post_test();
+		//start_capture();		// capture the image to internal memorys
 		//post_image();			// send the image to the wifi chip
-		//send_data_ws(samples_data);
-		//post_audio_usart((uint8_t *) samples_data, 2000);
 	}
 	return 0;
 }
