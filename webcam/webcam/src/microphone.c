@@ -4,8 +4,6 @@
  */ 
 #include "microphone.h"
 
-uint16_t wave_samples[AUDIO_BUFFER_SIZE] = {0};
-
 /** Receiver buffer content. */
 volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE] = {0};
 
@@ -71,14 +69,4 @@ void configure_i2s(void){
 	NVIC_ClearPendingIRQ(SSC_IRQn);
 	NVIC_SetPriority(SSC_IRQn, SSC_IRQ_PRIO);
 	NVIC_EnableIRQ(SSC_IRQn);
-}
-
-// generates sine wave with given number of samples at given frequency
-uint16_t *generate_spoof(uint32_t tone_frequency) {
-	int sampling_frequency = 32000;
-	
-	for (int i = 0; i < AUDIO_BUFFER_SIZE; i++)
-		wave_samples[i] = (uint16_t) (signed short) (32767*sinf(2*M_PI*tone_frequency*i/sampling_frequency));
-	
-	return wave_samples;
 }

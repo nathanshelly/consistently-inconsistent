@@ -16,35 +16,12 @@
 
 #define AUDIO_BUFFER_SIZE	16000
 #define PACKET_SIZE			200
-#define MULTISAMPLE_SIZE 5
-#define VOLT_REF 3300
-#define MAX_DIGITAL 4095
-#define MIN_PICKUP 696 // 824 is center counts for the mic, so 824-128 gives the min value
-#define MAX_PICKUP 952 // same logic
-#define ADC_DONE_MASK   ( (1<<NUM_CHANNELS) - 1 )
-#define NUM_CHANNELS 1
-#define MIC_CHANNEL ADC_CHANNEL_9
-/* Tracking Time*/
-#define TRACKING_TIME    1
-/* Transfer Period */
-#define TRANSFER_PERIOD  2
 
 volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE];
 
-uint16_t *generate_spoof(uint32_t tone_frequency);
-void start_adc(void);
-void capture_audio_segment(void);
-static uint32_t adc_read_buffer(Adc * pADC, int16_t * multisample_buffer, uint32_t multisample_buffer_size);
-uint16_t modify_data(uint32_t data_to_modify);
 void i2s_capture(void);
 void configure_i2s(void);
-void ADC_Handler(void);
-
-struct {
-	uint8_t uc_ch_num[NUM_CHANNELS];
-	uint16_t us_value[NUM_CHANNELS];
-	uint16_t us_done;
-} g_adc_sample_data;
+uint16_t modify_data(uint32_t data_to_modify);
 
 /** The SSC interrupt IRQ priority. */
 #define SSC_IRQ_PRIO				4
@@ -52,7 +29,6 @@ struct {
 #define OVER_SAMPLE_RATE			64
 #define SAMPLE_RATE					32000
 #define SSC_BIT_RATE				(OVER_SAMPLE_RATE * SAMPLE_RATE)
-//#define SSC_BIT_RATE				(8 * 8000)
 
 #define BIT_LEN_PER_CHANNEL			8
 

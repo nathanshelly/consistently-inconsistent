@@ -184,22 +184,6 @@ void write_wifi_command(char* comm, uint8_t cnt){
 /**
  *  \brief Writes image to file on the wifi chip.
  */
-void write_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
-	// will have already checked if image is valid
-	write_wifi_command("fde image.jpg\r\n", 2);
-	char* templated_command[35];
-	sprintf(templated_command, "fcr image.jpg %d\r\n", image_length);
-	usart_write_line(BOARD_USART, templated_command);
-	
-	for (int i = 0; i < image_length; i++)
-	{
-		usart_putchar(BOARD_USART, (uint32_t) start_of_image_ptr[i]);
-	}
-}
-
-/**
- *  \brief Writes image to file on the wifi chip.
- */
 void post_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
 	// will have already checked if image is valid
 	write_wifi_command("close all\r\n", 2);
@@ -238,34 +222,6 @@ uint8_t parse_stream_handle(void){
 		return -1;
 	}
 	
-}
-
-void post_audio_usart(uint8_t *audio_data_ptr, uint32_t num_samples){
-	uint8_t handle;
-
-	write_wifi_command("close all\r\n", 2);
-	write_wifi_command("http_post -o https://bigbrothersees.me/post_image application/json\r\n", 2);
-	
-	if (post_counter > 20) {
-		write_wifi_command("http_add_header 0 message-type audio-term\r\n", 2);
-		post_counter = 0;
-	}
-	else {
-		write_wifi_command("http_add_header 0 message-type audio-bin\r\n", 2);
-		char* templated_command[35];
-		sprintf(templated_command, "write 0 %d\r\n", num_samples);
-		usart_write_line(BOARD_USART, templated_command);
-		
-		for (int i = 0; i < num_samples; i++)
-		{
-			usart_putchar(BOARD_USART, audio_data_ptr[i]);
-		}
-		
-		post_counter++;
-	}
-	
-	//handle = parse_stream_handle();
-	write_wifi_command("http_read_status 0\r\n", 2);
 }
 
 uint8_t open_websocket(void) {
