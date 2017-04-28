@@ -14,7 +14,8 @@
 #include "wifi.h"
 #include "math.h"
 
-#define NUMBER_OF_SAMPLES 200
+#define AUDIO_BUFFER_SIZE	16000
+#define PACKET_SIZE			200
 #define MULTISAMPLE_SIZE 5
 #define VOLT_REF 3300
 #define MAX_DIGITAL 4095
@@ -28,7 +29,7 @@
 /* Transfer Period */
 #define TRANSFER_PERIOD  2
 
-volatile uint16_t i2s_rec_buf[NUMBER_OF_SAMPLES];
+volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE];
 
 uint16_t *generate_spoof(uint32_t tone_frequency);
 void start_adc(void);

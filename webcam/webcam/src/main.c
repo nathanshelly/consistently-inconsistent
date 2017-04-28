@@ -143,7 +143,7 @@ int main (void)
 		
 		i2s_capture();
 		//post_audio_usart((uint8_t *) i2s_rec_buf, 2000);
-		send_data_ws(i2s_rec_buf, NUMBER_OF_SAMPLES * 2, handle);
+		send_data_ws(i2s_rec_buf, AUDIO_BUFFER_SIZE * 2, handle);
 
 		//start_capture();		// capture the image to internal memorys
 		//post_image();			// send the image to the wifi chip

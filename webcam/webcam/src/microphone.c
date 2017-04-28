@@ -4,10 +4,10 @@
  */ 
 #include "microphone.h"
 
-uint16_t wave_samples[NUMBER_OF_SAMPLES] = {0};
+uint16_t wave_samples[AUDIO_BUFFER_SIZE] = {0};
 
 /** Receiver buffer content. */
-volatile uint16_t i2s_rec_buf[NUMBER_OF_SAMPLES] = {0};
+volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE] = {0};
 
 /** Receive done flag. */
 volatile uint8_t i2s_rec_done = 0;
@@ -35,7 +35,7 @@ void SSC_Handler(void)
 	
 	i2s_rec_buf[i2s_buf_index++] = modify_data(ul_data);
 
-	if (NUMBER_OF_SAMPLES == i2s_buf_index) {
+	if (AUDIO_BUFFER_SIZE == i2s_buf_index) {
 		i2s_rec_done = 1;
 		ssc_disable_interrupt(SSC, SSC_IDR_RXRDY);
 	}
@@ -77,7 +77,7 @@ void configure_i2s(void){
 uint16_t *generate_spoof(uint32_t tone_frequency) {
 	int sampling_frequency = 32000;
 	
-	for (int i = 0; i < NUMBER_OF_SAMPLES; i++)
+	for (int i = 0; i < AUDIO_BUFFER_SIZE; i++)
 		wave_samples[i] = (uint16_t) (signed short) (32767*sinf(2*M_PI*tone_frequency*i/sampling_frequency));
 	
 	return wave_samples;

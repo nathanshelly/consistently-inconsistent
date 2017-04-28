@@ -291,17 +291,17 @@ uint8_t open_websocket(void) {
 }
 
 void send_data_ws(uint16_t* samples_data, uint32_t num_samples, uint8_t handle) {
-	uint8_t curr_point;
+	uint8_t curr_data_point;
 	
-	char* templated_command[35];
-	sprintf(templated_command, "write %d %d\r\n", handle, num_samples); // each sample is 32 bits, 4 bytes
+	char* templated_command[20];
+	sprintf(templated_command, "write %d %d\r\n", handle, num_samples);
 	usart_write_line(BOARD_USART, templated_command);
 		
 	for (int i = 0; i < num_samples; i++)
 	{
-		curr_point = (uint8_t) samples_data[i];
+		curr_data_point = ((uint8_t*) samples_data)[i];
 		
-		usart_putchar(BOARD_USART, curr_point);
+		usart_putchar(BOARD_USART, curr_data_point);
 	}
 }
 
