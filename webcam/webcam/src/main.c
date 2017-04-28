@@ -78,7 +78,7 @@ int main (void)
 	tc_start(TC0, 0);
 	
 	// Custom configuration calls
-	configure_wifi();		// configures and initializes wifi module
+	configure_wifi();		// configures and initializes wifi 
 	//configure_camera();		// configures and initializes camera module
 	reboot_wifi();			// reboots the wifi chip (takes several seconds)
 	

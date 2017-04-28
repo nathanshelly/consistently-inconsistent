@@ -94,7 +94,6 @@ void configure_usart(void)
 void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
-	//ioport_toggle_pin_level(LED_PIN);
 	
 	delay_ms(50);
 	
@@ -260,8 +259,8 @@ void send_data_ws(uint16_t* samples_data, uint8_t handle) {
 	
 	// initialize send
 	
-	char* templated_command[20];
-	sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE * 2);
+	char* templated_command[30];
+	sprintf(templated_command, "write %d %d -f\r\n", handle, PACKET_SIZE * 2);
 	usart_write_line(BOARD_USART, templated_command);
 	
 	// loop starting at the send index, and end PACKET SIZE later
