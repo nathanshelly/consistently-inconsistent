@@ -260,7 +260,7 @@ void send_data_ws(uint16_t* samples_data, uint8_t handle) {
 	// initialize send
 	
 	char* templated_command[30];
-	sprintf(templated_command, "write %d %d -f\r\n", handle, PACKET_SIZE * 2);
+	sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE * 2);
 	usart_write_line(BOARD_USART, templated_command);
 	
 	// loop starting at the send index, and end PACKET SIZE later

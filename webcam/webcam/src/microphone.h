@@ -18,6 +18,7 @@
 #define PACKET_SIZE			200
 
 volatile uint32_t i2s_receive_index;
+volatile uint32_t buffer_filled;
 volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE];
 
 void start_i2s_capture(void);
