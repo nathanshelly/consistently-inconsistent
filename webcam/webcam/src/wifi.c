@@ -95,7 +95,7 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
 	
-	delay_ms(50);
+	//delay_ms(50);
 	
 	input_buffer[buffer_index] = 0;
 	data_recieved = 1;
@@ -204,6 +204,41 @@ void post_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
 	write_wifi_command("http_read_status 0\r\n", 2);
 }
 
+void post_audio_usart(uint16_t *samples_data){
+	uint8_t handle;
+
+	write_wifi_command("close all\r\n", 2);
+	write_wifi_command("http_post -o https://bigbrothersees.me/post_image application/json\r\n", 2);
+
+	//if (post_counter > 20) {
+		//write_wifi_command("http_add_header 0 message-type audio-term\r\n", 2);
+		//post_counter = 0;
+	//}
+	//else {
+	write_wifi_command("http_add_header 0 message-type audio-bin\r\n", 2);
+	char* templated_command[35];
+	sprintf(templated_command, "write 0 %d\r\n", PACKET_SIZE*2);
+	usart_write_line(BOARD_USART, templated_command);
+		
+	uint8_t curr_data_point;
+		
+	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (PACKET_SIZE*2); i++)
+	{
+		
+		curr_data_point = ((uint8_t*) samples_data)[i % (AUDIO_BUFFER_SIZE*2)];	
+		usart_putchar(BOARD_USART, curr_data_point);
+	}
+	
+	i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
+		
+	//post_counter++;
+	//}
+
+	//handle = parse_stream_handle();
+	write_wifi_command("http_read_status 0\r\n", 2);
+ }
+
+
 uint8_t parse_stream_handle(void){
 	// call right after opening the stream to get the handle used
 	
@@ -247,6 +282,35 @@ uint8_t open_websocket(void) {
 	// should check last thing in input buffer for handle
 	return handle;
 }
+
+//void send_data_ws(uint8_t* samples_data, uint8_t handle) {
+	//// don't send if there are fewer than PACKET_SIZE samples to send
+	//uint32_t end_index = (i2s_send_index + PACKET_SIZE) % (AUDIO_BUFFER_SIZE); // the last uint16 index that will be hit if it sends
+	//
+	//if(end_index > (i2s_receive_index)) // make sure that the end index isn't in front of the receive index
+		//return;
+	//
+	//uint8_t curr_data_point;
+	//
+	//// initialize send
+	//
+	//char* templated_command[30];
+	//sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE);
+	//usart_write_line(BOARD_USART, templated_command);
+	//
+	//// loop starting at the send index, and end PACKET SIZE later
+	//// i is a uint8 index, so everything is multiplied by two
+	//// i gets modded inside the loop to wrap around if necessary
+	//for (int i = i2s_send_index; i < i2s_send_index + (PACKET_SIZE); i++)
+	//{
+		//
+		//curr_data_point = samples_data[i % (AUDIO_BUFFER_SIZE)];	
+		//usart_putchar(BOARD_USART, curr_data_point);
+	//}
+	//
+	//i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
+//
+//}
 
 void send_data_ws(uint16_t* samples_data, uint8_t handle) {
 	// don't send if there are fewer than PACKET_SIZE samples to send

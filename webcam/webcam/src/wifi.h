@@ -40,6 +40,8 @@ void setup_wifi(void);
 void configure_wifi(void);
 void reboot_wifi(void);
 void safe_mode_recovery(void);
+void post_audio_usart(uint16_t *samples_data);
+//void send_data_ws(uint8_t* samples_data, uint8_t handle);
 void send_data_ws(uint16_t* samples_data, uint8_t handle);
 uint8_t open_websocket(void);
 
@@ -47,7 +49,7 @@ uint8_t open_websocket(void);
 
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0
-#define BOARD_USART_BAUDRATE		115200 // 921600
+#define BOARD_USART_BAUDRATE		921600 // 115200
 #define handler_usart				USART0_Handler
 #define USART_IRQn					USART0_IRQn
 

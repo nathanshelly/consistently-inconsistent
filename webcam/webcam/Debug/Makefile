@@ -102,6 +102,7 @@ C_SRCS +=  \
 ../src/ASF/sam/drivers/ssc/ssc.c \
 ../src/ASF/sam/drivers/tc/tc.c \
 ../src/ASF/sam/drivers/wdt/wdt.c \
+../src/interrupts.c \
 ../src/microphone.c \
 ../src/ASF/common/services/delay/sam/cycle_counter.c \
 ../src/ASF/sam/drivers/pio/pio_handler.c \
@@ -139,6 +140,7 @@ src/ASF/sam/drivers/pdc/pdc.o \
 src/ASF/sam/drivers/ssc/ssc.o \
 src/ASF/sam/drivers/tc/tc.o \
 src/ASF/sam/drivers/wdt/wdt.o \
+src/interrupts.o \
 src/microphone.o \
 src/ASF/common/services/delay/sam/cycle_counter.o \
 src/ASF/sam/drivers/pio/pio_handler.o \
@@ -169,6 +171,7 @@ src/ASF/sam/drivers/pdc/pdc.o \
 src/ASF/sam/drivers/ssc/ssc.o \
 src/ASF/sam/drivers/tc/tc.o \
 src/ASF/sam/drivers/wdt/wdt.o \
+src/interrupts.o \
 src/microphone.o \
 src/ASF/common/services/delay/sam/cycle_counter.o \
 src/ASF/sam/drivers/pio/pio_handler.o \
@@ -199,6 +202,7 @@ src/ASF/sam/drivers/pdc/pdc.d \
 src/ASF/sam/drivers/ssc/ssc.d \
 src/ASF/sam/drivers/tc/tc.d \
 src/ASF/sam/drivers/wdt/wdt.d \
+src/interrupts.d \
 src/microphone.d \
 src/ASF/common/services/delay/sam/cycle_counter.d \
 src/ASF/sam/drivers/pio/pio_handler.d \
@@ -229,6 +233,7 @@ src/ASF/sam/drivers/pdc/pdc.d \
 src/ASF/sam/drivers/ssc/ssc.d \
 src/ASF/sam/drivers/tc/tc.d \
 src/ASF/sam/drivers/wdt/wdt.d \
+src/interrupts.d \
 src/microphone.d \
 src/ASF/common/services/delay/sam/cycle_counter.d \
 src/ASF/sam/drivers/pio/pio_handler.d \
@@ -267,6 +272,8 @@ LINKER_SCRIPT_DEP+=  \
 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

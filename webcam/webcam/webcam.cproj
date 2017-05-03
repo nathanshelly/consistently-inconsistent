@@ -636,6 +636,12 @@
     <None Include="src\ASF\sam\drivers\wdt\wdt.h">
       <SubType>compile</SubType>
     </None>
+    <Compile Include="src\interrupts.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\interrupts.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\microphone.c">
       <SubType>compile</SubType>
     </Compile>

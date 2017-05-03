@@ -26,6 +26,7 @@
 #include "microphone.h"
 #include "ov2640.h"
 #include "timer_interface.h"
+#include "interrupts.h"
 
 /**
  * \brief Posts image to server
@@ -84,17 +85,17 @@ int main (void)
 	
 	configure_i2s(); // microphone configuration
 	
-	uint8_t handle = open_websocket();
+	//uint8_t handle = open_websocket();
 
 	start_i2s_capture();
-	while(!buffer_filled) {};
+	//while(!buffer_filled) {};
 	
 	while(1) {
 		//if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 		//	setup_wifi();		// the wifi chip tries to reassociate to a new network
 		//}
-		send_data_ws(i2s_rec_buf, handle);	
-		//post_audio_usart((uint8_t *) i2s_rec_buf, 2000);			
+		//send_data_ws(i2s_rec_buf, handle);	
+		post_audio_usart(i2s_rec_buf);			
 		
 
 		//start_capture();		// capture the image to internal memorys

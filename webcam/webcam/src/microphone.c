@@ -24,15 +24,17 @@ void SSC_Handler(void)
 	ssc_get_status(SSC);
 	ssc_read(SSC, &ul_data);
 	
-	if(!(capture_toggle++ % 4) && i2s_receive_index < AUDIO_BUFFER_SIZE)
+	if(!(capture_toggle++ % 4)) // && i2s_receive_index < AUDIO_BUFFER_SIZE 
 		i2s_rec_buf[i2s_receive_index++] = modify_data(ul_data);
 
-	if (i2s_receive_index >= AUDIO_BUFFER_SIZE && !buffer_filled)
-		buffer_filled = 1;
-		//i2s_receive_index = 0;
+	if (i2s_receive_index >= AUDIO_BUFFER_SIZE) // && !buffer_filled
+		i2s_receive_index = 0;
+		//buffer_filled = 1;
+	
 }
 
 // get rid of zero padding and tristated signal
+//uint16_t modify_data(uint32_t data_to_modify) { return (uint8_t) (data_to_modify >> 24); }
 uint16_t modify_data(uint32_t data_to_modify) { return (uint16_t) (data_to_modify >> 16); }
 
 /**
