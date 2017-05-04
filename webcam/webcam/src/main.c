@@ -26,7 +26,6 @@
 #include "microphone.h"
 #include "ov2640.h"
 #include "timer_interface.h"
-#include "interrupts.h"
 
 /**
  * \brief Posts image to server
@@ -77,25 +76,42 @@ int main (void)
 	board_init();
 	configure_tc();
 	tc_start(TC0, 0);
-	
+		
 	// Custom configuration calls
 	configure_wifi();		// configures and initializes wifi 
 	//configure_camera();		// configures and initializes camera module
-	reboot_wifi();			// reboots the wifi chip (takes several seconds)
+	
+	uint8_t status_code = 0;
+	
+	while(write_wifi_command_safe("reboot\r\n", "[Associated]", 20000,0)){}
+	
+	status_code = write_wifi_command_safe("set sy c p off\r\n","Set OK",100,0);
+	
+	status_code = write_wifi_command_safe("set sy c e off\r\n","Set OK", 100, 0);
+	
+	//status_code = write_wifi_command_safe("write 0 4\r\n","Success",500, 0);
+	
+	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
 	
 	configure_i2s(); // microphone configuration
 	
-	//uint8_t handle = open_websocket();
+	uint8_t ws_handle = open_websocket(5); // try 5 times to open the socket
 
 	start_i2s_capture();
-	//while(!buffer_filled) {};
+	
+	while(!buffer_filled){};
 	
 	while(1) {
 		//if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 		//	setup_wifi();		// the wifi chip tries to reassociate to a new network
 		//}
-		//send_data_ws(i2s_rec_buf, handle);	
-		post_audio_usart(i2s_rec_buf);			
+		if (ws_handle != NO_WEBSOCKET_OPEN){
+		// websocket not opened sucessfully
+			status_code = send_data_ws(i2s_rec_buf, ws_handle);
+		}
+		
+			
+		//post_audio_usart((uint8_t *) i2s_rec_buf, 2000);			
 		
 
 		//start_capture();		// capture the image to internal memorys

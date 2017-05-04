@@ -9,8 +9,8 @@
 #include "camera.h"
 #include "microphone.h"
 
-volatile uint8_t input_buffer[BUFFER_SIZE] = {0};
-volatile uint32_t buffer_index = 0;
+volatile uint8_t usart_buffer[BUFFER_SIZE] = {0};
+volatile uint32_t usart_buffer_index = 0;
 volatile uint8_t timeout_counter = 0;
 volatile uint32_t data_recieved = 0;
 volatile uint32_t wifi_setup_flag = false;
@@ -43,8 +43,8 @@ void handler_usart(void)
 	
 	if (ul_status & US_CSR_RXRDY) {
 		recieved_char_flag = usart_read(BOARD_USART, &received_byte_wifi);
-		input_buffer[buffer_index] = (uint8_t) received_byte_wifi;
-		buffer_index++;
+		usart_buffer[usart_buffer_index] = (uint8_t) received_byte_wifi;
+		usart_buffer_index++;
 	}	
 	
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
@@ -97,9 +97,9 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	
 	//delay_ms(50);
 	
-	input_buffer[buffer_index] = 0;
-	data_recieved = 1;
-	buffer_index = 0;
+	//input_buffer[buffer_index] = 0;
+	//data_recieved = 1;
+	//buffer_index = 0;
 }
 
 /**
@@ -183,6 +183,111 @@ void write_wifi_command(char* comm, uint8_t cnt){
 	//delay_ms(100);
 }
 
+uint8_t write_wifi_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
+	// returns 0 for a successful write
+	// returns 1 for a failed write
+	// returns 2 for a timeout
+	// returns 10+stream handle for opening a stream
+	
+	uint8_t command_finished = 0;
+	uint8_t command_failed = 0;
+	uint8_t parse_error = 0;
+	
+	uint32_t ms_counter = 0;
+	// clear buffer
+	memset(usart_buffer, 0, BUFFER_SIZE);
+	// set buffer index to 0
+	usart_buffer_index = 0;
+	
+	
+	uint32_t end_index = (i2s_send_index*2 + PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
+	
+	if(end_index > (i2s_receive_index*2)) // make sure that the end index isn't in front of the receive index
+		return 1;
+	
+	uint8_t curr_data_point;
+	
+	char* templated_command[30];
+	sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE * 2);
+	usart_write_line(BOARD_USART, templated_command);
+	
+	//usart_write_line(BOARD_USART, templated_command);
+	
+	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (PACKET_SIZE*2); i++)
+	{
+		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];	
+		usart_putchar(BOARD_USART, curr_data_point);
+	}
+	
+	i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
+	
+	while(1) {			
+		if(strstr(usart_buffer, resp)){
+			return COMMAND_SUCCESS; // successful response
+			// otherwise, parse for handle
+		}
+		if(strstr(usart_buffer, "Command failed")){
+			return COMMAND_FAILURE; // command failed
+		}
+		delay_ms(1);
+		if(ms_counter++ > timeout_ms){
+			return COMMAND_TIMEOUT;
+		}
+	}
+	
+}
+
+uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, uint8_t handle_expected){
+	// returns 0 for a successful write
+	// returns 1 for a failed write
+	// returns 2 for a timeout
+	// returns 10+stream handle for opening a stream
+	
+	// first thing: check if we've received any transmission since the last time
+	if (usart_buffer_index != 0){
+		// check for different issues
+		if(strstr(usart_buffer, "[Closed: ")){
+			// do something here
+			open_websocket(2); // this isn't the right thing to do
+		}
+	}
+	
+	uint8_t command_finished = 0;
+	uint8_t command_failed = 0;
+	uint8_t parse_error = 0;
+	
+	uint32_t ms_counter = 0;
+	// clear buffer
+	memset(usart_buffer, 0, BUFFER_SIZE);
+	// set buffer index to 0
+	usart_buffer_index = 0;
+	
+	usart_write_line(BOARD_USART, command);
+	
+	while(1) {			
+		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == 10)){
+			if(!handle_expected) return COMMAND_SUCCESS; // successful response
+			// otherwise, parse for handle
+			char *opened_pointer = strstr(usart_buffer, resp);
+			uint32_t buffer_offset = ((uint8_t *) opened_pointer) - usart_buffer;
+			uint8_t handle = usart_buffer[buffer_offset+13] - '0';
+			return handle+10;
+		}
+		if(strstr(usart_buffer, "Command failed")){
+			return COMMAND_FAILURE; // command failed
+		}
+		delay_ms(1);
+		if(ms_counter++ > timeout_ms){
+			return COMMAND_TIMEOUT;
+		}
+	}
+	
+	// now that the response has been processed, set the buffer index back to 0
+	usart_buffer_index = 0;
+	
+	
+}
+
 /**
  *  \brief Writes image to file on the wifi chip.
  */
@@ -203,41 +308,6 @@ void post_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length){
 	
 	write_wifi_command("http_read_status 0\r\n", 2);
 }
-
-void post_audio_usart(uint16_t *samples_data){
-	uint8_t handle;
-
-	write_wifi_command("close all\r\n", 2);
-	write_wifi_command("http_post -o https://bigbrothersees.me/post_image application/json\r\n", 2);
-
-	//if (post_counter > 20) {
-		//write_wifi_command("http_add_header 0 message-type audio-term\r\n", 2);
-		//post_counter = 0;
-	//}
-	//else {
-	write_wifi_command("http_add_header 0 message-type audio-bin\r\n", 2);
-	char* templated_command[35];
-	sprintf(templated_command, "write 0 %d\r\n", PACKET_SIZE*2);
-	usart_write_line(BOARD_USART, templated_command);
-		
-	uint8_t curr_data_point;
-		
-	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (PACKET_SIZE*2); i++)
-	{
-		
-		curr_data_point = ((uint8_t*) samples_data)[i % (AUDIO_BUFFER_SIZE*2)];	
-		usart_putchar(BOARD_USART, curr_data_point);
-	}
-	
-	i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
-		
-	//post_counter++;
-	//}
-
-	//handle = parse_stream_handle();
-	write_wifi_command("http_read_status 0\r\n", 2);
- }
-
 
 uint8_t parse_stream_handle(void){
 	// call right after opening the stream to get the handle used
@@ -261,84 +331,30 @@ uint8_t parse_stream_handle(void){
 	
 }
 
-uint8_t open_websocket(void) {
+uint8_t open_websocket(uint8_t number_of_attempts) {
 	// figure out handle
-	write_wifi_command("close all\r\n", 2);
-	write_wifi_command("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", 2);
-
-	int opened = 0;
-	int handle = 0;
-	int seconds = 0;
-			
-	while(!opened) {			// waits for association
-		opened = strstr(input_buffer, "[Opened: ");
-		if (seconds > 100){
-			blink_LED(50);
-		}
-		delay_ms(200);
-		seconds++;
-	}
+	//write_wifi_command("close all\r\n", 2);
+	uint8_t status_code;
+	for(int i; i<number_of_attempts; i++){
 	
+		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", "[Opened: ", 20000, 1);
+		if (status_code >= 10){
+			if (status_code > 18){
+				write_wifi_command_safe("close all\r\n","Success",200,0);
+				continue;
+			}
+			return status_code - 10;
+		}
+		
+	}
 	// should check last thing in input buffer for handle
-	return handle;
+	return NO_WEBSOCKET_OPEN; // indicate failure
 }
 
-//void send_data_ws(uint8_t* samples_data, uint8_t handle) {
-	//// don't send if there are fewer than PACKET_SIZE samples to send
-	//uint32_t end_index = (i2s_send_index + PACKET_SIZE) % (AUDIO_BUFFER_SIZE); // the last uint16 index that will be hit if it sends
-	//
-	//if(end_index > (i2s_receive_index)) // make sure that the end index isn't in front of the receive index
-		//return;
-	//
-	//uint8_t curr_data_point;
-	//
-	//// initialize send
-	//
-	//char* templated_command[30];
-	//sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE);
-	//usart_write_line(BOARD_USART, templated_command);
-	//
-	//// loop starting at the send index, and end PACKET SIZE later
-	//// i is a uint8 index, so everything is multiplied by two
-	//// i gets modded inside the loop to wrap around if necessary
-	//for (int i = i2s_send_index; i < i2s_send_index + (PACKET_SIZE); i++)
-	//{
-		//
-		//curr_data_point = samples_data[i % (AUDIO_BUFFER_SIZE)];	
-		//usart_putchar(BOARD_USART, curr_data_point);
-	//}
-	//
-	//i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
-//
-//}
-
-void send_data_ws(uint16_t* samples_data, uint8_t handle) {
+uint8_t send_data_ws(uint16_t* samples_data, uint8_t handle) {
 	// don't send if there are fewer than PACKET_SIZE samples to send
-	uint32_t end_index = (i2s_send_index*2 + PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
-	
-	if(end_index > (i2s_receive_index*2)) // make sure that the end index isn't in front of the receive index
-		return;
-	
-	uint8_t curr_data_point;
-	
-	// initialize send
-	
-	char* templated_command[30];
-	sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE * 2);
-	usart_write_line(BOARD_USART, templated_command);
-	
-	// loop starting at the send index, and end PACKET SIZE later
-	// i is a uint8 index, so everything is multiplied by two
-	// i gets modded inside the loop to wrap around if necessary
-	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (PACKET_SIZE*2); i++)
-	{
-		
-		curr_data_point = ((uint8_t*) samples_data)[i % (AUDIO_BUFFER_SIZE*2)];	
-		usart_putchar(BOARD_USART, curr_data_point);
-	}
-	
-	i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
-
+	uint8_t status_code = write_wifi_data_safe(samples_data, handle, "Success", 500);
+	return status_code;
 }
 
 /**
@@ -407,6 +423,9 @@ void safe_mode_recovery(){
 	write_wifi_command("faults_print\r\n",2);
 	write_wifi_command("reboot\r\n",2);
 }
+
+
+
 
 /**
  *  \brief Reboots the wifi chip.

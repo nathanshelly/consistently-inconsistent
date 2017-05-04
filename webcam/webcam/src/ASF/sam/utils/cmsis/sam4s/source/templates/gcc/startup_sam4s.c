@@ -67,7 +67,6 @@ void __libc_init_array(void);
 /* Default empty handler */
 void Dummy_Handler(void);
 
-
 /* Cortex-M4 core handlers */
 void NMI_Handler        ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
 void HardFault_Handler  ( void ) __attribute__ ((weak, alias("Dummy_Handler")));
