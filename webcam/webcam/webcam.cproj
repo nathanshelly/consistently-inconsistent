@@ -240,7 +240,7 @@
       </framework-data>
     </AsfFrameworkConfig>
     <avrtool>com.atmel.avrdbg.tool.atmelice</avrtool>
-    <avrtoolserialnumber>J41800065950</avrtoolserialnumber>
+    <avrtoolserialnumber>J41800065901</avrtoolserialnumber>
     <avrdeviceexpectedsignature>0x289C0AE0</avrdeviceexpectedsignature>
     <com_atmel_avrdbg_tool_atmelice>
       <ToolOptions>
@@ -250,7 +250,7 @@
         <InterfaceName>SWD</InterfaceName>
       </ToolOptions>
       <ToolType>com.atmel.avrdbg.tool.atmelice</ToolType>
-      <ToolNumber>J41800065950</ToolNumber>
+      <ToolNumber>J41800065901</ToolNumber>
       <ToolName>Atmel-ICE</ToolName>
     </com_atmel_avrdbg_tool_atmelice>
     <avrtoolinterface>SWD</avrtoolinterface>
@@ -636,12 +636,6 @@
     <None Include="src\ASF\sam\drivers\wdt\wdt.h">
       <SubType>compile</SubType>
     </None>
-    <Compile Include="src\interrupts.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="src\interrupts.c">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="src\microphone.c">
       <SubType>compile</SubType>
     </Compile>

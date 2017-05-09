@@ -187,7 +187,16 @@ uint8_t write_wifi_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp,
 	// returns 0 for a successful write
 	// returns 1 for a failed write
 	// returns 2 for a timeout
+	// returns 3 for an unexpected stream closure
 	// returns 10+stream handle for opening a stream
+	
+	// first thing: check if we've received any transmission since the last time
+	if (usart_buffer_index != 0){
+		// check for different issues
+		if(strstr(usart_buffer, "[Closed: ")){
+			return COMMAND_STCLOSE; // return a value indicating closure of the stream
+		}
+	}
 	
 	uint8_t command_finished = 0;
 	uint8_t command_failed = 0;
@@ -203,11 +212,12 @@ uint8_t write_wifi_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp,
 	uint32_t end_index = (i2s_send_index*2 + PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
 	
 	if(end_index > (i2s_receive_index*2)) // make sure that the end index isn't in front of the receive index
-		return 1;
+		return COMMAND_RETRYIT;
 	
 	uint8_t curr_data_point;
 	
 	char* templated_command[30];
+	usart_write_line(BOARD_USART,"\r\n");
 	sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE * 2);
 	usart_write_line(BOARD_USART, templated_command);
 	
@@ -219,12 +229,16 @@ uint8_t write_wifi_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp,
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
 	
-	i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
+	
 	
 	while(1) {			
 		if(strstr(usart_buffer, resp)){
+			i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
 			return COMMAND_SUCCESS; // successful response
 			// otherwise, parse for handle
+		}
+		if(strstr(usart_buffer, "[Closed: ")){
+			return COMMAND_STCLOSE; // return a value indicating closure of the stream
 		}
 		if(strstr(usart_buffer, "Command failed")){
 			return COMMAND_FAILURE; // command failed
@@ -243,15 +257,6 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 	// returns 2 for a timeout
 	// returns 10+stream handle for opening a stream
 	
-	// first thing: check if we've received any transmission since the last time
-	if (usart_buffer_index != 0){
-		// check for different issues
-		if(strstr(usart_buffer, "[Closed: ")){
-			// do something here
-			open_websocket(2); // this isn't the right thing to do
-		}
-	}
-	
 	uint8_t command_finished = 0;
 	uint8_t command_failed = 0;
 	uint8_t parse_error = 0;
@@ -262,6 +267,7 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 	// set buffer index to 0
 	usart_buffer_index = 0;
 	
+	usart_write_line(BOARD_USART,"\r\n");
 	usart_write_line(BOARD_USART, command);
 	
 	while(1) {			
@@ -335,7 +341,7 @@ uint8_t open_websocket(uint8_t number_of_attempts) {
 	// figure out handle
 	//write_wifi_command("close all\r\n", 2);
 	uint8_t status_code;
-	for(int i; i<number_of_attempts; i++){
+	for(int i=0; i<number_of_attempts; i++){
 	
 		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", "[Opened: ", 20000, 1);
 		if (status_code >= 10){
@@ -368,6 +374,16 @@ void print_to_file(char* message, int num_bytes) {
 	sprintf(templated_command, "fcr batman.txt %d\r\n", num_bytes);
 	usart_write_line(BOARD_USART, templated_command);
 	usart_write_line(BOARD_USART, message);
+}
+
+uint8_t check_ws_handle(uint8_t theoretical_handle){
+	
+	char* templated_response[40];
+	sprintf(templated_response, "%d WEBC", theoretical_handle);
+	
+	uint8_t command_response = write_wifi_command_safe("list\r\n", templated_response, 100, 0);
+	
+	return command_response == COMMAND_SUCCESS ? COMMAND_SUCCESS : COMMAND_FAILURE;
 }
 
 /**
@@ -454,5 +470,74 @@ void reboot_wifi() {
 	
 	//write_wifi_command("set sy c e off\r\n", 5);	// resets a couple of system parameters in case they were changed
 	write_wifi_command("set sy c p off\r\n", 5);
+	
+}
+
+uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
+	// returns 0 for a successful write
+	// returns 1 for a failed write
+	// returns 2 for a timeout
+	// returns 3 for an unexpected stream closure
+	// returns 10+stream handle for opening a stream
+	
+	// first thing: check if we've received any transmission since the last time
+	if (usart_buffer_index != 0){
+		// check for different issues
+		if(strstr(usart_buffer, "[Closed: ")){
+			return COMMAND_STCLOSE; // return a value indicating closure of the stream
+		}
+	}
+	
+	uint8_t command_finished = 0;
+	uint8_t command_failed = 0;
+	uint8_t parse_error = 0;
+	
+	uint32_t ms_counter = 0;
+	// clear buffer
+	memset(usart_buffer, 0, BUFFER_SIZE);
+	// set buffer index to 0
+	usart_buffer_index = 0;
+	
+	uint32_t end_index = start_index + PACKET_SIZE;
+	end_index = (end_index < im_len) ? end_index : im_len; // if the end index goes past the end of the array, don't go there
+	
+	uint32_t bytes_to_send = end_index - start_index; // usually PACKET_SIZE, unless it's the last one
+	
+	uint8_t curr_data_point;
+	
+	char* templated_command[30];
+	usart_write_line(BOARD_USART,"\r\n");
+	sprintf(templated_command, "write %d %d\r\n", handle, bytes_to_send);
+	usart_write_line(BOARD_USART, templated_command);
+	
+	for (int i = start_index; i < end_index; i++) {
+		curr_data_point = (array_start_pointer)[i];	
+		usart_putchar(BOARD_USART, curr_data_point);
+	}
+	
+	while(1) {			
+		if(strstr(usart_buffer, resp)){
+			return COMMAND_SUCCESS; // successful response
+			// otherwise, parse for handle
+		}
+		if(strstr(usart_buffer, "[Closed: ")){
+			return COMMAND_STCLOSE; // return a value indicating closure of the stream
+		}
+		if(strstr(usart_buffer, "Command failed")){
+			return COMMAND_FAILURE; // command failed
+		}
+		delay_ms(1);
+		if(ms_counter++ > timeout_ms){
+			return COMMAND_TIMEOUT;
+		}
+	}
+	
+}
+
+uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length){
+	
+	// send a message indicating the start of the image
+	// call the send image data safe function to transfer the image
+	// send a message indicating the end of the image
 	
 }

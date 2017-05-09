@@ -95,21 +95,48 @@ int main (void)
 	
 	configure_i2s(); // microphone configuration
 	
-	uint8_t ws_handle = open_websocket(5); // try 5 times to open the socket
+	//uint8_t audio_ws_handle = open_websocket(5); // try 5 times to open the socket
+	uint8_t image_ws_handle = open_websocket(5);
 
 	start_i2s_capture();
 	
-	while(!buffer_filled){};
+	//while(!buffer_filled){};
 	
 	while(1) {
-		//if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
-		//	setup_wifi();		// the wifi chip tries to reassociate to a new network
-		//}
-		if (ws_handle != NO_WEBSOCKET_OPEN){
-		// websocket not opened sucessfully
-			status_code = send_data_ws(i2s_rec_buf, ws_handle);
-		}
+		/*if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
+			setup_wifi();		// the wifi chip tries to reassociate to a new network
+		}*/
 		
+		/*if (audio_ws_handle != NO_WEBSOCKET_OPEN){
+			//websocket open
+			status_code = send_data_ws(i2s_rec_buf, audio_ws_handle);
+			if(status_code == COMMAND_STCLOSE){
+				audio_ws_handle = NO_WEBSOCKET_OPEN;
+			} else if (status_code == COMMAND_FAILURE){
+				if(check_ws_handle(audio_ws_handle) != COMMAND_SUCCESS){
+					audio_ws_handle = open_websocket(3);
+				}
+			}
+		} else{
+			// websocket not open
+			// wait a minute, then try to reopen
+			// (for now, less than a minute)
+			write_wifi_command_safe("close all\r\n","Success",100,0);
+			delay_ms(20000);
+			audio_ws_handle = open_websocket(5); // try 5 times to open the socket
+		}*/
+		
+		
+		if (image_ws_handle != NO_WEBSOCKET_OPEN){
+			start_capture();
+			uint32_t im_length;
+	
+			im_length = find_image_len();
+			if(im_length) {
+				status_code = send_image_ws(uint8_t *start_of_image_ptr, uint32_t im_length);
+			}
+			// do something with the status code		
+		}
 			
 		//post_audio_usart((uint8_t *) i2s_rec_buf, 2000);			
 		

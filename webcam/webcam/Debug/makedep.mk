@@ -14,8 +14,6 @@ src\ASF\sam\drivers\tc\tc.c
 
 src\ASF\sam\drivers\wdt\wdt.c
 
-src\interrupts.c
-
 src\microphone.c
 
 src\ASF\common\services\delay\sam\cycle_counter.c

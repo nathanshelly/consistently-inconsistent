@@ -20,6 +20,8 @@
 #define COMMAND_SUCCESS		0
 #define COMMAND_FAILURE		1
 #define COMMAND_TIMEOUT		2
+#define COMMAND_STCLOSE		3
+#define COMMAND_RETRYIT		4
 
 #define NO_WEBSOCKET_OPEN	10
 
@@ -49,6 +51,8 @@ void reboot_wifi(void);
 void safe_mode_recovery(void);
 uint8_t send_data_ws(uint16_t* samples_data, uint8_t handle);
 uint8_t open_websocket(uint8_t number_of_attempts);
+uint8_t check_ws_handle(uint8_t theoretical_handle);
+send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length);
 
 // Usart communication definitions
 
