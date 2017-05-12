@@ -276,7 +276,7 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 			// otherwise, parse for handle
 			char *opened_pointer = strstr(usart_buffer, resp);
 			uint32_t buffer_offset = ((uint8_t *) opened_pointer) - usart_buffer;
-			uint8_t handle = usart_buffer[buffer_offset+13] - '0';
+			uint8_t handle = usart_buffer[buffer_offset+12] - '0';
 			return handle+10;
 		}
 		if(strstr(usart_buffer, "Command failed")){
@@ -343,7 +343,7 @@ uint8_t open_websocket(uint8_t number_of_attempts) {
 	uint8_t status_code;
 	for(int i=0; i<number_of_attempts; i++){
 	
-		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", "[Opened: ", 20000, 1);
+		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", "Opened: ", 20000, 1);
 		if (status_code >= 10){
 			if (status_code > 18){
 				write_wifi_command_safe("close all\r\n","Success",200,0);

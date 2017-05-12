@@ -79,11 +79,11 @@ int main (void)
 		
 	// Custom configuration calls
 	configure_wifi();		// configures and initializes wifi 
-	//configure_camera();		// configures and initializes camera module
+	configure_camera();		// configures and initializes camera module
 	
 	uint8_t status_code = 0;
 	
-	while(write_wifi_command_safe("reboot\r\n", "[Associated]", 20000,0)){}
+	while(write_wifi_command_safe("reboot\r\n", "Associated]", 20000,0)){}
 	
 	status_code = write_wifi_command_safe("set sy c p off\r\n","Set OK",100,0);
 	
@@ -91,12 +91,10 @@ int main (void)
 	
 	//status_code = write_wifi_command_safe("write 0 4\r\n","Success",500, 0);
 	
-	//reboot_wifi();			// reboots the wifi chip (takes several seconds)
-	
 	configure_i2s(); // microphone configuration
 	
-	//uint8_t audio_ws_handle = open_websocket(5); // try 5 times to open the socket
-	uint8_t image_ws_handle = open_websocket(5);
+	uint8_t audio_ws_handle = open_websocket(5); // try 5 times to open the socket
+	//uint8_t image_ws_handle = open_websocket(5);
 
 	start_i2s_capture();
 	
@@ -106,8 +104,7 @@ int main (void)
 		/*if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}*/
-		
-		/*if (audio_ws_handle != NO_WEBSOCKET_OPEN){
+		if (audio_ws_handle != NO_WEBSOCKET_OPEN){
 			//websocket open
 			status_code = send_data_ws(i2s_rec_buf, audio_ws_handle);
 			if(status_code == COMMAND_STCLOSE){
@@ -124,10 +121,10 @@ int main (void)
 			write_wifi_command_safe("close all\r\n","Success",100,0);
 			delay_ms(20000);
 			audio_ws_handle = open_websocket(5); // try 5 times to open the socket
-		}*/
+		}
 		
 		
-		if (image_ws_handle != NO_WEBSOCKET_OPEN){
+		/*if (image_ws_handle != NO_WEBSOCKET_OPEN){
 			start_capture();
 			uint32_t im_length;
 	
@@ -136,7 +133,7 @@ int main (void)
 				status_code = send_image_ws(uint8_t *start_of_image_ptr, uint32_t im_length);
 			}
 			// do something with the status code		
-		}
+		}*/
 			
 		//post_audio_usart((uint8_t *) i2s_rec_buf, 2000);			
 		
