@@ -197,11 +197,7 @@ uint8_t write_wifi_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp,
 			return COMMAND_STCLOSE; // return a value indicating closure of the stream
 		}
 	}
-	
-	uint8_t command_finished = 0;
-	uint8_t command_failed = 0;
-	uint8_t parse_error = 0;
-	
+		
 	uint32_t ms_counter = 0;
 	// clear buffer
 	memset(usart_buffer, 0, BUFFER_SIZE);
@@ -221,33 +217,35 @@ uint8_t write_wifi_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp,
 	sprintf(templated_command, "write %d %d\r\n", handle, PACKET_SIZE * 2);
 	usart_write_line(BOARD_USART, templated_command);
 	
-	//usart_write_line(BOARD_USART, templated_command);
-	
 	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (PACKET_SIZE*2); i++)
 	{
 		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];	
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
 	
+	uint8_t command_response = COMMAND_UNSET;
 	
-	
-	while(1) {			
+	while(command_response == COMMAND_UNSET) {			
 		if(strstr(usart_buffer, resp)){
 			i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
-			return COMMAND_SUCCESS; // successful response
+			command_response = COMMAND_SUCCESS; // successful response
 			// otherwise, parse for handle
 		}
-		if(strstr(usart_buffer, "[Closed: ")){
-			return COMMAND_STCLOSE; // return a value indicating closure of the stream
+		else if(strstr(usart_buffer, "[Closed: ")){
+			command_response = COMMAND_STCLOSE; // return a value indicating closure of the stream
+			
 		}
-		if(strstr(usart_buffer, "Command failed")){
-			return COMMAND_FAILURE; // command failed
+		else if(strstr(usart_buffer, "Command failed")){
+			command_response = COMMAND_FAILURE; // command failed
+		}
+		else if(ms_counter++ > timeout_ms){
+			command_response = COMMAND_TIMEOUT;
 		}
 		delay_ms(1);
-		if(ms_counter++ > timeout_ms){
-			return COMMAND_TIMEOUT;
-		}
 	}
+	
+	usart_buffer_index = 0;
+	return command_response;
 	
 }
 
@@ -270,28 +268,31 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 	usart_write_line(BOARD_USART,"\r\n");
 	usart_write_line(BOARD_USART, command);
 	
-	while(1) {			
-		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == 10)){
-			if(!handle_expected) return COMMAND_SUCCESS; // successful response
+	uint8_t command_response = COMMAND_UNSET;
+	
+	while(command_response == COMMAND_UNSET) {			
+		// makes sure we have complete response before matching on expected
+		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == '/n')){
+			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
 			// otherwise, parse for handle
-			char *opened_pointer = strstr(usart_buffer, resp);
-			uint32_t buffer_offset = ((uint8_t *) opened_pointer) - usart_buffer;
-			uint8_t handle = usart_buffer[buffer_offset+12] - '0';
-			return handle+10;
+			else {
+				char *opened_pointer = strstr(usart_buffer, resp);
+				uint32_t buffer_offset = ((uint8_t *) opened_pointer) - usart_buffer;
+				uint8_t handle = usart_buffer[buffer_offset+12] - '0';
+				command_response = handle+10;
+			}
 		}
-		if(strstr(usart_buffer, "Command failed")){
-			return COMMAND_FAILURE; // command failed
+		else if (strstr(usart_buffer, "Command failed")){
+			command_response = COMMAND_FAILURE; // command failed
+		}
+		else if (ms_counter++ > timeout_ms){
+			command_response = COMMAND_TIMEOUT;
 		}
 		delay_ms(1);
-		if(ms_counter++ > timeout_ms){
-			return COMMAND_TIMEOUT;
-		}
 	}
 	
-	// now that the response has been processed, set the buffer index back to 0
 	usart_buffer_index = 0;
-	
-	
+	return command_response;
 }
 
 /**
@@ -515,27 +516,33 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
 	
-	while(1) {			
+	uint8_t command_response = COMMAND_UNSET;
+	
+	while(command_response == COMMAND_UNSET) {			
 		if(strstr(usart_buffer, resp)){
-			return COMMAND_SUCCESS; // successful response
+			i2s_send_index = (i2s_send_index + PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
+			command_response = COMMAND_SUCCESS; // successful response
 			// otherwise, parse for handle
 		}
-		if(strstr(usart_buffer, "[Closed: ")){
-			return COMMAND_STCLOSE; // return a value indicating closure of the stream
+		else if(strstr(usart_buffer, "[Closed: ")){
+			command_response = COMMAND_STCLOSE; // return a value indicating closure of the stream
+			
 		}
-		if(strstr(usart_buffer, "Command failed")){
-			return COMMAND_FAILURE; // command failed
+		else if(strstr(usart_buffer, "Command failed")){
+			command_response = COMMAND_FAILURE; // command failed
+		}
+		else if(ms_counter++ > timeout_ms){
+			command_response = COMMAND_TIMEOUT;
 		}
 		delay_ms(1);
-		if(ms_counter++ > timeout_ms){
-			return COMMAND_TIMEOUT;
-		}
 	}
+	
+	usart_buffer_index = 0;
+	return command_response;
 	
 }
 
 uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length){
-	
 	// send a message indicating the start of the image
 	// call the send image data safe function to transfer the image
 	// send a message indicating the end of the image

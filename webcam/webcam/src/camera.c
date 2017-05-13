@@ -180,8 +180,7 @@ void start_capture(void)
 
 	/* Wait end of capture*/
 	while (!((OV_DATA_BUS_PIO->PIO_PCISR & PIO_PCIMR_RXBUFF) ==
-			PIO_PCIMR_RXBUFF)) {
-	}
+			PIO_PCIMR_RXBUFF)) {}
 
 	/* Disable pio capture*/
 	pio_capture_disable(OV_DATA_BUS_PIO);
