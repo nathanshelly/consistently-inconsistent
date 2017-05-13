@@ -89,17 +89,13 @@ int main (void)
 	
 	status_code = write_wifi_command_safe("set sy c e off\r\n","Set OK", 100, 0);
 	
-	//status_code = write_wifi_command_safe("write 0 4\r\n","Success",500, 0);
-	
 	configure_i2s(); // microphone configuration
 	
 	uint8_t audio_ws_handle = open_websocket(5); // try 5 times to open the socket
 	//uint8_t image_ws_handle = open_websocket(5);
 
 	start_i2s_capture();
-	
-	//while(!buffer_filled){};
-	
+		
 	while(1) {
 		/*if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
