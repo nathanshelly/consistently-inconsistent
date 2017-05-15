@@ -20,6 +20,11 @@ volatile uint32_t i2s_send_index = 0;
 
 uint32_t post_counter = 0;
 
+uint8_t audio_ws_handle;
+uint8_t image_ws_handle;
+
+uint32_t reopen_delay_seconds = 5;
+
 /**
  *  \brief Interrupt handler for USART.
  *
@@ -183,7 +188,7 @@ void write_wifi_command(char* comm, uint8_t cnt){
 	//delay_ms(100);
 }
 
-uint8_t write_wifi_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
+uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
 	// returns 0 for a successful write
 	// returns 1 for a failed write
 	// returns 2 for a timeout
@@ -207,7 +212,7 @@ uint8_t write_wifi_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp,
 	
 	uint32_t end_index = (i2s_send_index*2 + PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
 	
-	if(end_index > (i2s_receive_index*2)) // make sure that the end index isn't in front of the receive index
+	if(end_index > (i2s_capture_index*2)) // make sure that the end index isn't in front of the receive index
 		return COMMAND_RETRYIT;
 	
 	uint8_t curr_data_point;
@@ -378,11 +383,7 @@ uint8_t open_camera_websocket(uint8_t number_of_attempts) {
 	return NO_WEBSOCKET_OPEN; // indicate failure
 }
 
-uint8_t send_data_ws(uint16_t* samples_data, uint8_t handle) {
-	// don't send if there are fewer than PACKET_SIZE samples to send
-	uint8_t status_code = write_wifi_data_safe(samples_data, handle, "Success", 500);
-	return status_code;
-}
+
 
 /**
  *  \brief Prints a message to a text file with a static name.
@@ -448,33 +449,11 @@ void safe_mode_recovery(){
 	reboot_wifi();
 }
 
-
-
-
 /**
  *  \brief Reboots the wifi chip.
  */
 void reboot_wifi() {
-	/*write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
 	
-	int associated = 0;
-	int seconds = 0;
-	
-	wifi_setup_flag = false;		// resets the wifi setup flag
-		
-	while(!associated) {			// waits for association
-		if(wifi_setup_flag) {		// listens for wifi setup flag (should be pressed shortly after power)
-			setup_wifi();			// sets up wifi on new network
-		}
-		associated = strstr(input_buffer, "[Associated]\r\n");
-		if (seconds > 100){
-			blink_LED(50);
-		}
-		delay_ms(200);
-		seconds++;
-	}
-	
-	buffer_index = 0;*/
 	wifi_setup_flag = false;
 	uint8_t status_code;
 	
@@ -560,29 +539,114 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	
 }
 
-uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_t image_ws_handle){
-	// send a message indicating the start of the image (or not)
+
+void configure_websockets(){
 	
-	// call the send image data safe function to transfer the image
+	audio_ws_handle = open_audio_websocket(5); // try 5 times to open the socket
+	image_ws_handle = open_camera_websocket(5);
+}
+
+void send_audio_packet(){
+	// sends one audio packet, assuming everything is OK everywhere
+	// called by camera functions to stream audio while capturing image
+	
+	uint8_t status_code;
+	
+	uint32_t end_index = (i2s_send_index*2 + PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
+	
+	if ((audio_ws_handle != NO_WEBSOCKET_OPEN && audio_ws_handle != PREV_COMMAND_FAILED) && (end_index <= (i2s_capture_index*2))){
+			//websocket open, no recent command failure, and enough data to send
+		status_code = write_audio_data_safe(i2s_rec_buf, audio_ws_handle, "Success", 500);
+		
+		if(status_code == COMMAND_STCLOSE){
+			audio_ws_handle = NO_WEBSOCKET_OPEN;
+		} else if (status_code == COMMAND_FAILURE){
+			audio_ws_handle = PREV_COMMAND_FAILED;
+		}
+	
+	}
+	
+}
+
+void reopen_websockets(){
+	// reopen websocket connections if something breaks
+	write_wifi_command_safe("close all\r\n","Success",100,0); // fix this
+	audio_ws_handle = NO_WEBSOCKET_OPEN;
+	image_ws_handle = NO_WEBSOCKET_OPEN;
+	
+	
+	while((audio_ws_handle == NO_WEBSOCKET_OPEN) || (image_ws_handle == NO_WEBSOCKET_OPEN)){
+		delay_s(reopen_delay_seconds);
+		audio_ws_handle = open_audio_websocket(5); // try 5 times to open the socket
+		image_ws_handle = open_camera_websocket(5);
+		reopen_delay_seconds += 5;
+		// this could take a while
+	}
+	
+}
+
+void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
+	// sends image data over ws connection while still streaming audio
+	// throttled to audio speed
 	
 	uint32_t image_byte_index = 0;
 	uint8_t status_code;
 	
 	while (image_byte_index < image_length){
+		// there's still image data to send
 		
-		if (image_ws_handle != NO_WEBSOCKET_OPEN){
+		//send audio data until caught up
+		if (audio_ws_handle != NO_WEBSOCKET_OPEN){
 			//websocket open
-			status_code = write_image_data_safe(start_of_image_ptr, image_byte_index, image_length, image_ws_handle, "Success", 500);
-			if(status_code == COMMAND_STCLOSE){
-				image_ws_handle = NO_WEBSOCKET_OPEN;
-			} else if (status_code == COMMAND_FAILURE){
-				if(check_ws_handle(image_ws_handle) != COMMAND_SUCCESS){
-					image_ws_handle = open_camera_websocket(3);
+			status_code = write_audio_data_safe(i2s_rec_buf, audio_ws_handle, "Success", 500);
+			if (status_code == COMMAND_RETRYIT){
+				// this means that the send index has caught up to the capture index
+				// so, we can send some image data
+				if (image_ws_handle != NO_WEBSOCKET_OPEN){
+				//image websocket is open
+					status_code = write_image_data_safe(start_of_image_ptr, image_byte_index, image_length, image_ws_handle, "Success", 500);
+					if(status_code == COMMAND_STCLOSE){
+						image_ws_handle = NO_WEBSOCKET_OPEN;
+					} else if (status_code == COMMAND_FAILURE){
+						if(check_ws_handle(image_ws_handle) != COMMAND_SUCCESS){
+							image_ws_handle = open_camera_websocket(3);
+						}
+					} else if (status_code == COMMAND_SUCCESS){
+						image_byte_index += PACKET_SIZE;
+					}
+				} else{
+					reopen_websockets();
 				}
-			} else if (status_code == COMMAND_SUCCESS){
-				image_byte_index += PACKET_SIZE;
+			}
+			if(status_code == COMMAND_STCLOSE){
+				audio_ws_handle = NO_WEBSOCKET_OPEN;
+			} else if (status_code == COMMAND_FAILURE){
+				if(check_ws_handle(audio_ws_handle) != COMMAND_SUCCESS){
+					audio_ws_handle = open_audio_websocket(3);
+				}
 			}
 		} else{
+			// websocket not open
+			reopen_websockets();
+		}
+		
+	}
+		
+		
+	write_wifi_command_safe("write 0 0\r\n,"Success", 500, 0); // replace 0 with handle at some point
+	
+}
+
+uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_t image_ws_handle){
+	// send a message indicating the start of the image (or not)
+	
+	// call the send image data safe function to transfer the image
+	
+	
+	
+	
+		
+		 else{
 			// websocket not open
 			// wait a minute, then try to reopen
 			// (for now, less than a minute)
@@ -598,7 +662,5 @@ uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_
 	}
 	
 	// send a message indicating the end of the image (or not)
-	write_wifi_command_safe("write 0 0\r\n","Success", 500, 0); // replace 0 with handle at some point
+	
 }
-
-

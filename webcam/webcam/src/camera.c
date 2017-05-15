@@ -155,7 +155,7 @@ uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size)
 /**
  * \brief Start picture capture.
  */
-void start_capture(void)
+void capture_image(void)
 {
 	/* Enable vsync interrupt*/
 	pio_enable_interrupt(OV_VSYNC_PIO, OV_VSYNC_MASK);
@@ -163,7 +163,8 @@ void start_capture(void)
 	/* Capture acquisition will start on rising edge of Vsync signal.
 	 * So wait vsync_rising_edge_flag = 1 before start process*/
 	while (!vsync_rising_edge_flag) {
-		// do nothing
+		
+		send_audio_packet(); // send one audio packet if available
 	}
 	
 	/* Disable vsync interrupt*/
@@ -181,6 +182,7 @@ void start_capture(void)
 	/* Wait end of capture*/
 	while (!((OV_DATA_BUS_PIO->PIO_PCISR & PIO_PCIMR_RXBUFF) ==
 			PIO_PCIMR_RXBUFF)) {
+		send_audio_packet(); // send one audio packet if available
 	}
 
 	/* Disable pio capture*/

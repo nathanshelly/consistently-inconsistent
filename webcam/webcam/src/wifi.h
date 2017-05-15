@@ -25,6 +25,7 @@
 #define COMMAND_UNSET		99
 
 #define NO_WEBSOCKET_OPEN	10
+#define PREV_COMMAND_FAILED	11
 
 // variable declarations
 volatile uint8_t input_buffer[BUFFER_SIZE];
@@ -50,11 +51,14 @@ void setup_wifi(void);
 void configure_wifi(void);
 void reboot_wifi(void);
 void safe_mode_recovery(void);
-uint8_t send_data_ws(uint16_t* samples_data, uint8_t handle);
+//uint8_t send_data_ws(uint16_t* samples_data, uint8_t handle);
 uint8_t open_audio_websocket(uint8_t number_of_attempts);
 uint8_t open_camera_websocket(uint8_t number_of_attempts);
 uint8_t check_ws_handle(uint8_t theoretical_handle);
 uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_t image_ws_handle);
+void configure_websockets();
+void send_audio_packet();
+void send_image(uint8_t *start_of_image_ptr, uint32_t image_length);
 
 // Usart communication definitions
 

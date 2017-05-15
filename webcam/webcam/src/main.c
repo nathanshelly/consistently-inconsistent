@@ -82,14 +82,16 @@ int main (void)
 	configure_camera();		// configures and initializes camera module
 	
 	uint8_t status_code = 0;
+	uint32_t im_length;
 	
 	reboot_wifi();
 	//safe_mode_recovery();
 	
 	configure_i2s(); // microphone configuration
 	
+	configure_websockets();
 	//uint8_t audio_ws_handle = open_audio_websocket(5); // try 5 times to open the socket
-	uint8_t image_ws_handle = open_camera_websocket(5);
+	//uint8_t image_ws_handle = open_camera_websocket(5);
 
 	start_i2s_capture();
 		
@@ -97,6 +99,14 @@ int main (void)
 		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
+		
+		capture_image();		// captures image to internal memory. Owned by camera but sends audio data
+		im_length = find_image_len();
+		if(im_length) {
+			send_image(start_of_image_ptr, im_length);
+		}
+		send_image();			// sends image data over ws, multiplexed with audio
+		
 		/*if (audio_ws_handle != NO_WEBSOCKET_OPEN){
 			//websocket open
 			status_code = send_data_ws(i2s_rec_buf, audio_ws_handle);
@@ -117,8 +127,8 @@ int main (void)
 		}*/
 		
 		
-		if (image_ws_handle != NO_WEBSOCKET_OPEN){
-			start_capture();
+		/*if (image_ws_handle != NO_WEBSOCKET_OPEN){
+			capture_image(); // owned by camera but calls audio 
 			uint32_t im_length;
 	
 			im_length = find_image_len();
@@ -126,7 +136,7 @@ int main (void)
 				status_code = send_image_ws(start_of_image_ptr, im_length, image_ws_handle);
 			}
 			// do something with the status code		
-		}
+		}*/
 			
 		//post_audio_usart((uint8_t *) i2s_rec_buf, 2000);			
 		
