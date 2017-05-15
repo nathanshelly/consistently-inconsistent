@@ -272,7 +272,7 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 	
 	while(command_response == COMMAND_UNSET) {			
 		// makes sure we have complete response before matching on expected
-		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == '/n')){
+		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == 10)){ // 10 is new line, should be the last thing in the buffer
 			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
 			// otherwise, parse for handle
 			else {
@@ -338,13 +338,33 @@ uint8_t parse_stream_handle(void){
 	
 }
 
-uint8_t open_websocket(uint8_t number_of_attempts) {
+uint8_t open_audio_websocket(uint8_t number_of_attempts) {
 	// figure out handle
 	//write_wifi_command("close all\r\n", 2);
 	uint8_t status_code;
 	for(int i=0; i<number_of_attempts; i++){
 	
 		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", "Opened: ", 20000, 1);
+		if (status_code >= 10){
+			if (status_code > 18){
+				write_wifi_command_safe("close all\r\n","Success",200,0);
+				continue;
+			}
+			return status_code - 10;
+		}
+		
+	}
+	// should check last thing in input buffer for handle
+	return NO_WEBSOCKET_OPEN; // indicate failure
+}
+
+uint8_t open_camera_websocket(uint8_t number_of_attempts) {
+	// figure out handle
+	//write_wifi_command("close all\r\n", 2);
+	uint8_t status_code;
+	for(int i=0; i<number_of_attempts; i++){
+	
+		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_cam_socket\r\n", "Opened: ", 20000, 1);
 		if (status_code >= 10){
 			if (status_code > 18){
 				write_wifi_command_safe("close all\r\n","Success",200,0);
@@ -405,21 +425,8 @@ void blink_LED(int ms_blink){
  */
 void setup_wifi(void){
 	
-	int connected = 0;
-	int seconds = 0;
+	write_wifi_command_safe("setup web\r\n","Associated]", 60000, 0);	// command wifi chip to setup
 	
-	write_wifi_command("setup web\r\n", 2000);	// command wifi chip to setup
-			
-	while(!connected){		// waits a long time for the user to connect to the chip and join a network
-				
-		connected = strstr(input_buffer, "[Associated]\r\n");	// check for connection
-		if (seconds > 1500) {	// blink debug LED quickly after a while
-			blink_LED(50);
-		}
-		delay_ms(200);
-		seconds++;
-	}
-			
 	wifi_setup_flag = false;	// turn off setup flag
 }
 
@@ -438,7 +445,7 @@ void safe_mode_recovery(){
 	write_wifi_command("faults_print\r\n",2);
 	write_wifi_command("faults_reset\r\n",2);
 	write_wifi_command("faults_print\r\n",2);
-	write_wifi_command("reboot\r\n",2);
+	reboot_wifi();
 }
 
 
@@ -448,7 +455,7 @@ void safe_mode_recovery(){
  *  \brief Reboots the wifi chip.
  */
 void reboot_wifi() {
-	write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
+	/*write_wifi_command("reboot\r\n", 10);	// commands wifi chip to reboot
 	
 	int associated = 0;
 	int seconds = 0;
@@ -467,10 +474,21 @@ void reboot_wifi() {
 		seconds++;
 	}
 	
-	buffer_index = 0;
+	buffer_index = 0;*/
+	wifi_setup_flag = false;
+	uint8_t status_code;
+	
+	while(write_wifi_command_safe("reboot\r\n", "Associated]", 10000,0) != COMMAND_SUCCESS){
+		if(wifi_setup_flag){
+			setup_wifi();
+		}
+	}
+	
+	status_code = write_wifi_command_safe("set sy c p off\r\n","Set OK",100,0);
+	
+	status_code = write_wifi_command_safe("set sy c e off\r\n","Set OK", 100, 0);
 	
 	//write_wifi_command("set sy c e off\r\n", 5);	// resets a couple of system parameters in case they were changed
-	write_wifi_command("set sy c p off\r\n", 5);
 	
 }
 
@@ -542,9 +560,45 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	
 }
 
-uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length){
-	// send a message indicating the start of the image
-	// call the send image data safe function to transfer the image
-	// send a message indicating the end of the image
+uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_t image_ws_handle){
+	// send a message indicating the start of the image (or not)
 	
+	// call the send image data safe function to transfer the image
+	
+	uint32_t image_byte_index = 0;
+	uint8_t status_code;
+	
+	while (image_byte_index < image_length){
+		
+		if (image_ws_handle != NO_WEBSOCKET_OPEN){
+			//websocket open
+			status_code = write_image_data_safe(start_of_image_ptr, image_byte_index, image_length, image_ws_handle, "Success", 500);
+			if(status_code == COMMAND_STCLOSE){
+				image_ws_handle = NO_WEBSOCKET_OPEN;
+			} else if (status_code == COMMAND_FAILURE){
+				if(check_ws_handle(image_ws_handle) != COMMAND_SUCCESS){
+					image_ws_handle = open_camera_websocket(3);
+				}
+			} else if (status_code == COMMAND_SUCCESS){
+				image_byte_index += PACKET_SIZE;
+			}
+		} else{
+			// websocket not open
+			// wait a minute, then try to reopen
+			// (for now, less than a minute)
+			write_wifi_command_safe("close all\r\n","Success",100,0);
+			delay_ms(20000);
+			image_ws_handle = open_camera_websocket(5); // try 5 times to open the socket
+		}
+		
+		
+		
+		
+		
+	}
+	
+	// send a message indicating the end of the image (or not)
+	write_wifi_command_safe("write 0 0\r\n","Success", 500, 0); // replace 0 with handle at some point
 }
+
+
