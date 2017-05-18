@@ -546,7 +546,7 @@ void configure_websocket(){
 	//image_ws_handle = open_camera_websocket(5);
 }
 
-void send_audio_packet(){
+uint8_t send_audio_packet(){
 	// sends one audio packet, assuming everything is OK everywhere
 	// called by camera functions to stream audio while capturing image
 	
@@ -563,9 +563,9 @@ void send_audio_packet(){
 		} else if (status_code == COMMAND_FAILURE){
 			ws_handle = PREV_COMMAND_FAILED;
 		}
-	
+		return 1;
 	}
-	
+	return 0;
 }
 
 void reopen_websockets(){
@@ -586,6 +586,16 @@ void reopen_websockets(){
 	
 }
 
+uint8_t is_audio_caught_up(void){
+	uint32_t end_index = (i2s_send_index*2 + AUDIO_PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
+	
+	if(end_index > (i2s_capture_index*2)){ // make sure that the end index isn't in front of the receive index
+		return 1;
+	}else{
+		return 0;
+	}
+}
+
 void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
 	// sends image data over ws connection while still streaming audio
 	// throttled to audio speed
@@ -599,12 +609,8 @@ void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
 		//send audio data until caught up
 		if (ws_handle != NO_WEBSOCKET_OPEN){
 			//websocket open
-			status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
-			if (status_code == COMMAND_RETRYIT){
-				// this means that the send index has caught up to the capture index
-				// so, we can send some image data
-
-				//image websocket is open
+			if(is_audio_caught_up()){
+				// if the audio sending is caught up, we can send an image packet
 				status_code = write_image_data_safe(start_of_image_ptr, image_byte_index, image_length, ws_handle, "Success", 500);
 				if(status_code == COMMAND_STCLOSE){
 					ws_handle = NO_WEBSOCKET_OPEN;
@@ -616,12 +622,15 @@ void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
 					image_byte_index += IMAGE_PACKET_SIZE;
 				}
 
-			}
-			if(status_code == COMMAND_STCLOSE){
-				ws_handle = NO_WEBSOCKET_OPEN;
-			} else if (status_code == COMMAND_FAILURE){
-				if(check_ws_handle(ws_handle) != COMMAND_SUCCESS){
-					ws_handle = open_audio_websocket(3);
+			} else{
+				// the audio still has stuff to send (should be most of the time)
+				status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
+				if(status_code == COMMAND_STCLOSE){
+					ws_handle = NO_WEBSOCKET_OPEN;
+				} else if (status_code == COMMAND_FAILURE){
+					if(check_ws_handle(ws_handle) != COMMAND_SUCCESS){
+						reopen_websockets();
+					}
 				}
 			}
 		} else{

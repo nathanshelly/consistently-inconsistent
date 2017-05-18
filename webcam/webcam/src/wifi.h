@@ -60,14 +60,14 @@ uint8_t open_camera_websocket(uint8_t number_of_attempts);
 uint8_t check_ws_handle(uint8_t theoretical_handle);
 uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_t image_ws_handle);
 void configure_websocket();
-void send_audio_packet();
+uint8_t send_audio_packet();
 void send_image(uint8_t *start_of_image_ptr, uint32_t image_length);
 
 // Usart communication definitions
 
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0
-#define BOARD_USART_BAUDRATE		921600
+#define BOARD_USART_BAUDRATE		3000000 //921600
 #define handler_usart				USART0_Handler
 #define USART_IRQn					USART0_IRQn
 

@@ -163,8 +163,7 @@ void start_capture(void)
 	/* Capture acquisition will start on rising edge of Vsync signal.
 	 * So wait vsync_rising_edge_flag = 1 before start process*/
 	while (!vsync_rising_edge_flag) {
-		
-		send_audio_packet(); // send one audio packet if available
+		// not really busy waiting in a meaningful sense
 	}
 	
 	/* Disable vsync interrupt*/
@@ -178,11 +177,12 @@ void start_capture(void)
 	if(capture_pio(OV_DATA_BUS_PIO, image_dest_buffer_ptr, CAM_BUFFER_SIZE/4)){
 	}else {
 	}
-
+	uint32_t counter = 0;
 	/* Wait end of capture*/
 	while (!((OV_DATA_BUS_PIO->PIO_PCISR & PIO_PCIMR_RXBUFF) ==
 			PIO_PCIMR_RXBUFF)) {
-		send_audio_packet(); // send one audio packet if available
+		counter += send_audio_packet(); // send one audio packet if available
+		// send 0-10 packets here - usefull but not killer
 	}
 
 	/* Disable pio capture*/
