@@ -15,7 +15,6 @@
 #include "math.h"
 
 #define AUDIO_BUFFER_SIZE	16000
-#define PACKET_SIZE			200
 
 volatile uint32_t i2s_capture_index;
 volatile uint32_t buffer_filled;

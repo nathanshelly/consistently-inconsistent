@@ -28,7 +28,7 @@ void configure_twi(void);
 void init_camera(void);
 void configure_camera(void);
 uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size);
-void capture_image(void);
+void start_capture(void);
 uint32_t find_image_len(void);
 
 ///** OV_VSYNC pin definition */

@@ -89,7 +89,7 @@ int main (void)
 	
 	configure_i2s(); // microphone configuration
 	
-	configure_websockets();
+	configure_websocket();
 	//uint8_t audio_ws_handle = open_audio_websocket(5); // try 5 times to open the socket
 	//uint8_t image_ws_handle = open_camera_websocket(5);
 
@@ -100,12 +100,11 @@ int main (void)
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
 		
-		capture_image();		// captures image to internal memory. Owned by camera but sends audio data
+		start_capture();		// captures image to internal memory. Owned by camera but sends audio data
 		im_length = find_image_len();
 		if(im_length) {
 			send_image(start_of_image_ptr, im_length);
 		}
-		send_image();			// sends image data over ws, multiplexed with audio
 		
 		/*if (audio_ws_handle != NO_WEBSOCKET_OPEN){
 			//websocket open

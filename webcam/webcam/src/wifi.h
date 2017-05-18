@@ -27,6 +27,9 @@
 #define NO_WEBSOCKET_OPEN	10
 #define PREV_COMMAND_FAILED	11
 
+#define AUDIO_PACKET_SIZE	200 // in uint-16s
+#define IMAGE_PACKET_SIZE	399 // in bytes
+
 // variable declarations
 volatile uint8_t input_buffer[BUFFER_SIZE];
 volatile uint32_t buffer_index;
@@ -56,7 +59,7 @@ uint8_t open_audio_websocket(uint8_t number_of_attempts);
 uint8_t open_camera_websocket(uint8_t number_of_attempts);
 uint8_t check_ws_handle(uint8_t theoretical_handle);
 uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_t image_ws_handle);
-void configure_websockets();
+void configure_websocket();
 void send_audio_packet();
 void send_image(uint8_t *start_of_image_ptr, uint32_t image_length);
 

@@ -155,7 +155,7 @@ uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size)
 /**
  * \brief Start picture capture.
  */
-void capture_image(void)
+void start_capture(void)
 {
 	/* Enable vsync interrupt*/
 	pio_enable_interrupt(OV_VSYNC_PIO, OV_VSYNC_MASK);
