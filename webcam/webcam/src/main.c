@@ -100,48 +100,16 @@ int main (void)
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
 		}
 		
+
+/*
 		start_capture();		// captures image to internal memory. Owned by camera but sends audio data
 		im_length = find_image_len();
 		if(im_length) {
 			send_image(start_of_image_ptr, im_length);
 		}
-		
-		/*if (audio_ws_handle != NO_WEBSOCKET_OPEN){
-			//websocket open
-			status_code = send_data_ws(i2s_rec_buf, audio_ws_handle);
-			if(status_code == COMMAND_STCLOSE){
-				audio_ws_handle = NO_WEBSOCKET_OPEN;
-			} else if (status_code == COMMAND_FAILURE){
-				if(check_ws_handle(audio_ws_handle) != COMMAND_SUCCESS){
-					audio_ws_handle = open_audio_websocket(3);
-				}
-			}
-		} else{
-			// websocket not open
-			// wait a minute, then try to reopen
-			// (for now, less than a minute)
-			write_wifi_command_safe("close all\r\n","Success",100,0);
-			delay_ms(20000);
-			audio_ws_handle = open_audio_websocket(5); // try 5 times to open the socket
-		}*/
-		
-		
-		/*if (image_ws_handle != NO_WEBSOCKET_OPEN){
-			capture_image(); // owned by camera but calls audio 
-			uint32_t im_length;
-	
-			im_length = find_image_len();
-			if(im_length) {
-				status_code = send_image_ws(start_of_image_ptr, im_length, image_ws_handle);
-			}
-			// do something with the status code		
-		}*/
-			
-		//post_audio_usart((uint8_t *) i2s_rec_buf, 2000);			
-		
+	*/	
+		send_image_dummy();
 
-		//start_capture();		// capture the image to internal memorys
-		//post_image();			// send the image to the wifi chip
 	}
 	return 0;
 }

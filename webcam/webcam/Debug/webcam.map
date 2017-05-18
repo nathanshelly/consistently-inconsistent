@@ -3948,8 +3948,8 @@ Discarded input sections
                 0x00000000      0x1c4 src/wifi.o
  .text.safe_mode_recovery
                 0x00000000       0x40 src/wifi.o
- .text.send_image_ws
-                0x00000000       0x1c src/wifi.o
+ .text.send_image_dummy
+                0x00000000       0x70 src/wifi.o
  .debug_macro   0x00000000      0x898 src/wifi.o
  .debug_macro   0x00000000      0x16d src/wifi.o
  .debug_macro   0x00000000      0x652 src/wifi.o
@@ -8062,7 +8062,7 @@ LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/arm/arm-gnu-toolchain/bin
  .bss.i2s_send_index
                 0x2000d658        0x4 src/wifi.o
                 0x2000d658                i2s_send_index
- .bss.ul_sysclk.9525
+ .bss.ul_sysclk.9523
                 0x2000d65c        0x4 src/wifi.o
  .bss.heap.5287
                 0x2000d660        0x4 src/ASF/sam/utils/syscalls/gcc/syscalls.o
@@ -8247,7 +8247,7 @@ OUTPUT(webcam.elf elf32-littlearm)
  .comment       0x00000059       0x5a src/ASF/sam/utils/syscalls/gcc/syscalls.o
  .comment       0x00000059       0x5a src/main.o
 
-.debug_info     0x00000000     0xe54a
+.debug_info     0x00000000     0xe528
  .debug_info    0x00000000      0xddd src/ASF/sam/drivers/ssc/ssc.o
  .debug_info    0x00000ddd      0x944 src/ASF/sam/drivers/tc/tc.o
  .debug_info    0x00001721      0x2d2 src/ASF/sam/drivers/wdt/wdt.o
@@ -8260,15 +8260,15 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_info    0x000065d7     0x1100 src/ov2640.o
  .debug_info    0x000076d7      0x385 src/ov2640_table_registers.o
  .debug_info    0x00007a5c      0x685 src/timer_interface.o
- .debug_info    0x000080e1     0x17fe src/wifi.o
- .debug_info    0x000098df      0x6bd src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_info    0x00009f9c     0x1378 src/ASF/sam/drivers/pio/pio.o
- .debug_info    0x0000b314     0x10cf src/ASF/sam/drivers/pmc/pmc.o
- .debug_info    0x0000c3e3      0xd25 src/ASF/common/boards/user_board/init.o
- .debug_info    0x0000d108      0x696 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_info    0x0000d79e      0x46d src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_info    0x0000dc0b      0x435 src/ASF/sam/utils/syscalls/gcc/syscalls.o
- .debug_info    0x0000e040      0x50a src/main.o
+ .debug_info    0x000080e1     0x17dc src/wifi.o
+ .debug_info    0x000098bd      0x6bd src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_info    0x00009f7a     0x1378 src/ASF/sam/drivers/pio/pio.o
+ .debug_info    0x0000b2f2     0x10cf src/ASF/sam/drivers/pmc/pmc.o
+ .debug_info    0x0000c3c1      0xd25 src/ASF/common/boards/user_board/init.o
+ .debug_info    0x0000d0e6      0x696 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_info    0x0000d77c      0x46d src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_info    0x0000dbe9      0x435 src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_info    0x0000e01e      0x50a src/main.o
 
 .debug_abbrev   0x00000000     0x24e5
  .debug_abbrev  0x00000000      0x197 src/ASF/sam/drivers/ssc/ssc.o
@@ -8293,7 +8293,7 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_abbrev  0x000022ad      0x120 src/ASF/sam/utils/syscalls/gcc/syscalls.o
  .debug_abbrev  0x000023cd      0x118 src/main.o
 
-.debug_loc      0x00000000     0x85ea
+.debug_loc      0x00000000     0x85de
  .debug_loc     0x00000000      0xd94 src/ASF/sam/drivers/ssc/ssc.o
  .debug_loc     0x00000d94      0x844 src/ASF/sam/drivers/tc/tc.o
  .debug_loc     0x000015d8      0x228 src/ASF/sam/drivers/wdt/wdt.o
@@ -8304,15 +8304,15 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_loc     0x00003e30      0x4f4 src/camera.o
  .debug_loc     0x00004324      0x5c4 src/ov2640.o
  .debug_loc     0x000048e8      0x1b0 src/timer_interface.o
- .debug_loc     0x00004a98      0x9e0 src/wifi.o
- .debug_loc     0x00005478      0x4ac src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_loc     0x00005924     0x1174 src/ASF/sam/drivers/pio/pio.o
- .debug_loc     0x00006a98     0x1450 src/ASF/sam/drivers/pmc/pmc.o
- .debug_loc     0x00007ee8      0x1bc src/ASF/common/boards/user_board/init.o
- .debug_loc     0x000080a4       0x64 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_loc     0x00008108       0xe4 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_loc     0x000081ec      0x324 src/ASF/sam/utils/syscalls/gcc/syscalls.o
- .debug_loc     0x00008510       0xda src/main.o
+ .debug_loc     0x00004a98      0x9d4 src/wifi.o
+ .debug_loc     0x0000546c      0x4ac src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_loc     0x00005918     0x1174 src/ASF/sam/drivers/pio/pio.o
+ .debug_loc     0x00006a8c     0x1450 src/ASF/sam/drivers/pmc/pmc.o
+ .debug_loc     0x00007edc      0x1bc src/ASF/common/boards/user_board/init.o
+ .debug_loc     0x00008098       0x64 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_loc     0x000080fc       0xe4 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_loc     0x000081e0      0x324 src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_loc     0x00008504       0xda src/main.o
 
 .debug_aranges  0x00000000      0xea8
  .debug_aranges
@@ -8452,7 +8452,7 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_macro   0x000082c3      0x6b6 src/main.o
  .debug_macro   0x00008979       0x10 src/main.o
 
-.debug_line     0x00000000    0x10fc5
+.debug_line     0x00000000    0x10fcf
  .debug_line    0x00000000      0xd6b src/ASF/sam/drivers/ssc/ssc.o
  .debug_line    0x00000d6b      0xba1 src/ASF/sam/drivers/tc/tc.o
  .debug_line    0x0000190c      0xa4e src/ASF/sam/drivers/wdt/wdt.o
@@ -8465,59 +8465,59 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_line    0x000074bb      0xe7c src/ov2640.o
  .debug_line    0x00008337      0xbb0 src/ov2640_table_registers.o
  .debug_line    0x00008ee7      0xf54 src/timer_interface.o
- .debug_line    0x00009e3b     0x136a src/wifi.o
- .debug_line    0x0000b1a5      0xc75 src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_line    0x0000be1a      0xe1b src/ASF/sam/drivers/pio/pio.o
- .debug_line    0x0000cc35      0xff9 src/ASF/sam/drivers/pmc/pmc.o
- .debug_line    0x0000dc2e      0xffb src/ASF/common/boards/user_board/init.o
- .debug_line    0x0000ec29      0x819 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_line    0x0000f442      0x858 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_line    0x0000fc9a      0x3da src/ASF/sam/utils/syscalls/gcc/syscalls.o
- .debug_line    0x00010074      0xf51 src/main.o
+ .debug_line    0x00009e3b     0x1376 src/wifi.o
+ .debug_line    0x0000b1b1      0xc75 src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_line    0x0000be26      0xe1b src/ASF/sam/drivers/pio/pio.o
+ .debug_line    0x0000cc41      0xff9 src/ASF/sam/drivers/pmc/pmc.o
+ .debug_line    0x0000dc3a      0xffb src/ASF/common/boards/user_board/init.o
+ .debug_line    0x0000ec35      0x819 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_line    0x0000f44e      0x858 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_line    0x0000fca6      0x3da src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_line    0x00010080      0xf4f src/main.o
 
-.debug_str      0x00000000    0x4ff42
+.debug_str      0x00000000    0x4ff36
  .debug_str     0x00000000    0x47329 src/ASF/sam/drivers/ssc/ssc.o
                               0x4767b (size before relaxing)
  .debug_str     0x00047329      0x369 src/ASF/sam/drivers/tc/tc.o
                               0x47246 (size before relaxing)
  .debug_str     0x00047692      0x135 src/ASF/sam/drivers/wdt/wdt.o
                               0x46fe2 (size before relaxing)
- .debug_str     0x000477c7     0x38f6 src/microphone.o
-                              0x4aad6 (size before relaxing)
- .debug_str     0x0004b0bd       0x35 src/ASF/common/services/delay/sam/cycle_counter.o
+ .debug_str     0x000477c7     0x38f7 src/microphone.o
+                              0x4aad7 (size before relaxing)
+ .debug_str     0x0004b0be       0x35 src/ASF/common/services/delay/sam/cycle_counter.o
                               0x4705b (size before relaxing)
- .debug_str     0x0004b0f2      0x3d9 src/ASF/sam/drivers/pio/pio_handler.o
+ .debug_str     0x0004b0f3      0x3d9 src/ASF/sam/drivers/pio/pio_handler.o
                               0x4793a (size before relaxing)
- .debug_str     0x0004b4cb      0x3cd src/ASF/sam/drivers/twi/twi.o
+ .debug_str     0x0004b4cc      0x3cd src/ASF/sam/drivers/twi/twi.o
                               0x47426 (size before relaxing)
- .debug_str     0x0004b898      0x8bd src/ASF/sam/drivers/usart/usart.o
+ .debug_str     0x0004b899      0x8bd src/ASF/sam/drivers/usart/usart.o
                               0x478e0 (size before relaxing)
- .debug_str     0x0004c155     0x1a7e src/camera.o
-                              0x4bd81 (size before relaxing)
- .debug_str     0x0004dbd3      0x33d src/ov2640.o
+ .debug_str     0x0004c156     0x1a7e src/camera.o
+                              0x4bd82 (size before relaxing)
+ .debug_str     0x0004dbd4      0x33d src/ov2640.o
                               0x4acaa (size before relaxing)
- .debug_str     0x0004df10       0x20 src/ov2640_table_registers.o
+ .debug_str     0x0004df11       0x20 src/ov2640_table_registers.o
                               0x4a4b4 (size before relaxing)
- .debug_str     0x0004df30       0x66 src/timer_interface.o
+ .debug_str     0x0004df31       0x66 src/timer_interface.o
                               0x49c07 (size before relaxing)
- .debug_str     0x0004df96      0x4da src/wifi.o
-                              0x4b50e (size before relaxing)
- .debug_str     0x0004e470      0x147 src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_str     0x0004df97      0x4cd src/wifi.o
+                              0x4b502 (size before relaxing)
+ .debug_str     0x0004e464      0x147 src/ASF/common/services/clock/sam4s/sysclk.o
                               0x48a5f (size before relaxing)
- .debug_str     0x0004e5b7      0x556 src/ASF/sam/drivers/pio/pio.o
+ .debug_str     0x0004e5ab      0x556 src/ASF/sam/drivers/pio/pio.o
                               0x47afb (size before relaxing)
- .debug_str     0x0004eb0d      0x6c9 src/ASF/sam/drivers/pmc/pmc.o
+ .debug_str     0x0004eb01      0x6c9 src/ASF/sam/drivers/pmc/pmc.o
                               0x4794a (size before relaxing)
- .debug_str     0x0004f1d6       0xee src/ASF/common/boards/user_board/init.o
-                              0x4ae4b (size before relaxing)
- .debug_str     0x0004f2c4      0x401 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_str     0x0004f1ca       0xee src/ASF/common/boards/user_board/init.o
+                              0x4ae4c (size before relaxing)
+ .debug_str     0x0004f2b8      0x401 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
                               0x381fd (size before relaxing)
- .debug_str     0x0004f6c5       0xf1 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_str     0x0004f6b9       0xf1 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
                               0x37fd3 (size before relaxing)
- .debug_str     0x0004f7b6      0x74e src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_str     0x0004f7aa      0x74e src/ASF/sam/utils/syscalls/gcc/syscalls.o
                                0x6a03 (size before relaxing)
- .debug_str     0x0004ff04       0x3e src/main.o
-                              0x4bf42 (size before relaxing)
+ .debug_str     0x0004fef8       0x3e src/main.o
+                              0x4bf43 (size before relaxing)
 
 .debug_frame    0x00000000     0x4798
  .debug_frame   0x00000000      0x5f8 src/ASF/sam/drivers/ssc/ssc.o
@@ -9363,7 +9363,7 @@ send_audio_packet                                 src/wifi.o
                                                   src/camera.o
 send_image                                        src/wifi.o
                                                   src/main.o
-send_image_ws                                     src/wifi.o
+send_image_dummy                                  src/wifi.o
 setlocale                                         c:/program files (x86)/atmel/studio/7.0/toolchain/arm/arm-gnu-toolchain/bin/../lib/gcc/arm-none-eabi/5.3.1/../../../../arm-none-eabi/lib/armv7e-m\libc.a(lib_a-locale.o)
 setup_wifi                                        src/wifi.o
                                                   src/main.o

@@ -647,30 +647,24 @@ void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
 	
 }
 
-uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_t image_ws_handle){
-	// send a message indicating the start of the image (or not)
+void send_image_dummy(void){
 	
-	// call the send image data safe function to transfer the image
-	
-	//
-	//
-	//
-		//
-		 //else{
-			//// websocket not open
-			//// wait a minute, then try to reopen
-			//// (for now, less than a minute)
-			//write_wifi_command_safe("close all\r\n","Success",100,0);
-			//delay_ms(20000);
-			//image_ws_handle = open_camera_websocket(5); // try 5 times to open the socket
-		//}
-		//
-		
-		
-		
-		
-	
-	
-	// send a message indicating the end of the image (or not)
+	uint8_t status_code;
+
+	if (ws_handle != NO_WEBSOCKET_OPEN){
+		//websocket open
+		// the audio still has stuff to send (should be most of the time)
+		status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
+		if(status_code == COMMAND_STCLOSE){
+			ws_handle = NO_WEBSOCKET_OPEN;
+		} else if (status_code == COMMAND_FAILURE){
+			if(check_ws_handle(ws_handle) != COMMAND_SUCCESS){
+				reopen_websockets();
+			}
+		}
+	} else{
+		// websocket not open
+		reopen_websockets();
+	}
 	
 }
