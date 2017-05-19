@@ -182,7 +182,7 @@ void start_capture(void)
 	while (!((OV_DATA_BUS_PIO->PIO_PCISR & PIO_PCIMR_RXBUFF) ==
 			PIO_PCIMR_RXBUFF)) {
 		counter += send_audio_packet(); // send one audio packet if available
-		// send 0-10 packets here - usefull but not killer
+		// send 0-10 packets here - useful but not killer
 	}
 
 	/* Disable pio capture*/

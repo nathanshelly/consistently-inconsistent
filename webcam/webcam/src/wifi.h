@@ -55,10 +55,9 @@ void configure_wifi(void);
 void reboot_wifi(void);
 void safe_mode_recovery(void);
 void send_image_dummy(void);
-uint8_t open_audio_websocket(uint8_t number_of_attempts);
-uint8_t open_camera_websocket(uint8_t number_of_attempts);
+uint8_t is_audio_caught_up(void);
+uint8_t open_websocket(uint8_t number_of_attempts);
 uint8_t check_ws_handle(uint8_t theoretical_handle);
-//uint8_t send_image_ws(uint8_t *start_of_image_ptr, uint32_t image_length, uint8_t image_ws_handle);
 void configure_websocket();
 uint8_t send_audio_packet();
 void send_image(uint8_t *start_of_image_ptr, uint32_t image_length);
@@ -67,7 +66,7 @@ void send_image(uint8_t *start_of_image_ptr, uint32_t image_length);
 
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0
-#define BOARD_USART_BAUDRATE		3000000 //921600
+#define BOARD_USART_BAUDRATE		921600		//3000000
 #define handler_usart				USART0_Handler
 #define USART_IRQn					USART0_IRQn
 
