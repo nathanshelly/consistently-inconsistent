@@ -505,13 +505,11 @@ void reopen_websockets(){
 }
 
 uint8_t is_audio_caught_up(void){
-	uint32_t end_index = (i2s_send_index*2 + AUDIO_PACKET_SIZE*2) % (AUDIO_BUFFER_SIZE*2); // the last uint16 index that will be hit if it sends
-	uint32_t adjusted_send_index = i2s_send_index*2;
-	uint32_t adjusted_capture_index = i2s_capture_index*2;
+	uint32_t end_index = (i2s_send_index + AUDIO_PACKET_SIZE) % (AUDIO_BUFFER_SIZE); // the last uint16 index that will be hit if it sends
 	
 	// make sure that the end index isn't in front of the receive index
-	uint32_t first_condition = ((adjusted_capture_index - adjusted_send_index) < AUDIO_PACKET_SIZE*2) && ((adjusted_capture_index - adjusted_send_index) > 0);
-	uint32_t second_condition = ((end_index - adjusted_capture_index) > 0) && ((end_index - adjusted_capture_index) < AUDIO_PACKET_SIZE*2);
+	uint32_t first_condition = ((i2s_capture_index - i2s_send_index) < AUDIO_PACKET_SIZE) && ((i2s_capture_index - i2s_send_index) > 0);
+	uint32_t second_condition = ((end_index - i2s_capture_index) > 0) && ((end_index - i2s_capture_index) < AUDIO_PACKET_SIZE);
 	return (first_condition || second_condition) ? 1 : 0;
 }
 
