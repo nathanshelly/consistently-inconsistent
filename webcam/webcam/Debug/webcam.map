@@ -7378,12 +7378,12 @@ LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/arm/arm-gnu-toolchain/bin
  .text.start_i2s_capture
                 0x004006f8       0x18 src/microphone.o
                 0x004006f8                start_i2s_capture
- .text.SSC_Handler
-                0x00400710       0x88 src/microphone.o
-                0x00400710                SSC_Handler
  .text.modify_data
-                0x00400798       0x18 src/microphone.o
-                0x00400798                modify_data
+                0x00400710       0x18 src/microphone.o
+                0x00400710                modify_data
+ .text.SSC_Handler
+                0x00400728       0x88 src/microphone.o
+                0x00400728                SSC_Handler
  .text.configure_i2s
                 0x004007b0       0x94 src/microphone.o
                 0x004007b0                configure_i2s
@@ -8209,7 +8209,7 @@ LOAD c:/program files (x86)/atmel/studio/7.0/toolchain/arm/arm-gnu-toolchain/bin
  .bss.i2s_send_index
                 0x2000d788        0x4 src/wifi.o
                 0x2000d788                i2s_send_index
- .bss.ul_sysclk.9531
+ .bss.ul_sysclk.9529
                 0x2000d78c        0x4 src/wifi.o
  .bss.heap.5277
                 0x2000d790        0x4 src/ASF/sam/utils/syscalls/gcc/syscalls.o
@@ -8608,28 +8608,28 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_macro   0x0000863e      0x6ef src/main.o
  .debug_macro   0x00008d2d       0x10 src/main.o
 
-.debug_line     0x00000000    0x11339
+.debug_line     0x00000000    0x1133a
  .debug_line    0x00000000      0xdb2 src/ASF/sam/drivers/ssc/ssc.o
  .debug_line    0x00000db2      0xbcd src/ASF/sam/drivers/tc/tc.o
  .debug_line    0x0000197f      0xa7b src/ASF/sam/drivers/wdt/wdt.o
- .debug_line    0x000023fa     0x1006 src/microphone.o
- .debug_line    0x00003400      0xa2e src/ASF/common/services/delay/sam/cycle_counter.o
- .debug_line    0x00003e2e      0xb2f src/ASF/sam/drivers/pio/pio_handler.o
- .debug_line    0x0000495d      0xc79 src/ASF/sam/drivers/twi/twi.o
- .debug_line    0x000055d6      0xffe src/ASF/sam/drivers/usart/usart.o
- .debug_line    0x000065d4     0x10b3 src/camera.o
- .debug_line    0x00007687      0xeb5 src/ov2640.o
- .debug_line    0x0000853c      0xbdc src/ov2640_table_registers.o
- .debug_line    0x00009118      0xf8d src/timer_interface.o
- .debug_line    0x0000a0a5     0x1376 src/wifi.o
- .debug_line    0x0000b41b      0xca1 src/ASF/common/services/clock/sam4s/sysclk.o
- .debug_line    0x0000c0bc      0xe47 src/ASF/sam/drivers/pio/pio.o
- .debug_line    0x0000cf03     0x1029 src/ASF/sam/drivers/pmc/pmc.o
- .debug_line    0x0000df2c     0x1034 src/ASF/common/boards/user_board/init.o
- .debug_line    0x0000ef60      0x819 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
- .debug_line    0x0000f779      0x858 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
- .debug_line    0x0000ffd1      0x413 src/ASF/sam/utils/syscalls/gcc/syscalls.o
- .debug_line    0x000103e4      0xf55 src/main.o
+ .debug_line    0x000023fa     0x1007 src/microphone.o
+ .debug_line    0x00003401      0xa2e src/ASF/common/services/delay/sam/cycle_counter.o
+ .debug_line    0x00003e2f      0xb2f src/ASF/sam/drivers/pio/pio_handler.o
+ .debug_line    0x0000495e      0xc79 src/ASF/sam/drivers/twi/twi.o
+ .debug_line    0x000055d7      0xffe src/ASF/sam/drivers/usart/usart.o
+ .debug_line    0x000065d5     0x10b3 src/camera.o
+ .debug_line    0x00007688      0xeb5 src/ov2640.o
+ .debug_line    0x0000853d      0xbdc src/ov2640_table_registers.o
+ .debug_line    0x00009119      0xf8d src/timer_interface.o
+ .debug_line    0x0000a0a6     0x1376 src/wifi.o
+ .debug_line    0x0000b41c      0xca1 src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_line    0x0000c0bd      0xe47 src/ASF/sam/drivers/pio/pio.o
+ .debug_line    0x0000cf04     0x1029 src/ASF/sam/drivers/pmc/pmc.o
+ .debug_line    0x0000df2d     0x1034 src/ASF/common/boards/user_board/init.o
+ .debug_line    0x0000ef61      0x819 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_line    0x0000f77a      0x858 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_line    0x0000ffd2      0x413 src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_line    0x000103e5      0xf55 src/main.o
 
 .debug_str      0x00000000    0x506a4
  .debug_str     0x00000000    0x47af3 src/ASF/sam/drivers/ssc/ssc.o

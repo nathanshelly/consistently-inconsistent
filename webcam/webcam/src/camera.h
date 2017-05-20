@@ -1,10 +1,3 @@
-/*
- * camera.h
- *
- * Created: 2/2/2017 19:58:28
- *  Author: Nathan
- */ 
-
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
@@ -21,13 +14,13 @@ uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE];
 uint8_t *start_of_image_ptr;
 
 // function declarations
-void handler_vsync(uint32_t ul_id, uint32_t ul_mask);
+void handler_vsync(uint32_t, uint32_t);
 void configure_vsync(void);
-void init_pio_capture(Pio *p_pio, uint32_t ul_id);
+void init_pio_capture(Pio*, uint32_t);
 void configure_twi(void);
 void init_camera(void);
 void configure_camera(void);
-uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size);
+uint8_t capture_pio(Pio*, uint8_t*, uint32_t);
 void start_capture(void);
 uint32_t find_image_len(void);
 

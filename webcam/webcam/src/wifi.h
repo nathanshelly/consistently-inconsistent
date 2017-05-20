@@ -1,10 +1,3 @@
-/*
- * wifi.h
- *
- * Created: 2/2/2017 19:57:25
- *  Author: Nathan
- */ 
-
 #ifndef WIFI_H_
 #define WIFI_H_
 

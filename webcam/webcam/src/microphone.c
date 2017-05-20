@@ -1,7 +1,3 @@
-/*
- * Created: 4/5/2017 20:55:00
- * Author: Nathan
- */ 
 #include "microphone.h"
 
 /** Receive index. */
@@ -15,11 +11,15 @@ volatile uint8_t capture_toggle = 0;
 
 void start_i2s_capture(void){ ssc_enable_interrupt(SSC, SSC_IDR_RXRDY); }
 
+// get rid of zero padding and tristated signal
+uint16_t modify_data(uint32_t data_to_modify) {
+	return (uint16_t) (data_to_modify >> 16);
+}
+
 /**
  * \brief Synchronous Serial Controller Handler.
  */
-void SSC_Handler(void)
-{
+void SSC_Handler(void) {
 	uint32_t ul_data;
 	ssc_get_status(SSC);
 	ssc_read(SSC, &ul_data);
@@ -32,16 +32,13 @@ void SSC_Handler(void)
 		i2s_capture_index = 0;
 }
 
-// get rid of zero padding and tristated signal
-uint16_t modify_data(uint32_t data_to_modify) { return (uint16_t) (data_to_modify >> 16); }
-
 /**
  * \brief Set up clock.
  * \param p_ssc Pointer to an SSC instance.
  * \param ul_bitrate Desired bit clock.
  * \param ul_mck MCK clock.
 */
-void configure_i2s(void){
+void configure_i2s(void) {
 	/* Initialize the SSC module and work in loop mode. */
 	pmc_enable_periph_clk(ID_SSC);
 	ssc_reset(SSC);

@@ -1,8 +1,3 @@
-/*
- * microphone.h
- */ 
-
-
 #ifndef MICROPHONE_H_
 #define MICROPHONE_H_
 #include <asf.h>
@@ -19,7 +14,6 @@ volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE];
 
 void start_i2s_capture(void);
 void configure_i2s(void);
-uint16_t modify_data(uint32_t data_to_modify);
 
 /** The SSC interrupt IRQ priority. */
 #define SSC_IRQ_PRIO				4

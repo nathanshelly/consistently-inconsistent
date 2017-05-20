@@ -1,8 +1,3 @@
-/*
- * Created: 2/2/2017 19:58:38
- * Author: Nathan
- */ 
-
 #include "camera.h"
 #include "ov2640.h"
 
@@ -14,8 +9,7 @@ uint8_t *start_of_image_ptr = 0;
  * \brief Handler for vertical synchronisation using by the OV2640 image
  * sensor.
  */
-void handler_vsync(uint32_t ul_id, uint32_t ul_mask)
-{
+void handler_vsync(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
 
@@ -25,8 +19,7 @@ void handler_vsync(uint32_t ul_id, uint32_t ul_mask)
 /**
  * \brief Intialize Vsync_Handler.
  */
-void configure_vsync(void)
-{
+void configure_vsync(void) {
 	/* Initialize PIO interrupt handler, see PIO definition in conf_board.h
 	**/
 	pio_handler_set(OV_VSYNC_PIO, OV_VSYNC_ID, OV_VSYNC_MASK,
@@ -39,8 +32,7 @@ void configure_vsync(void)
 /**
  * \brief Configures TWI.
  */
-void configure_twi(void)
-{
+void configure_twi(void) {
 	twi_options_t opt;
 
 	/* Enable TWI peripheral */
@@ -61,7 +53,7 @@ void configure_twi(void)
 /**
  * \brief Configuration and initialization of parallel capture.
  */
-void init_pio_capture(Pio *p_pio, uint32_t ul_id){	
+void init_pio_capture(Pio *p_pio, uint32_t ul_id) {
 	/* Enable periphral clock */
 	pmc_enable_periph_clk(ul_id);
 
@@ -83,7 +75,7 @@ void init_pio_capture(Pio *p_pio, uint32_t ul_id){
 /**
  * \brief Initialize camera.
  */
-void init_camera(void){	
+void init_camera(void) {
 	pmc_enable_pllbck(7, 0x1, 1); /* PLLA work at 96 Mhz */
 
 	configure_vsync();
@@ -102,8 +94,7 @@ void init_camera(void){
 /**
  * \brief Configure camera.
  */	
-void configure_camera(void)
-{
+void configure_camera(void) {
 	init_camera();
 	/* ov2640 Initialization */
 	// First, make sure reg 0xFF=1
@@ -118,8 +109,7 @@ void configure_camera(void)
 	};
 	ov_write_reg(BOARD_TWI, &init_packet);
 	
-	while (ov_init(BOARD_TWI) == 1) {
-	}
+	while (ov_init(BOARD_TWI) == 1) {}
 
 	/* ov2640 configuration */
 	ov_configure(BOARD_TWI, JPEG_INIT);
@@ -135,8 +125,7 @@ void configure_camera(void)
  * \param p_uc_buf Buffer address where captured data must be stored.
  * \param ul_size Data frame size.
  */
-uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size)
-{
+uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size) {
 	/* Check if the first PDC bank is free */
 	if ((p_pio->PIO_RCR == 0) && (p_pio->PIO_RNCR == 0)) {
 		p_pio->PIO_RPR = (uint32_t)image_dest_buffer_ptr;
@@ -155,16 +144,14 @@ uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size)
 /**
  * \brief Start picture capture.
  */
-void start_capture(void)
-{
+void start_capture(void) {
 	/* Enable vsync interrupt*/
 	pio_enable_interrupt(OV_VSYNC_PIO, OV_VSYNC_MASK);
 
 	/* Capture acquisition will start on rising edge of Vsync signal.
 	 * So wait vsync_rising_edge_flag = 1 before start process*/
-	while (!vsync_rising_edge_flag) {
-		// not really busy waiting in a meaningful sense
-	}
+	// not really busy waiting in a meaningful sense
+	while (!vsync_rising_edge_flag) {}
 	
 	/* Disable vsync interrupt*/
 	pio_disable_interrupt(OV_VSYNC_PIO, OV_VSYNC_MASK);
@@ -174,9 +161,8 @@ void start_capture(void)
 
 	/* Capture data and send it to external SRAM memory thanks to PDC
 	 * feature */
-	if(capture_pio(OV_DATA_BUS_PIO, image_dest_buffer_ptr, CAM_BUFFER_SIZE/4)){
-	}else {
-	}
+	capture_pio(OV_DATA_BUS_PIO, image_dest_buffer_ptr, CAM_BUFFER_SIZE/4);
+	
 	uint32_t counter = 0;
 	/* Wait end of capture*/
 	while (!((OV_DATA_BUS_PIO->PIO_PCISR & PIO_PCIMR_RXBUFF) ==
