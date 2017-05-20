@@ -408,8 +408,8 @@ uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp
 			// otherwise, parse for handle
 		}
 		else if(strstr(usart_buffer, "[Closed: ")){
-			command_response = COMMAND_STCLOSE; // return a value indicating closure of the stream
-			
+			// return a value indicating closure of the stream
+			command_response = COMMAND_STCLOSE;
 		}
 		else if(strstr(usart_buffer, "Command failed")){
 			command_response = COMMAND_FAILURE; // command failed
@@ -450,9 +450,11 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	usart_buffer_index = 0;
 	
 	uint32_t end_index = start_index + IMAGE_PACKET_SIZE;
-	end_index = (end_index < im_len) ? end_index : im_len; // if the end index goes past the end of the array, don't go there
+	// if the end index goes past the end of the array, don't go there
+	end_index = (end_index < im_len) ? end_index : im_len;
 	
-	uint32_t bytes_to_send = end_index - start_index; // usually PACKET_SIZE, unless it's the last one
+	// usually PACKET_SIZE, unless it's the last one
+	uint32_t bytes_to_send = end_index - start_index;
 	
 	uint8_t curr_data_point;
 	
@@ -474,8 +476,8 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 			// otherwise, parse for handle
 		}
 		else if(strstr(usart_buffer, "[Closed: ")){
-			command_response = COMMAND_STCLOSE; // return a value indicating closure of the stream
-			
+			// return a value indicating closure of the stream
+			command_response = COMMAND_STCLOSE;
 		}
 		else if(strstr(usart_buffer, "Command failed")){
 			command_response = COMMAND_FAILURE; // command failed
@@ -513,7 +515,8 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 	
 	while(command_response == COMMAND_UNSET) {			
 		// makes sure we have complete response before matching on expected
-		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == 10)){ // 10 is new line, should be the last thing in the buffer
+		// 10 is new line, should be the last thing in the buffer
+		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == 10)){
 			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
 			// otherwise, parse for handle
 			else {
@@ -522,6 +525,10 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 				uint8_t handle = usart_buffer[buffer_offset+12] - '0';
 				command_response = handle+10;
 			}
+		}
+		else if(strstr(usart_buffer, "[Closed: ")){
+			// return a value indicating closure of the stream
+			command_response = COMMAND_STCLOSE;
 		}
 		else if (strstr(usart_buffer, "Command failed")){
 			command_response = COMMAND_FAILURE; // command failed
