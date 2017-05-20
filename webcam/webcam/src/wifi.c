@@ -370,11 +370,8 @@ uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp
 	// returns 10+stream handle for opening a stream
 	
 	// first thing: check if we've received any transmission since the last time
-	if (usart_buffer_index != 0){
-		// check for different issues
-		if(strstr(usart_buffer, "[Closed: ")){
-			return COMMAND_STCLOSE; // return a value indicating closure of the stream
-		}
+	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: ")) {
+		return COMMAND_STCLOSE; // return a value indicating closure of the stream
 	}
 
 	uint32_t ms_counter = 0;
@@ -385,22 +382,20 @@ uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp
 	
 	if(is_audio_caught_up()) // make sure that the end index isn't in front of the receive index
 		return COMMAND_RETRYIT;
-	
-	uint8_t curr_data_point;
-	
+		
 	char* templated_command[30];
 	usart_write_line(BOARD_USART,"\r\n");
 	sprintf(templated_command, "write %d %d\r\n", handle, AUDIO_PACKET_SIZE * 2);
 	usart_write_line(BOARD_USART, templated_command);
 	
-	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++)
-	{
-		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];	
+	uint8_t curr_data_point;
+	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++) {
+		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
 	
 	uint8_t command_response = COMMAND_UNSET;
-	
+
 	while(command_response == COMMAND_UNSET) {			
 		if(strstr(usart_buffer, resp)){
 			i2s_send_index = (i2s_send_index + AUDIO_PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
@@ -432,16 +427,9 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	// returns 10+stream handle for opening a stream
 	
 	// first thing: check if we've received any transmission since the last time
-	if (usart_buffer_index != 0){
-		// check for different issues
-		if(strstr(usart_buffer, "[Closed: ")){
-			return COMMAND_STCLOSE; // return a value indicating closure of the stream
-		}
+	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: ")) {
+		return COMMAND_STCLOSE; // return a value indicating closure of the stream
 	}
-	
-	uint8_t command_finished = 0;
-	uint8_t command_failed = 0;
-	uint8_t parse_error = 0;
 	
 	uint32_t ms_counter = 0;
 	// clear buffer
@@ -455,14 +443,13 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	
 	// usually PACKET_SIZE, unless it's the last one
 	uint32_t bytes_to_send = end_index - start_index;
-	
-	uint8_t curr_data_point;
-	
+
 	char* templated_command[30];
 	usart_write_line(BOARD_USART,"\r\n");
 	sprintf(templated_command, "write %d %d\r\n", handle, bytes_to_send);
 	usart_write_line(BOARD_USART, templated_command);
-	
+
+	uint8_t curr_data_point;	
 	for (int i = start_index; i < end_index; i++) {
 		curr_data_point = (array_start_pointer)[i];	
 		usart_putchar(BOARD_USART, curr_data_point);
@@ -497,11 +484,7 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 	// returns 1 for a failed write
 	// returns 2 for a timeout
 	// returns 10+stream handle for opening a stream
-	
-	uint8_t command_finished = 0;
-	uint8_t command_failed = 0;
-	uint8_t parse_error = 0;
-	
+
 	uint32_t ms_counter = 0;
 	// clear buffer
 	memset(usart_buffer, 0, BUFFER_SIZE);
