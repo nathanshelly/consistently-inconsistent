@@ -3,37 +3,37 @@ webcam.elf:     file format elf32-littlearm
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00009c44  00400000  00400000  00010000  2**6
+  0 .text         00009c1c  00400000  00400000  00010000  2**6
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .ARM.exidx    00000008  00409c44  00409c44  00019c44  2**2
+  1 .ARM.exidx    00000008  00409c1c  00409c1c  00019c1c  2**2
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
-  2 .relocate     000009bc  20000000  00409c4c  00020000  2**3
+  2 .relocate     000009bc  20000000  00409c24  00020000  2**3
                   CONTENTS, ALLOC, LOAD, CODE
-  3 .bss          0000ce18  200009bc  0040a608  000209bc  2**2
+  3 .bss          0000ce18  200009bc  0040a5e0  000209bc  2**2
                   ALLOC
-  4 .stack        00003004  2000d7d4  00417420  000209bc  2**0
+  4 .stack        00003004  2000d7d4  004173f8  000209bc  2**0
                   ALLOC
   5 .ARM.attributes 0000002a  00000000  00000000  000209bc  2**0
                   CONTENTS, READONLY
   6 .comment      00000059  00000000  00000000  000209e6  2**0
                   CONTENTS, READONLY
-  7 .debug_info   0001a392  00000000  00000000  00020a3f  2**0
+  7 .debug_info   0001a302  00000000  00000000  00020a3f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00003550  00000000  00000000  0003add1  2**0
+  8 .debug_abbrev 00003543  00000000  00000000  0003ad41  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    0000844a  00000000  00000000  0003e321  2**0
+  9 .debug_loc    000083f8  00000000  00000000  0003e284  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_aranges 00000e80  00000000  00000000  0004676b  2**0
+ 10 .debug_aranges 00000e78  00000000  00000000  0004667c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000d88  00000000  00000000  000475eb  2**0
+ 11 .debug_ranges 00000d80  00000000  00000000  000474f4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_macro  00008d3d  00000000  00000000  00048373  2**0
+ 12 .debug_macro  00008d3d  00000000  00000000  00048274  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_line   00011357  00000000  00000000  000510b0  2**0
+ 13 .debug_line   00011339  00000000  00000000  00050fb1  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    000506e9  00000000  00000000  00062407  2**0
+ 14 .debug_str    000506a4  00000000  00000000  000622ea  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_frame  00004980  00000000  00000000  000b2af0  2**2
+ 15 .debug_frame  0000495c  00000000  00000000  000b2990  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -68,7 +68,7 @@ Disassembly of section .text:
   4000e2:	bd10      	pop	{r4, pc}
   4000e4:	200009bc 	.word	0x200009bc
   4000e8:	00000000 	.word	0x00000000
-  4000ec:	00409c4c 	.word	0x00409c4c
+  4000ec:	00409c24 	.word	0x00409c24
 
 004000f0 <frame_dummy>:
   4000f0:	4b0c      	ldr	r3, [pc, #48]	; (400124 <frame_dummy+0x34>)
@@ -96,9 +96,9 @@ Disassembly of section .text:
   400120:	4718      	bx	r3
   400122:	bf00      	nop
   400124:	00000000 	.word	0x00000000
-  400128:	00409c4c 	.word	0x00409c4c
+  400128:	00409c24 	.word	0x00409c24
   40012c:	200009c0 	.word	0x200009c0
-  400130:	00409c4c 	.word	0x00409c4c
+  400130:	00409c24 	.word	0x00409c24
   400134:	00000000 	.word	0x00000000
 
 00400138 <ssc_set_clock_divider>:
@@ -3871,7 +3871,7 @@ void start_capture(void)
   4015b0:	0040322d 	.word	0x0040322d
   4015b4:	20008760 	.word	0x20008760
   4015b8:	004014c9 	.word	0x004014c9
-  4015bc:	004026b1 	.word	0x004026b1
+  4015bc:	00402479 	.word	0x00402479
   4015c0:	00403259 	.word	0x00403259
 
 004015c4 <find_image_len>:
@@ -5248,1758 +5248,1735 @@ static inline void sysclk_enable_peripheral_clock(uint32_t ul_id)
  * another transfer if the desired bps has not been met yet.
  *
  */
-void handler_usart(void)
-{	
+void handler_usart()
+{
   401e00:	b580      	push	{r7, lr}
   401e02:	b082      	sub	sp, #8
   401e04:	af00      	add	r7, sp, #0
-	uint8_t recieved_char_flag = 0;
-  401e06:	2300      	movs	r3, #0
-  401e08:	71fb      	strb	r3, [r7, #7]
-	uint32_t ul_status;
-	
 	usart_disable_interrupt(BOARD_USART, US_IER_RXRDY);
-  401e0a:	2101      	movs	r1, #1
-  401e0c:	4815      	ldr	r0, [pc, #84]	; (401e64 <USART0_Handler+0x64>)
-  401e0e:	4b16      	ldr	r3, [pc, #88]	; (401e68 <USART0_Handler+0x68>)
-  401e10:	4798      	blx	r3
+  401e06:	2101      	movs	r1, #1
+  401e08:	4815      	ldr	r0, [pc, #84]	; (401e60 <USART0_Handler+0x60>)
+  401e0a:	4b16      	ldr	r3, [pc, #88]	; (401e64 <USART0_Handler+0x64>)
+  401e0c:	4798      	blx	r3
 	
 	/* Read USART status. */
-	ul_status = usart_get_status(BOARD_USART);
-  401e12:	4814      	ldr	r0, [pc, #80]	; (401e64 <USART0_Handler+0x64>)
-  401e14:	4b15      	ldr	r3, [pc, #84]	; (401e6c <USART0_Handler+0x6c>)
-  401e16:	4798      	blx	r3
-  401e18:	6038      	str	r0, [r7, #0]
+	uint32_t ul_status = usart_get_status(BOARD_USART);
+  401e0e:	4814      	ldr	r0, [pc, #80]	; (401e60 <USART0_Handler+0x60>)
+  401e10:	4b15      	ldr	r3, [pc, #84]	; (401e68 <USART0_Handler+0x68>)
+  401e12:	4798      	blx	r3
+  401e14:	6078      	str	r0, [r7, #4]
 
 	/* Receive buffer is full. */
-	recieved_char_flag = usart_read(BOARD_USART, &received_byte_wifi);
-  401e1a:	4915      	ldr	r1, [pc, #84]	; (401e70 <USART0_Handler+0x70>)
-  401e1c:	4811      	ldr	r0, [pc, #68]	; (401e64 <USART0_Handler+0x64>)
-  401e1e:	4b15      	ldr	r3, [pc, #84]	; (401e74 <USART0_Handler+0x74>)
-  401e20:	4798      	blx	r3
-  401e22:	4603      	mov	r3, r0
-  401e24:	71fb      	strb	r3, [r7, #7]
-	// he doesn't have this line?
+	uint8_t recieved_char_flag = usart_read(BOARD_USART, &received_byte_wifi);
+  401e16:	4915      	ldr	r1, [pc, #84]	; (401e6c <USART0_Handler+0x6c>)
+  401e18:	4811      	ldr	r0, [pc, #68]	; (401e60 <USART0_Handler+0x60>)
+  401e1a:	4b15      	ldr	r3, [pc, #84]	; (401e70 <USART0_Handler+0x70>)
+  401e1c:	4798      	blx	r3
+  401e1e:	4603      	mov	r3, r0
+  401e20:	70fb      	strb	r3, [r7, #3]
 	
 	if (ul_status & US_CSR_RXRDY) {
-  401e26:	683b      	ldr	r3, [r7, #0]
-  401e28:	f003 0301 	and.w	r3, r3, #1
-  401e2c:	2b00      	cmp	r3, #0
-  401e2e:	d011      	beq.n	401e54 <USART0_Handler+0x54>
+  401e22:	687b      	ldr	r3, [r7, #4]
+  401e24:	f003 0301 	and.w	r3, r3, #1
+  401e28:	2b00      	cmp	r3, #0
+  401e2a:	d011      	beq.n	401e50 <USART0_Handler+0x50>
 		recieved_char_flag = usart_read(BOARD_USART, &received_byte_wifi);
-  401e30:	490f      	ldr	r1, [pc, #60]	; (401e70 <USART0_Handler+0x70>)
-  401e32:	480c      	ldr	r0, [pc, #48]	; (401e64 <USART0_Handler+0x64>)
-  401e34:	4b0f      	ldr	r3, [pc, #60]	; (401e74 <USART0_Handler+0x74>)
-  401e36:	4798      	blx	r3
-  401e38:	4603      	mov	r3, r0
-  401e3a:	71fb      	strb	r3, [r7, #7]
+  401e2c:	490f      	ldr	r1, [pc, #60]	; (401e6c <USART0_Handler+0x6c>)
+  401e2e:	480c      	ldr	r0, [pc, #48]	; (401e60 <USART0_Handler+0x60>)
+  401e30:	4b0f      	ldr	r3, [pc, #60]	; (401e70 <USART0_Handler+0x70>)
+  401e32:	4798      	blx	r3
+  401e34:	4603      	mov	r3, r0
+  401e36:	70fb      	strb	r3, [r7, #3]
 		usart_buffer[usart_buffer_index] = (uint8_t) received_byte_wifi;
-  401e3c:	4b0e      	ldr	r3, [pc, #56]	; (401e78 <USART0_Handler+0x78>)
-  401e3e:	681b      	ldr	r3, [r3, #0]
-  401e40:	4a0b      	ldr	r2, [pc, #44]	; (401e70 <USART0_Handler+0x70>)
-  401e42:	6812      	ldr	r2, [r2, #0]
-  401e44:	b2d1      	uxtb	r1, r2
-  401e46:	4a0d      	ldr	r2, [pc, #52]	; (401e7c <USART0_Handler+0x7c>)
-  401e48:	54d1      	strb	r1, [r2, r3]
+  401e38:	4b0e      	ldr	r3, [pc, #56]	; (401e74 <USART0_Handler+0x74>)
+  401e3a:	681b      	ldr	r3, [r3, #0]
+  401e3c:	4a0b      	ldr	r2, [pc, #44]	; (401e6c <USART0_Handler+0x6c>)
+  401e3e:	6812      	ldr	r2, [r2, #0]
+  401e40:	b2d1      	uxtb	r1, r2
+  401e42:	4a0d      	ldr	r2, [pc, #52]	; (401e78 <USART0_Handler+0x78>)
+  401e44:	54d1      	strb	r1, [r2, r3]
 		usart_buffer_index++;
-  401e4a:	4b0b      	ldr	r3, [pc, #44]	; (401e78 <USART0_Handler+0x78>)
-  401e4c:	681b      	ldr	r3, [r3, #0]
-  401e4e:	3301      	adds	r3, #1
-  401e50:	4a09      	ldr	r2, [pc, #36]	; (401e78 <USART0_Handler+0x78>)
-  401e52:	6013      	str	r3, [r2, #0]
+  401e46:	4b0b      	ldr	r3, [pc, #44]	; (401e74 <USART0_Handler+0x74>)
+  401e48:	681b      	ldr	r3, [r3, #0]
+  401e4a:	3301      	adds	r3, #1
+  401e4c:	4a09      	ldr	r2, [pc, #36]	; (401e74 <USART0_Handler+0x74>)
+  401e4e:	6013      	str	r3, [r2, #0]
 	}	
 	
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
-  401e54:	2101      	movs	r1, #1
-  401e56:	4803      	ldr	r0, [pc, #12]	; (401e64 <USART0_Handler+0x64>)
-  401e58:	4b09      	ldr	r3, [pc, #36]	; (401e80 <USART0_Handler+0x80>)
-  401e5a:	4798      	blx	r3
+  401e50:	2101      	movs	r1, #1
+  401e52:	4803      	ldr	r0, [pc, #12]	; (401e60 <USART0_Handler+0x60>)
+  401e54:	4b09      	ldr	r3, [pc, #36]	; (401e7c <USART0_Handler+0x7c>)
+  401e56:	4798      	blx	r3
 }
-  401e5c:	bf00      	nop
-  401e5e:	3708      	adds	r7, #8
-  401e60:	46bd      	mov	sp, r7
-  401e62:	bd80      	pop	{r7, pc}
-  401e64:	40024000 	.word	0x40024000
-  401e68:	00400feb 	.word	0x00400feb
-  401e6c:	00401005 	.word	0x00401005
-  401e70:	2000d58c 	.word	0x2000d58c
-  401e74:	004010c9 	.word	0x004010c9
-  401e78:	2000d784 	.word	0x2000d784
-  401e7c:	2000d590 	.word	0x2000d590
-  401e80:	00400fd1 	.word	0x00400fd1
+  401e58:	bf00      	nop
+  401e5a:	3708      	adds	r7, #8
+  401e5c:	46bd      	mov	sp, r7
+  401e5e:	bd80      	pop	{r7, pc}
+  401e60:	40024000 	.word	0x40024000
+  401e64:	00400feb 	.word	0x00400feb
+  401e68:	00401005 	.word	0x00401005
+  401e6c:	2000d58c 	.word	0x2000d58c
+  401e70:	004010c9 	.word	0x004010c9
+  401e74:	2000d784 	.word	0x2000d784
+  401e78:	2000d590 	.word	0x2000d590
+  401e7c:	00400fd1 	.word	0x00400fd1
 
-00401e84 <configure_usart>:
+00401e80 <configure_usart>:
 
 /**
  *  Configure board USART communication with PC or other terminal.
  */
-void configure_usart(void)
+void configure_usart()
 {
-  401e84:	b5b0      	push	{r4, r5, r7, lr}
-  401e86:	b086      	sub	sp, #24
-  401e88:	af00      	add	r7, sp, #0
+  401e80:	b5b0      	push	{r4, r5, r7, lr}
+  401e82:	b086      	sub	sp, #24
+  401e84:	af00      	add	r7, sp, #0
 	static uint32_t ul_sysclk;
 	const sam_usart_opt_t usart_console_settings = {
-  401e8a:	4b15      	ldr	r3, [pc, #84]	; (401ee0 <configure_usart+0x5c>)
-  401e8c:	463c      	mov	r4, r7
-  401e8e:	461d      	mov	r5, r3
-  401e90:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
-  401e92:	c40f      	stmia	r4!, {r0, r1, r2, r3}
-  401e94:	e895 0003 	ldmia.w	r5, {r0, r1}
-  401e98:	e884 0003 	stmia.w	r4, {r0, r1}
+  401e86:	4b15      	ldr	r3, [pc, #84]	; (401edc <configure_usart+0x5c>)
+  401e88:	463c      	mov	r4, r7
+  401e8a:	461d      	mov	r5, r3
+  401e8c:	cd0f      	ldmia	r5!, {r0, r1, r2, r3}
+  401e8e:	c40f      	stmia	r4!, {r0, r1, r2, r3}
+  401e90:	e895 0003 	ldmia.w	r5, {r0, r1}
+  401e94:	e884 0003 	stmia.w	r4, {r0, r1}
 		/* This field is only used in IrDA mode. */
 		0
 	};
 
 	/* Get peripheral clock. */
 	ul_sysclk = sysclk_get_peripheral_hz();
-  401e9c:	4b11      	ldr	r3, [pc, #68]	; (401ee4 <configure_usart+0x60>)
-  401e9e:	4798      	blx	r3
-  401ea0:	4602      	mov	r2, r0
-  401ea2:	4b11      	ldr	r3, [pc, #68]	; (401ee8 <configure_usart+0x64>)
-  401ea4:	601a      	str	r2, [r3, #0]
+  401e98:	4b11      	ldr	r3, [pc, #68]	; (401ee0 <configure_usart+0x60>)
+  401e9a:	4798      	blx	r3
+  401e9c:	4602      	mov	r2, r0
+  401e9e:	4b11      	ldr	r3, [pc, #68]	; (401ee4 <configure_usart+0x64>)
+  401ea0:	601a      	str	r2, [r3, #0]
 
 	/* Enable peripheral clock. */
 	sysclk_enable_peripheral_clock(BOARD_ID_USART);
-  401ea6:	200e      	movs	r0, #14
-  401ea8:	4b10      	ldr	r3, [pc, #64]	; (401eec <configure_usart+0x68>)
-  401eaa:	4798      	blx	r3
+  401ea2:	200e      	movs	r0, #14
+  401ea4:	4b10      	ldr	r3, [pc, #64]	; (401ee8 <configure_usart+0x68>)
+  401ea6:	4798      	blx	r3
 
 	/* Configure USART. */
 	usart_init_hw_handshaking(BOARD_USART, &usart_console_settings, ul_sysclk);
-  401eac:	4b0e      	ldr	r3, [pc, #56]	; (401ee8 <configure_usart+0x64>)
-  401eae:	681a      	ldr	r2, [r3, #0]
-  401eb0:	463b      	mov	r3, r7
-  401eb2:	4619      	mov	r1, r3
-  401eb4:	480e      	ldr	r0, [pc, #56]	; (401ef0 <configure_usart+0x6c>)
-  401eb6:	4b0f      	ldr	r3, [pc, #60]	; (401ef4 <configure_usart+0x70>)
-  401eb8:	4798      	blx	r3
+  401ea8:	4b0e      	ldr	r3, [pc, #56]	; (401ee4 <configure_usart+0x64>)
+  401eaa:	681a      	ldr	r2, [r3, #0]
+  401eac:	463b      	mov	r3, r7
+  401eae:	4619      	mov	r1, r3
+  401eb0:	480e      	ldr	r0, [pc, #56]	; (401eec <configure_usart+0x6c>)
+  401eb2:	4b0f      	ldr	r3, [pc, #60]	; (401ef0 <configure_usart+0x70>)
+  401eb4:	4798      	blx	r3
 
 	/* Disable all the interrupts. */
 	usart_disable_interrupt(BOARD_USART, ALL_INTERRUPT_MASK);
-  401eba:	f04f 31ff 	mov.w	r1, #4294967295
-  401ebe:	480c      	ldr	r0, [pc, #48]	; (401ef0 <configure_usart+0x6c>)
-  401ec0:	4b0d      	ldr	r3, [pc, #52]	; (401ef8 <configure_usart+0x74>)
-  401ec2:	4798      	blx	r3
+  401eb6:	f04f 31ff 	mov.w	r1, #4294967295
+  401eba:	480c      	ldr	r0, [pc, #48]	; (401eec <configure_usart+0x6c>)
+  401ebc:	4b0d      	ldr	r3, [pc, #52]	; (401ef4 <configure_usart+0x74>)
+  401ebe:	4798      	blx	r3
 	
 	/* Enable TX & RX function. */
 	usart_enable_tx(BOARD_USART);
-  401ec4:	480a      	ldr	r0, [pc, #40]	; (401ef0 <configure_usart+0x6c>)
-  401ec6:	4b0d      	ldr	r3, [pc, #52]	; (401efc <configure_usart+0x78>)
-  401ec8:	4798      	blx	r3
+  401ec0:	480a      	ldr	r0, [pc, #40]	; (401eec <configure_usart+0x6c>)
+  401ec2:	4b0d      	ldr	r3, [pc, #52]	; (401ef8 <configure_usart+0x78>)
+  401ec4:	4798      	blx	r3
 	usart_enable_rx(BOARD_USART);
-  401eca:	4809      	ldr	r0, [pc, #36]	; (401ef0 <configure_usart+0x6c>)
-  401ecc:	4b0c      	ldr	r3, [pc, #48]	; (401f00 <configure_usart+0x7c>)
-  401ece:	4798      	blx	r3
+  401ec6:	4809      	ldr	r0, [pc, #36]	; (401eec <configure_usart+0x6c>)
+  401ec8:	4b0c      	ldr	r3, [pc, #48]	; (401efc <configure_usart+0x7c>)
+  401eca:	4798      	blx	r3
 
 	/* Configure and enable interrupt of USART. */
 	NVIC_EnableIRQ(USART_IRQn);
-  401ed0:	200e      	movs	r0, #14
-  401ed2:	4b0c      	ldr	r3, [pc, #48]	; (401f04 <configure_usart+0x80>)
-  401ed4:	4798      	blx	r3
+  401ecc:	200e      	movs	r0, #14
+  401ece:	4b0c      	ldr	r3, [pc, #48]	; (401f00 <configure_usart+0x80>)
+  401ed0:	4798      	blx	r3
 	
 	//usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
 }
-  401ed6:	bf00      	nop
-  401ed8:	3718      	adds	r7, #24
-  401eda:	46bd      	mov	sp, r7
-  401edc:	bdb0      	pop	{r4, r5, r7, pc}
-  401ede:	bf00      	nop
-  401ee0:	00409804 	.word	0x00409804
-  401ee4:	00401dd1 	.word	0x00401dd1
-  401ee8:	2000d78c 	.word	0x2000d78c
-  401eec:	00401de5 	.word	0x00401de5
-  401ef0:	40024000 	.word	0x40024000
-  401ef4:	00400f31 	.word	0x00400f31
-  401ef8:	00400feb 	.word	0x00400feb
-  401efc:	00400f71 	.word	0x00400f71
-  401f00:	00400fa1 	.word	0x00400fa1
-  401f04:	00401cfd 	.word	0x00401cfd
+  401ed2:	bf00      	nop
+  401ed4:	3718      	adds	r7, #24
+  401ed6:	46bd      	mov	sp, r7
+  401ed8:	bdb0      	pop	{r4, r5, r7, pc}
+  401eda:	bf00      	nop
+  401edc:	00409804 	.word	0x00409804
+  401ee0:	00401dd1 	.word	0x00401dd1
+  401ee4:	2000d78c 	.word	0x2000d78c
+  401ee8:	00401de5 	.word	0x00401de5
+  401eec:	40024000 	.word	0x40024000
+  401ef0:	00400f31 	.word	0x00400f31
+  401ef4:	00400feb 	.word	0x00400feb
+  401ef8:	00400f71 	.word	0x00400f71
+  401efc:	00400fa1 	.word	0x00400fa1
+  401f00:	00401cfd 	.word	0x00401cfd
 
-00401f08 <handler_command_complete>:
+00401f04 <handler_command_complete>:
 
 /**
  *  \brief Command response handler for wifi.
  */
 void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
-  401f08:	b480      	push	{r7}
-  401f0a:	b083      	sub	sp, #12
-  401f0c:	af00      	add	r7, sp, #0
-  401f0e:	6078      	str	r0, [r7, #4]
-  401f10:	6039      	str	r1, [r7, #0]
-	//delay_ms(50);
-	
-	//input_buffer[buffer_index] = 0;
-	//data_recieved = 1;
-	//buffer_index = 0;
+  401f04:	b480      	push	{r7}
+  401f06:	b083      	sub	sp, #12
+  401f08:	af00      	add	r7, sp, #0
+  401f0a:	6078      	str	r0, [r7, #4]
+  401f0c:	6039      	str	r1, [r7, #0]
+	unused(ul_id);
+	unused(ul_mask);
 }
-  401f12:	bf00      	nop
-  401f14:	370c      	adds	r7, #12
-  401f16:	46bd      	mov	sp, r7
-  401f18:	bc80      	pop	{r7}
-  401f1a:	4770      	bx	lr
+  401f0e:	bf00      	nop
+  401f10:	370c      	adds	r7, #12
+  401f12:	46bd      	mov	sp, r7
+  401f14:	bc80      	pop	{r7}
+  401f16:	4770      	bx	lr
 
-00401f1c <configure_command_complete>:
+00401f18 <configure_command_complete>:
 
 /**
  *  \brief Configures communication pin for wifi.
  */
-void configure_command_complete(void){
-  401f1c:	b590      	push	{r4, r7, lr}
-  401f1e:	b083      	sub	sp, #12
-  401f20:	af02      	add	r7, sp, #8
+void configure_command_complete(){
+  401f18:	b590      	push	{r4, r7, lr}
+  401f1a:	b083      	sub	sp, #12
+  401f1c:	af02      	add	r7, sp, #8
 	// we set as the wifi command pin
 	// we should be able to do this
 	
 	//configure button from the button project?
 	
 	pmc_enable_periph_clk(WIFI_COMM_ID); // put these definitions in wifi.h
-  401f22:	200c      	movs	r0, #12
-  401f24:	4b0e      	ldr	r3, [pc, #56]	; (401f60 <configure_command_complete+0x44>)
-  401f26:	4798      	blx	r3
+  401f1e:	200c      	movs	r0, #12
+  401f20:	4b0e      	ldr	r3, [pc, #56]	; (401f5c <configure_command_complete+0x44>)
+  401f22:	4798      	blx	r3
 	// see which pins we used
 	// just the rising edge option
 	
 	pio_set_debounce_filter(WIFI_COMM_PIO, WIFI_COMM_PIN_MSK, 10);
-  401f28:	220a      	movs	r2, #10
-  401f2a:	2101      	movs	r1, #1
-  401f2c:	480d      	ldr	r0, [pc, #52]	; (401f64 <configure_command_complete+0x48>)
-  401f2e:	4b0e      	ldr	r3, [pc, #56]	; (401f68 <configure_command_complete+0x4c>)
-  401f30:	4798      	blx	r3
+  401f24:	220a      	movs	r2, #10
+  401f26:	2101      	movs	r1, #1
+  401f28:	480d      	ldr	r0, [pc, #52]	; (401f60 <configure_command_complete+0x48>)
+  401f2a:	4b0e      	ldr	r3, [pc, #56]	; (401f64 <configure_command_complete+0x4c>)
+  401f2c:	4798      	blx	r3
 	
 	pio_handler_set(WIFI_COMM_PIO, WIFI_COMM_ID, WIFI_COMM_PIN_MSK, WIFI_COMM_ATTR, handler_command_complete);
-  401f32:	4b0e      	ldr	r3, [pc, #56]	; (401f6c <configure_command_complete+0x50>)
-  401f34:	9300      	str	r3, [sp, #0]
-  401f36:	2370      	movs	r3, #112	; 0x70
-  401f38:	2201      	movs	r2, #1
-  401f3a:	210c      	movs	r1, #12
-  401f3c:	4809      	ldr	r0, [pc, #36]	; (401f64 <configure_command_complete+0x48>)
-  401f3e:	4c0c      	ldr	r4, [pc, #48]	; (401f70 <configure_command_complete+0x54>)
-  401f40:	47a0      	blx	r4
+  401f2e:	4b0e      	ldr	r3, [pc, #56]	; (401f68 <configure_command_complete+0x50>)
+  401f30:	9300      	str	r3, [sp, #0]
+  401f32:	2370      	movs	r3, #112	; 0x70
+  401f34:	2201      	movs	r2, #1
+  401f36:	210c      	movs	r1, #12
+  401f38:	4809      	ldr	r0, [pc, #36]	; (401f60 <configure_command_complete+0x48>)
+  401f3a:	4c0c      	ldr	r4, [pc, #48]	; (401f6c <configure_command_complete+0x54>)
+  401f3c:	47a0      	blx	r4
 	
 	NVIC_EnableIRQ((IRQn_Type)WIFI_COMM_ID);
-  401f42:	200c      	movs	r0, #12
-  401f44:	4b0b      	ldr	r3, [pc, #44]	; (401f74 <configure_command_complete+0x58>)
-  401f46:	4798      	blx	r3
+  401f3e:	200c      	movs	r0, #12
+  401f40:	4b0b      	ldr	r3, [pc, #44]	; (401f70 <configure_command_complete+0x58>)
+  401f42:	4798      	blx	r3
 	
 	pio_enable_interrupt(WIFI_COMM_PIO, WIFI_COMM_PIN_MSK);
-  401f48:	2101      	movs	r1, #1
-  401f4a:	4806      	ldr	r0, [pc, #24]	; (401f64 <configure_command_complete+0x48>)
-  401f4c:	4b0a      	ldr	r3, [pc, #40]	; (401f78 <configure_command_complete+0x5c>)
-  401f4e:	4798      	blx	r3
+  401f44:	2101      	movs	r1, #1
+  401f46:	4806      	ldr	r0, [pc, #24]	; (401f60 <configure_command_complete+0x48>)
+  401f48:	4b0a      	ldr	r3, [pc, #40]	; (401f74 <configure_command_complete+0x5c>)
+  401f4a:	4798      	blx	r3
 	data_recieved = 0;
-  401f50:	4b0a      	ldr	r3, [pc, #40]	; (401f7c <configure_command_complete+0x60>)
-  401f52:	2200      	movs	r2, #0
-  401f54:	601a      	str	r2, [r3, #0]
+  401f4c:	4b0a      	ldr	r3, [pc, #40]	; (401f78 <configure_command_complete+0x60>)
+  401f4e:	2200      	movs	r2, #0
+  401f50:	601a      	str	r2, [r3, #0]
 }
-  401f56:	bf00      	nop
-  401f58:	3704      	adds	r7, #4
-  401f5a:	46bd      	mov	sp, r7
-  401f5c:	bd90      	pop	{r4, r7, pc}
-  401f5e:	bf00      	nop
-  401f60:	00403521 	.word	0x00403521
-  401f64:	400e1000 	.word	0x400e1000
-  401f68:	00402d63 	.word	0x00402d63
-  401f6c:	00401f09 	.word	0x00401f09
-  401f70:	00400919 	.word	0x00400919
-  401f74:	00401cfd 	.word	0x00401cfd
-  401f78:	00402ff7 	.word	0x00402ff7
-  401f7c:	2000d584 	.word	0x2000d584
+  401f52:	bf00      	nop
+  401f54:	3704      	adds	r7, #4
+  401f56:	46bd      	mov	sp, r7
+  401f58:	bd90      	pop	{r4, r7, pc}
+  401f5a:	bf00      	nop
+  401f5c:	00403521 	.word	0x00403521
+  401f60:	400e1000 	.word	0x400e1000
+  401f64:	00402d63 	.word	0x00402d63
+  401f68:	00401f05 	.word	0x00401f05
+  401f6c:	00400919 	.word	0x00400919
+  401f70:	00401cfd 	.word	0x00401cfd
+  401f74:	00402ff7 	.word	0x00402ff7
+  401f78:	2000d584 	.word	0x2000d584
 
-00401f80 <handler_web_setup>:
+00401f7c <handler_web_setup>:
 
 /**
  *  \brief Handler for setting up wifi.
  */
 void handler_web_setup(uint32_t ul_id, uint32_t ul_mask) {
-  401f80:	b480      	push	{r7}
-  401f82:	b083      	sub	sp, #12
-  401f84:	af00      	add	r7, sp, #0
-  401f86:	6078      	str	r0, [r7, #4]
-  401f88:	6039      	str	r1, [r7, #0]
+  401f7c:	b480      	push	{r7}
+  401f7e:	b083      	sub	sp, #12
+  401f80:	af00      	add	r7, sp, #0
+  401f82:	6078      	str	r0, [r7, #4]
+  401f84:	6039      	str	r1, [r7, #0]
 	unused(ul_id);
 	unused(ul_mask);
 
 	wifi_setup_flag = true;
-  401f8a:	4b04      	ldr	r3, [pc, #16]	; (401f9c <handler_web_setup+0x1c>)
-  401f8c:	2201      	movs	r2, #1
-  401f8e:	601a      	str	r2, [r3, #0]
+  401f86:	4b04      	ldr	r3, [pc, #16]	; (401f98 <handler_web_setup+0x1c>)
+  401f88:	2201      	movs	r2, #1
+  401f8a:	601a      	str	r2, [r3, #0]
 }
-  401f90:	bf00      	nop
-  401f92:	370c      	adds	r7, #12
-  401f94:	46bd      	mov	sp, r7
-  401f96:	bc80      	pop	{r7}
-  401f98:	4770      	bx	lr
-  401f9a:	bf00      	nop
-  401f9c:	2000d588 	.word	0x2000d588
+  401f8c:	bf00      	nop
+  401f8e:	370c      	adds	r7, #12
+  401f90:	46bd      	mov	sp, r7
+  401f92:	bc80      	pop	{r7}
+  401f94:	4770      	bx	lr
+  401f96:	bf00      	nop
+  401f98:	2000d588 	.word	0x2000d588
 
-00401fa0 <configure_web_setup>:
+00401f9c <configure_web_setup>:
 
 /**
  *  \brief Configures wifi setup pin.
  */
-void configure_web_setup(void){
-  401fa0:	b590      	push	{r4, r7, lr}
-  401fa2:	b083      	sub	sp, #12
-  401fa4:	af02      	add	r7, sp, #8
+void configure_web_setup(){
+  401f9c:	b590      	push	{r4, r7, lr}
+  401f9e:	b083      	sub	sp, #12
+  401fa0:	af02      	add	r7, sp, #8
 	
 	///* Set direction and pullup on the given button IOPORT */
 	//ioport_set_pin_dir(GPIO_WIFI_RESET_PB, IOPORT_DIR_INPUT);
 	//ioport_set_pin_mode(GPIO_WIFI_RESET_PB, IOPORT_MODE_PULLUP);
 	/* Configure PIO clock. */
 	pmc_enable_periph_clk(WIFI_SETUP_ID);
-  401fa6:	200c      	movs	r0, #12
-  401fa8:	4b0e      	ldr	r3, [pc, #56]	; (401fe4 <configure_web_setup+0x44>)
-  401faa:	4798      	blx	r3
+  401fa2:	200c      	movs	r0, #12
+  401fa4:	4b0e      	ldr	r3, [pc, #56]	; (401fe0 <configure_web_setup+0x44>)
+  401fa6:	4798      	blx	r3
 
 	/* Adjust PIO debounce filter using a 10 Hz filter. */
 	pio_set_debounce_filter(WIFI_SETUP_PIO, WIFI_SETUP_MASK, 10);
-  401fac:	220a      	movs	r2, #10
-  401fae:	f44f 4180 	mov.w	r1, #16384	; 0x4000
-  401fb2:	480d      	ldr	r0, [pc, #52]	; (401fe8 <configure_web_setup+0x48>)
-  401fb4:	4b0d      	ldr	r3, [pc, #52]	; (401fec <configure_web_setup+0x4c>)
-  401fb6:	4798      	blx	r3
+  401fa8:	220a      	movs	r2, #10
+  401faa:	f44f 4180 	mov.w	r1, #16384	; 0x4000
+  401fae:	480d      	ldr	r0, [pc, #52]	; (401fe4 <configure_web_setup+0x48>)
+  401fb0:	4b0d      	ldr	r3, [pc, #52]	; (401fe8 <configure_web_setup+0x4c>)
+  401fb2:	4798      	blx	r3
 
 	/* Initialize PIO interrupt handler, see PIO definition in conf_board.h */
 	pio_handler_set(WIFI_SETUP_PIO, WIFI_SETUP_ID, WIFI_SETUP_MASK,
-  401fb8:	4b0d      	ldr	r3, [pc, #52]	; (401ff0 <configure_web_setup+0x50>)
-  401fba:	9300      	str	r3, [sp, #0]
-  401fbc:	2379      	movs	r3, #121	; 0x79
-  401fbe:	f44f 4280 	mov.w	r2, #16384	; 0x4000
-  401fc2:	210c      	movs	r1, #12
-  401fc4:	4808      	ldr	r0, [pc, #32]	; (401fe8 <configure_web_setup+0x48>)
-  401fc6:	4c0b      	ldr	r4, [pc, #44]	; (401ff4 <configure_web_setup+0x54>)
-  401fc8:	47a0      	blx	r4
+  401fb4:	4b0d      	ldr	r3, [pc, #52]	; (401fec <configure_web_setup+0x50>)
+  401fb6:	9300      	str	r3, [sp, #0]
+  401fb8:	2379      	movs	r3, #121	; 0x79
+  401fba:	f44f 4280 	mov.w	r2, #16384	; 0x4000
+  401fbe:	210c      	movs	r1, #12
+  401fc0:	4808      	ldr	r0, [pc, #32]	; (401fe4 <configure_web_setup+0x48>)
+  401fc2:	4c0b      	ldr	r4, [pc, #44]	; (401ff0 <configure_web_setup+0x54>)
+  401fc4:	47a0      	blx	r4
 			WIFI_SETUP_ATTR, handler_web_setup);
 			
 	/* Enable PIO controller IRQs. */
 	NVIC_EnableIRQ((IRQn_Type) WIFI_SETUP_ID);
-  401fca:	200c      	movs	r0, #12
-  401fcc:	4b0a      	ldr	r3, [pc, #40]	; (401ff8 <configure_web_setup+0x58>)
-  401fce:	4798      	blx	r3
+  401fc6:	200c      	movs	r0, #12
+  401fc8:	4b0a      	ldr	r3, [pc, #40]	; (401ff4 <configure_web_setup+0x58>)
+  401fca:	4798      	blx	r3
 
 	/* Enable PIO interrupt lines. */
 	pio_enable_interrupt(WIFI_SETUP_PIO, WIFI_SETUP_MASK);
-  401fd0:	f44f 4180 	mov.w	r1, #16384	; 0x4000
-  401fd4:	4804      	ldr	r0, [pc, #16]	; (401fe8 <configure_web_setup+0x48>)
-  401fd6:	4b09      	ldr	r3, [pc, #36]	; (401ffc <configure_web_setup+0x5c>)
-  401fd8:	4798      	blx	r3
+  401fcc:	f44f 4180 	mov.w	r1, #16384	; 0x4000
+  401fd0:	4804      	ldr	r0, [pc, #16]	; (401fe4 <configure_web_setup+0x48>)
+  401fd2:	4b09      	ldr	r3, [pc, #36]	; (401ff8 <configure_web_setup+0x5c>)
+  401fd4:	4798      	blx	r3
 }
-  401fda:	bf00      	nop
-  401fdc:	3704      	adds	r7, #4
-  401fde:	46bd      	mov	sp, r7
-  401fe0:	bd90      	pop	{r4, r7, pc}
-  401fe2:	bf00      	nop
-  401fe4:	00403521 	.word	0x00403521
-  401fe8:	400e1000 	.word	0x400e1000
-  401fec:	00402d63 	.word	0x00402d63
-  401ff0:	00401f81 	.word	0x00401f81
-  401ff4:	00400919 	.word	0x00400919
-  401ff8:	00401cfd 	.word	0x00401cfd
-  401ffc:	00402ff7 	.word	0x00402ff7
+  401fd6:	bf00      	nop
+  401fd8:	3704      	adds	r7, #4
+  401fda:	46bd      	mov	sp, r7
+  401fdc:	bd90      	pop	{r4, r7, pc}
+  401fde:	bf00      	nop
+  401fe0:	00403521 	.word	0x00403521
+  401fe4:	400e1000 	.word	0x400e1000
+  401fe8:	00402d63 	.word	0x00402d63
+  401fec:	00401f7d 	.word	0x00401f7d
+  401ff0:	00400919 	.word	0x00400919
+  401ff4:	00401cfd 	.word	0x00401cfd
+  401ff8:	00402ff7 	.word	0x00402ff7
 
-00402000 <write_audio_data_safe>:
+00401ffc <open_websocket>:
+		delay_ms(10);
+		timeout_counter++;
 	}
-	
-	//delay_ms(100);
 }
-
-uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
-  402000:	e92d 4890 	stmdb	sp!, {r4, r7, fp, lr}
-  402004:	b0a6      	sub	sp, #152	; 0x98
-  402006:	af00      	add	r7, sp, #0
-  402008:	60f8      	str	r0, [r7, #12]
-  40200a:	607a      	str	r2, [r7, #4]
-  40200c:	603b      	str	r3, [r7, #0]
-  40200e:	460b      	mov	r3, r1
-  402010:	72fb      	strb	r3, [r7, #11]
-	// returns 2 for a timeout
-	// returns 3 for an unexpected stream closure
-	// returns 10+stream handle for opening a stream
-	
-	// first thing: check if we've received any transmission since the last time
-	if (usart_buffer_index != 0){
-  402012:	4b62      	ldr	r3, [pc, #392]	; (40219c <write_audio_data_safe+0x19c>)
-  402014:	681b      	ldr	r3, [r3, #0]
-  402016:	2b00      	cmp	r3, #0
-  402018:	d008      	beq.n	40202c <write_audio_data_safe+0x2c>
-		// check for different issues
-		if(strstr(usart_buffer, "[Closed: ")){
-  40201a:	4961      	ldr	r1, [pc, #388]	; (4021a0 <write_audio_data_safe+0x1a0>)
-  40201c:	4861      	ldr	r0, [pc, #388]	; (4021a4 <write_audio_data_safe+0x1a4>)
-  40201e:	4b62      	ldr	r3, [pc, #392]	; (4021a8 <write_audio_data_safe+0x1a8>)
-  402020:	4798      	blx	r3
-  402022:	4603      	mov	r3, r0
-  402024:	2b00      	cmp	r3, #0
-  402026:	d001      	beq.n	40202c <write_audio_data_safe+0x2c>
-			return COMMAND_STCLOSE; // return a value indicating closure of the stream
-  402028:	2303      	movs	r3, #3
-  40202a:	e0b1      	b.n	402190 <write_audio_data_safe+0x190>
-		}
-	}
-
-	uint32_t ms_counter = 0;
-  40202c:	2300      	movs	r3, #0
-  40202e:	f8c7 3094 	str.w	r3, [r7, #148]	; 0x94
-	// clear buffer
-	memset(usart_buffer, 0, BUFFER_SIZE);
-  402032:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
-  402036:	2100      	movs	r1, #0
-  402038:	485a      	ldr	r0, [pc, #360]	; (4021a4 <write_audio_data_safe+0x1a4>)
-  40203a:	4b5c      	ldr	r3, [pc, #368]	; (4021ac <write_audio_data_safe+0x1ac>)
-  40203c:	4798      	blx	r3
-	// set buffer index to 0
-	usart_buffer_index = 0;
-  40203e:	4b57      	ldr	r3, [pc, #348]	; (40219c <write_audio_data_safe+0x19c>)
-  402040:	2200      	movs	r2, #0
-  402042:	601a      	str	r2, [r3, #0]
-	
-	if(is_audio_caught_up()) // make sure that the end index isn't in front of the receive index
-  402044:	4b5a      	ldr	r3, [pc, #360]	; (4021b0 <write_audio_data_safe+0x1b0>)
-  402046:	4798      	blx	r3
-  402048:	4603      	mov	r3, r0
-  40204a:	2b00      	cmp	r3, #0
-  40204c:	d001      	beq.n	402052 <write_audio_data_safe+0x52>
-		return COMMAND_RETRYIT;
-  40204e:	2304      	movs	r3, #4
-  402050:	e09e      	b.n	402190 <write_audio_data_safe+0x190>
-	
-	uint8_t curr_data_point;
-	
-	char* templated_command[30];
-	usart_write_line(BOARD_USART,"\r\n");
-  402052:	4958      	ldr	r1, [pc, #352]	; (4021b4 <write_audio_data_safe+0x1b4>)
-  402054:	4858      	ldr	r0, [pc, #352]	; (4021b8 <write_audio_data_safe+0x1b8>)
-  402056:	4b59      	ldr	r3, [pc, #356]	; (4021bc <write_audio_data_safe+0x1bc>)
-  402058:	4798      	blx	r3
-	sprintf(templated_command, "write %d %d\r\n", handle, AUDIO_PACKET_SIZE * 2);
-  40205a:	7afa      	ldrb	r2, [r7, #11]
-  40205c:	f107 0014 	add.w	r0, r7, #20
-  402060:	f44f 73c8 	mov.w	r3, #400	; 0x190
-  402064:	4956      	ldr	r1, [pc, #344]	; (4021c0 <write_audio_data_safe+0x1c0>)
-  402066:	4c57      	ldr	r4, [pc, #348]	; (4021c4 <write_audio_data_safe+0x1c4>)
-  402068:	47a0      	blx	r4
-	usart_write_line(BOARD_USART, templated_command);
-  40206a:	f107 0314 	add.w	r3, r7, #20
-  40206e:	4619      	mov	r1, r3
-  402070:	4851      	ldr	r0, [pc, #324]	; (4021b8 <write_audio_data_safe+0x1b8>)
-  402072:	4b52      	ldr	r3, [pc, #328]	; (4021bc <write_audio_data_safe+0x1bc>)
-  402074:	4798      	blx	r3
-	
-	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++)
-  402076:	4b54      	ldr	r3, [pc, #336]	; (4021c8 <write_audio_data_safe+0x1c8>)
-  402078:	681b      	ldr	r3, [r3, #0]
-  40207a:	005b      	lsls	r3, r3, #1
-  40207c:	f8c7 3090 	str.w	r3, [r7, #144]	; 0x90
-  402080:	e01c      	b.n	4020bc <write_audio_data_safe+0xbc>
-	{
-		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];	
-  402082:	f8d7 3090 	ldr.w	r3, [r7, #144]	; 0x90
-  402086:	4a51      	ldr	r2, [pc, #324]	; (4021cc <write_audio_data_safe+0x1cc>)
-  402088:	fb82 1203 	smull	r1, r2, r2, r3
-  40208c:	12d1      	asrs	r1, r2, #11
-  40208e:	17da      	asrs	r2, r3, #31
-  402090:	1a8a      	subs	r2, r1, r2
-  402092:	f44f 41fa 	mov.w	r1, #32000	; 0x7d00
-  402096:	fb01 f202 	mul.w	r2, r1, r2
-  40209a:	1a9a      	subs	r2, r3, r2
-  40209c:	68fb      	ldr	r3, [r7, #12]
-  40209e:	4413      	add	r3, r2
-  4020a0:	781b      	ldrb	r3, [r3, #0]
-  4020a2:	f887 308e 	strb.w	r3, [r7, #142]	; 0x8e
-		usart_putchar(BOARD_USART, curr_data_point);
-  4020a6:	f897 308e 	ldrb.w	r3, [r7, #142]	; 0x8e
-  4020aa:	4619      	mov	r1, r3
-  4020ac:	4842      	ldr	r0, [pc, #264]	; (4021b8 <write_audio_data_safe+0x1b8>)
-  4020ae:	4b48      	ldr	r3, [pc, #288]	; (4021d0 <write_audio_data_safe+0x1d0>)
-  4020b0:	4798      	blx	r3
-	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++)
-  4020b2:	f8d7 3090 	ldr.w	r3, [r7, #144]	; 0x90
-  4020b6:	3301      	adds	r3, #1
-  4020b8:	f8c7 3090 	str.w	r3, [r7, #144]	; 0x90
-  4020bc:	4b42      	ldr	r3, [pc, #264]	; (4021c8 <write_audio_data_safe+0x1c8>)
-  4020be:	681b      	ldr	r3, [r3, #0]
-  4020c0:	33c8      	adds	r3, #200	; 0xc8
-  4020c2:	005a      	lsls	r2, r3, #1
-  4020c4:	f8d7 3090 	ldr.w	r3, [r7, #144]	; 0x90
-  4020c8:	429a      	cmp	r2, r3
-  4020ca:	d8da      	bhi.n	402082 <write_audio_data_safe+0x82>
-	}
-	
-	uint8_t command_response = COMMAND_UNSET;
-  4020cc:	2363      	movs	r3, #99	; 0x63
-  4020ce:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
-	
-	while(command_response == COMMAND_UNSET) {			
-  4020d2:	e054      	b.n	40217e <write_audio_data_safe+0x17e>
-		if(strstr(usart_buffer, resp)){
-  4020d4:	6879      	ldr	r1, [r7, #4]
-  4020d6:	4833      	ldr	r0, [pc, #204]	; (4021a4 <write_audio_data_safe+0x1a4>)
-  4020d8:	4b33      	ldr	r3, [pc, #204]	; (4021a8 <write_audio_data_safe+0x1a8>)
-  4020da:	4798      	blx	r3
-  4020dc:	4603      	mov	r3, r0
-  4020de:	2b00      	cmp	r3, #0
-  4020e0:	d012      	beq.n	402108 <write_audio_data_safe+0x108>
-			i2s_send_index = (i2s_send_index + AUDIO_PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
-  4020e2:	4b39      	ldr	r3, [pc, #228]	; (4021c8 <write_audio_data_safe+0x1c8>)
-  4020e4:	681b      	ldr	r3, [r3, #0]
-  4020e6:	f103 02c8 	add.w	r2, r3, #200	; 0xc8
-  4020ea:	4b38      	ldr	r3, [pc, #224]	; (4021cc <write_audio_data_safe+0x1cc>)
-  4020ec:	fba3 1302 	umull	r1, r3, r3, r2
-  4020f0:	0a9b      	lsrs	r3, r3, #10
-  4020f2:	f44f 517a 	mov.w	r1, #16000	; 0x3e80
-  4020f6:	fb01 f303 	mul.w	r3, r1, r3
-  4020fa:	1ad3      	subs	r3, r2, r3
-  4020fc:	4a32      	ldr	r2, [pc, #200]	; (4021c8 <write_audio_data_safe+0x1c8>)
-  4020fe:	6013      	str	r3, [r2, #0]
-			command_response = COMMAND_SUCCESS; // successful response
-  402100:	2300      	movs	r3, #0
-  402102:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
-  402106:	e020      	b.n	40214a <write_audio_data_safe+0x14a>
-			// otherwise, parse for handle
-		}
-		else if(strstr(usart_buffer, "[Closed: ")){
-  402108:	4925      	ldr	r1, [pc, #148]	; (4021a0 <write_audio_data_safe+0x1a0>)
-  40210a:	4826      	ldr	r0, [pc, #152]	; (4021a4 <write_audio_data_safe+0x1a4>)
-  40210c:	4b26      	ldr	r3, [pc, #152]	; (4021a8 <write_audio_data_safe+0x1a8>)
-  40210e:	4798      	blx	r3
-  402110:	4603      	mov	r3, r0
-  402112:	2b00      	cmp	r3, #0
-  402114:	d003      	beq.n	40211e <write_audio_data_safe+0x11e>
-			command_response = COMMAND_STCLOSE; // return a value indicating closure of the stream
-  402116:	2303      	movs	r3, #3
-  402118:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
-  40211c:	e015      	b.n	40214a <write_audio_data_safe+0x14a>
-			
-		}
-		else if(strstr(usart_buffer, "Command failed")){
-  40211e:	492d      	ldr	r1, [pc, #180]	; (4021d4 <write_audio_data_safe+0x1d4>)
-  402120:	4820      	ldr	r0, [pc, #128]	; (4021a4 <write_audio_data_safe+0x1a4>)
-  402122:	4b21      	ldr	r3, [pc, #132]	; (4021a8 <write_audio_data_safe+0x1a8>)
-  402124:	4798      	blx	r3
-  402126:	4603      	mov	r3, r0
-  402128:	2b00      	cmp	r3, #0
-  40212a:	d003      	beq.n	402134 <write_audio_data_safe+0x134>
-			command_response = COMMAND_FAILURE; // command failed
-  40212c:	2301      	movs	r3, #1
-  40212e:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
-  402132:	e00a      	b.n	40214a <write_audio_data_safe+0x14a>
-		}
-		else if(ms_counter++ > timeout_ms){
-  402134:	f8d7 3094 	ldr.w	r3, [r7, #148]	; 0x94
-  402138:	1c5a      	adds	r2, r3, #1
-  40213a:	f8c7 2094 	str.w	r2, [r7, #148]	; 0x94
-  40213e:	683a      	ldr	r2, [r7, #0]
-  402140:	4293      	cmp	r3, r2
-  402142:	d902      	bls.n	40214a <write_audio_data_safe+0x14a>
-			command_response = COMMAND_TIMEOUT;
-  402144:	2302      	movs	r3, #2
-  402146:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
-		}
-		delay_ms(1);
-  40214a:	4b23      	ldr	r3, [pc, #140]	; (4021d8 <write_audio_data_safe+0x1d8>)
-  40214c:	4798      	blx	r3
-  40214e:	4603      	mov	r3, r0
-  402150:	f04f 0400 	mov.w	r4, #0
-  402154:	f243 61af 	movw	r1, #13999	; 0x36af
-  402158:	f04f 0200 	mov.w	r2, #0
-  40215c:	eb13 0b01 	adds.w	fp, r3, r1
-  402160:	eb44 0c02 	adc.w	ip, r4, r2
-  402164:	4658      	mov	r0, fp
-  402166:	4661      	mov	r1, ip
-  402168:	4c1c      	ldr	r4, [pc, #112]	; (4021dc <write_audio_data_safe+0x1dc>)
-  40216a:	f243 62b0 	movw	r2, #14000	; 0x36b0
-  40216e:	f04f 0300 	mov.w	r3, #0
-  402172:	47a0      	blx	r4
-  402174:	4603      	mov	r3, r0
-  402176:	460c      	mov	r4, r1
-  402178:	4618      	mov	r0, r3
-  40217a:	4b19      	ldr	r3, [pc, #100]	; (4021e0 <write_audio_data_safe+0x1e0>)
-  40217c:	4798      	blx	r3
-	while(command_response == COMMAND_UNSET) {			
-  40217e:	f897 308f 	ldrb.w	r3, [r7, #143]	; 0x8f
-  402182:	2b63      	cmp	r3, #99	; 0x63
-  402184:	d0a6      	beq.n	4020d4 <write_audio_data_safe+0xd4>
-	}
-	
-	usart_buffer_index = 0;
-  402186:	4b05      	ldr	r3, [pc, #20]	; (40219c <write_audio_data_safe+0x19c>)
-  402188:	2200      	movs	r2, #0
-  40218a:	601a      	str	r2, [r3, #0]
-	return command_response;
-  40218c:	f897 308f 	ldrb.w	r3, [r7, #143]	; 0x8f
-}
-  402190:	4618      	mov	r0, r3
-  402192:	3798      	adds	r7, #152	; 0x98
-  402194:	46bd      	mov	sp, r7
-  402196:	e8bd 8890 	ldmia.w	sp!, {r4, r7, fp, pc}
-  40219a:	bf00      	nop
-  40219c:	2000d784 	.word	0x2000d784
-  4021a0:	0040981c 	.word	0x0040981c
-  4021a4:	2000d590 	.word	0x2000d590
-  4021a8:	0040450d 	.word	0x0040450d
-  4021ac:	00404091 	.word	0x00404091
-  4021b0:	00402821 	.word	0x00402821
-  4021b4:	00409828 	.word	0x00409828
-  4021b8:	40024000 	.word	0x40024000
-  4021bc:	00401099 	.word	0x00401099
-  4021c0:	0040982c 	.word	0x0040982c
-  4021c4:	0040412d 	.word	0x0040412d
-  4021c8:	2000d788 	.word	0x2000d788
-  4021cc:	10624dd3 	.word	0x10624dd3
-  4021d0:	00401069 	.word	0x00401069
-  4021d4:	0040983c 	.word	0x0040983c
-  4021d8:	00401dbd 	.word	0x00401dbd
-  4021dc:	00403d31 	.word	0x00403d31
-  4021e0:	20000001 	.word	0x20000001
-
-004021e4 <write_wifi_command_safe>:
-
-uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, uint8_t handle_expected){
-  4021e4:	e92d 4890 	stmdb	sp!, {r4, r7, fp, lr}
-  4021e8:	b08a      	sub	sp, #40	; 0x28
-  4021ea:	af00      	add	r7, sp, #0
-  4021ec:	60f8      	str	r0, [r7, #12]
-  4021ee:	60b9      	str	r1, [r7, #8]
-  4021f0:	607a      	str	r2, [r7, #4]
-  4021f2:	70fb      	strb	r3, [r7, #3]
-	// returns 0 for a successful write
-	// returns 1 for a failed write
-	// returns 2 for a timeout
-	// returns 10+stream handle for opening a stream
-	
-	uint8_t command_finished = 0;
-  4021f4:	2300      	movs	r3, #0
-  4021f6:	f887 3022 	strb.w	r3, [r7, #34]	; 0x22
-	uint8_t command_failed = 0;
-  4021fa:	2300      	movs	r3, #0
-  4021fc:	f887 3021 	strb.w	r3, [r7, #33]	; 0x21
-	uint8_t parse_error = 0;
-  402200:	2300      	movs	r3, #0
-  402202:	f887 3020 	strb.w	r3, [r7, #32]
-	
-	uint32_t ms_counter = 0;
-  402206:	2300      	movs	r3, #0
-  402208:	627b      	str	r3, [r7, #36]	; 0x24
-	// clear buffer
-	memset(usart_buffer, 0, BUFFER_SIZE);
-  40220a:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
-  40220e:	2100      	movs	r1, #0
-  402210:	483c      	ldr	r0, [pc, #240]	; (402304 <write_wifi_command_safe+0x120>)
-  402212:	4b3d      	ldr	r3, [pc, #244]	; (402308 <write_wifi_command_safe+0x124>)
-  402214:	4798      	blx	r3
-	// set buffer index to 0
-	usart_buffer_index = 0;
-  402216:	4b3d      	ldr	r3, [pc, #244]	; (40230c <write_wifi_command_safe+0x128>)
-  402218:	2200      	movs	r2, #0
-  40221a:	601a      	str	r2, [r3, #0]
-	
-	usart_write_line(BOARD_USART,"\r\n");
-  40221c:	493c      	ldr	r1, [pc, #240]	; (402310 <write_wifi_command_safe+0x12c>)
-  40221e:	483d      	ldr	r0, [pc, #244]	; (402314 <write_wifi_command_safe+0x130>)
-  402220:	4b3d      	ldr	r3, [pc, #244]	; (402318 <write_wifi_command_safe+0x134>)
-  402222:	4798      	blx	r3
-	usart_write_line(BOARD_USART, command);
-  402224:	68f9      	ldr	r1, [r7, #12]
-  402226:	483b      	ldr	r0, [pc, #236]	; (402314 <write_wifi_command_safe+0x130>)
-  402228:	4b3b      	ldr	r3, [pc, #236]	; (402318 <write_wifi_command_safe+0x134>)
-  40222a:	4798      	blx	r3
-	
-	uint8_t command_response = COMMAND_UNSET;
-  40222c:	2363      	movs	r3, #99	; 0x63
-  40222e:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
-	
-	while(command_response == COMMAND_UNSET) {			
-  402232:	e058      	b.n	4022e6 <write_wifi_command_safe+0x102>
-		// makes sure we have complete response before matching on expected
-		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == 10)){ // 10 is new line, should be the last thing in the buffer
-  402234:	68b9      	ldr	r1, [r7, #8]
-  402236:	4833      	ldr	r0, [pc, #204]	; (402304 <write_wifi_command_safe+0x120>)
-  402238:	4b38      	ldr	r3, [pc, #224]	; (40231c <write_wifi_command_safe+0x138>)
-  40223a:	4798      	blx	r3
-  40223c:	4603      	mov	r3, r0
-  40223e:	2b00      	cmp	r3, #0
-  402240:	d023      	beq.n	40228a <write_wifi_command_safe+0xa6>
-  402242:	4b32      	ldr	r3, [pc, #200]	; (40230c <write_wifi_command_safe+0x128>)
-  402244:	681b      	ldr	r3, [r3, #0]
-  402246:	3b01      	subs	r3, #1
-  402248:	4a2e      	ldr	r2, [pc, #184]	; (402304 <write_wifi_command_safe+0x120>)
-  40224a:	5cd3      	ldrb	r3, [r2, r3]
-  40224c:	b2db      	uxtb	r3, r3
-  40224e:	2b0a      	cmp	r3, #10
-  402250:	d11b      	bne.n	40228a <write_wifi_command_safe+0xa6>
-			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
-  402252:	78fb      	ldrb	r3, [r7, #3]
-  402254:	2b00      	cmp	r3, #0
-  402256:	d103      	bne.n	402260 <write_wifi_command_safe+0x7c>
-  402258:	2300      	movs	r3, #0
-  40225a:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
-  40225e:	e028      	b.n	4022b2 <write_wifi_command_safe+0xce>
-			// otherwise, parse for handle
-			else {
-				char *opened_pointer = strstr(usart_buffer, resp);
-  402260:	68b9      	ldr	r1, [r7, #8]
-  402262:	4828      	ldr	r0, [pc, #160]	; (402304 <write_wifi_command_safe+0x120>)
-  402264:	4b2d      	ldr	r3, [pc, #180]	; (40231c <write_wifi_command_safe+0x138>)
-  402266:	4798      	blx	r3
-  402268:	61f8      	str	r0, [r7, #28]
-				uint32_t buffer_offset = ((uint8_t *) opened_pointer) - usart_buffer;
-  40226a:	69fb      	ldr	r3, [r7, #28]
-  40226c:	4a25      	ldr	r2, [pc, #148]	; (402304 <write_wifi_command_safe+0x120>)
-  40226e:	1a9b      	subs	r3, r3, r2
-  402270:	61bb      	str	r3, [r7, #24]
-				uint8_t handle = usart_buffer[buffer_offset+12] - '0';
-  402272:	69bb      	ldr	r3, [r7, #24]
-  402274:	330c      	adds	r3, #12
-  402276:	4a23      	ldr	r2, [pc, #140]	; (402304 <write_wifi_command_safe+0x120>)
-  402278:	5cd3      	ldrb	r3, [r2, r3]
-  40227a:	b2db      	uxtb	r3, r3
-  40227c:	3b30      	subs	r3, #48	; 0x30
-  40227e:	75fb      	strb	r3, [r7, #23]
-				command_response = handle+10;
-  402280:	7dfb      	ldrb	r3, [r7, #23]
-  402282:	330a      	adds	r3, #10
-  402284:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
-			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
-  402288:	e013      	b.n	4022b2 <write_wifi_command_safe+0xce>
-			}
-		}
-		else if (strstr(usart_buffer, "Command failed")){
-  40228a:	4925      	ldr	r1, [pc, #148]	; (402320 <write_wifi_command_safe+0x13c>)
-  40228c:	481d      	ldr	r0, [pc, #116]	; (402304 <write_wifi_command_safe+0x120>)
-  40228e:	4b23      	ldr	r3, [pc, #140]	; (40231c <write_wifi_command_safe+0x138>)
-  402290:	4798      	blx	r3
-  402292:	4603      	mov	r3, r0
-  402294:	2b00      	cmp	r3, #0
-  402296:	d003      	beq.n	4022a0 <write_wifi_command_safe+0xbc>
-			command_response = COMMAND_FAILURE; // command failed
-  402298:	2301      	movs	r3, #1
-  40229a:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
-  40229e:	e008      	b.n	4022b2 <write_wifi_command_safe+0xce>
-		}
-		else if (ms_counter++ > timeout_ms){
-  4022a0:	6a7b      	ldr	r3, [r7, #36]	; 0x24
-  4022a2:	1c5a      	adds	r2, r3, #1
-  4022a4:	627a      	str	r2, [r7, #36]	; 0x24
-  4022a6:	687a      	ldr	r2, [r7, #4]
-  4022a8:	4293      	cmp	r3, r2
-  4022aa:	d902      	bls.n	4022b2 <write_wifi_command_safe+0xce>
-			command_response = COMMAND_TIMEOUT;
-  4022ac:	2302      	movs	r3, #2
-  4022ae:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
-		}
-		delay_ms(1);
-  4022b2:	4b1c      	ldr	r3, [pc, #112]	; (402324 <write_wifi_command_safe+0x140>)
-  4022b4:	4798      	blx	r3
-  4022b6:	4603      	mov	r3, r0
-  4022b8:	f04f 0400 	mov.w	r4, #0
-  4022bc:	f243 61af 	movw	r1, #13999	; 0x36af
-  4022c0:	f04f 0200 	mov.w	r2, #0
-  4022c4:	eb13 0b01 	adds.w	fp, r3, r1
-  4022c8:	eb44 0c02 	adc.w	ip, r4, r2
-  4022cc:	4658      	mov	r0, fp
-  4022ce:	4661      	mov	r1, ip
-  4022d0:	4c15      	ldr	r4, [pc, #84]	; (402328 <write_wifi_command_safe+0x144>)
-  4022d2:	f243 62b0 	movw	r2, #14000	; 0x36b0
-  4022d6:	f04f 0300 	mov.w	r3, #0
-  4022da:	47a0      	blx	r4
-  4022dc:	4603      	mov	r3, r0
-  4022de:	460c      	mov	r4, r1
-  4022e0:	4618      	mov	r0, r3
-  4022e2:	4b12      	ldr	r3, [pc, #72]	; (40232c <write_wifi_command_safe+0x148>)
-  4022e4:	4798      	blx	r3
-	while(command_response == COMMAND_UNSET) {			
-  4022e6:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
-  4022ea:	2b63      	cmp	r3, #99	; 0x63
-  4022ec:	d0a2      	beq.n	402234 <write_wifi_command_safe+0x50>
-	}
-	
-	usart_buffer_index = 0;
-  4022ee:	4b07      	ldr	r3, [pc, #28]	; (40230c <write_wifi_command_safe+0x128>)
-  4022f0:	2200      	movs	r2, #0
-  4022f2:	601a      	str	r2, [r3, #0]
-	return command_response;
-  4022f4:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
-}
-  4022f8:	4618      	mov	r0, r3
-  4022fa:	3728      	adds	r7, #40	; 0x28
-  4022fc:	46bd      	mov	sp, r7
-  4022fe:	e8bd 8890 	ldmia.w	sp!, {r4, r7, fp, pc}
-  402302:	bf00      	nop
-  402304:	2000d590 	.word	0x2000d590
-  402308:	00404091 	.word	0x00404091
-  40230c:	2000d784 	.word	0x2000d784
-  402310:	00409828 	.word	0x00409828
-  402314:	40024000 	.word	0x40024000
-  402318:	00401099 	.word	0x00401099
-  40231c:	0040450d 	.word	0x0040450d
-  402320:	0040983c 	.word	0x0040983c
-  402324:	00401dbd 	.word	0x00401dbd
-  402328:	00403d31 	.word	0x00403d31
-  40232c:	20000001 	.word	0x20000001
-
-00402330 <open_websocket>:
 
 uint8_t open_websocket(uint8_t number_of_attempts) {
-  402330:	b590      	push	{r4, r7, lr}
-  402332:	b085      	sub	sp, #20
-  402334:	af00      	add	r7, sp, #0
-  402336:	4603      	mov	r3, r0
-  402338:	71fb      	strb	r3, [r7, #7]
+  401ffc:	b590      	push	{r4, r7, lr}
+  401ffe:	b085      	sub	sp, #20
+  402000:	af00      	add	r7, sp, #0
+  402002:	4603      	mov	r3, r0
+  402004:	71fb      	strb	r3, [r7, #7]
 	// figure out handle
-	//write_wifi_command("close all\r\n", 2);
 	uint8_t status_code;
 	for(int i=0; i<number_of_attempts; i++){
-  40233a:	2300      	movs	r3, #0
-  40233c:	60fb      	str	r3, [r7, #12]
-  40233e:	e01c      	b.n	40237a <open_websocket+0x4a>
-	
+  402006:	2300      	movs	r3, #0
+  402008:	60fb      	str	r3, [r7, #12]
+  40200a:	e01c      	b.n	402046 <open_websocket+0x4a>
 		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", "Opened: ", 20000, 1);
-  402340:	2301      	movs	r3, #1
-  402342:	f644 6220 	movw	r2, #20000	; 0x4e20
-  402346:	4911      	ldr	r1, [pc, #68]	; (40238c <open_websocket+0x5c>)
-  402348:	4811      	ldr	r0, [pc, #68]	; (402390 <open_websocket+0x60>)
-  40234a:	4c12      	ldr	r4, [pc, #72]	; (402394 <open_websocket+0x64>)
-  40234c:	47a0      	blx	r4
-  40234e:	4603      	mov	r3, r0
-  402350:	72fb      	strb	r3, [r7, #11]
+  40200c:	2301      	movs	r3, #1
+  40200e:	f644 6220 	movw	r2, #20000	; 0x4e20
+  402012:	4911      	ldr	r1, [pc, #68]	; (402058 <open_websocket+0x5c>)
+  402014:	4811      	ldr	r0, [pc, #68]	; (40205c <open_websocket+0x60>)
+  402016:	4c12      	ldr	r4, [pc, #72]	; (402060 <open_websocket+0x64>)
+  402018:	47a0      	blx	r4
+  40201a:	4603      	mov	r3, r0
+  40201c:	72fb      	strb	r3, [r7, #11]
 		if (status_code >= 10){
-  402352:	7afb      	ldrb	r3, [r7, #11]
-  402354:	2b09      	cmp	r3, #9
-  402356:	d90d      	bls.n	402374 <open_websocket+0x44>
+  40201e:	7afb      	ldrb	r3, [r7, #11]
+  402020:	2b09      	cmp	r3, #9
+  402022:	d90d      	bls.n	402040 <open_websocket+0x44>
 			if (status_code > 18){
-  402358:	7afb      	ldrb	r3, [r7, #11]
-  40235a:	2b12      	cmp	r3, #18
-  40235c:	d906      	bls.n	40236c <open_websocket+0x3c>
+  402024:	7afb      	ldrb	r3, [r7, #11]
+  402026:	2b12      	cmp	r3, #18
+  402028:	d906      	bls.n	402038 <open_websocket+0x3c>
 				write_wifi_command_safe("close all\r\n","Success",200,0);
-  40235e:	2300      	movs	r3, #0
-  402360:	22c8      	movs	r2, #200	; 0xc8
-  402362:	490d      	ldr	r1, [pc, #52]	; (402398 <open_websocket+0x68>)
-  402364:	480d      	ldr	r0, [pc, #52]	; (40239c <open_websocket+0x6c>)
-  402366:	4c0b      	ldr	r4, [pc, #44]	; (402394 <open_websocket+0x64>)
-  402368:	47a0      	blx	r4
+  40202a:	2300      	movs	r3, #0
+  40202c:	22c8      	movs	r2, #200	; 0xc8
+  40202e:	490d      	ldr	r1, [pc, #52]	; (402064 <open_websocket+0x68>)
+  402030:	480d      	ldr	r0, [pc, #52]	; (402068 <open_websocket+0x6c>)
+  402032:	4c0b      	ldr	r4, [pc, #44]	; (402060 <open_websocket+0x64>)
+  402034:	47a0      	blx	r4
 				continue;
-  40236a:	e003      	b.n	402374 <open_websocket+0x44>
+  402036:	e003      	b.n	402040 <open_websocket+0x44>
 			}
 			return status_code - 10;
-  40236c:	7afb      	ldrb	r3, [r7, #11]
-  40236e:	3b0a      	subs	r3, #10
-  402370:	b2db      	uxtb	r3, r3
-  402372:	e007      	b.n	402384 <open_websocket+0x54>
+  402038:	7afb      	ldrb	r3, [r7, #11]
+  40203a:	3b0a      	subs	r3, #10
+  40203c:	b2db      	uxtb	r3, r3
+  40203e:	e007      	b.n	402050 <open_websocket+0x54>
 	for(int i=0; i<number_of_attempts; i++){
-  402374:	68fb      	ldr	r3, [r7, #12]
-  402376:	3301      	adds	r3, #1
-  402378:	60fb      	str	r3, [r7, #12]
-  40237a:	79fa      	ldrb	r2, [r7, #7]
-  40237c:	68fb      	ldr	r3, [r7, #12]
-  40237e:	429a      	cmp	r2, r3
-  402380:	dcde      	bgt.n	402340 <open_websocket+0x10>
+  402040:	68fb      	ldr	r3, [r7, #12]
+  402042:	3301      	adds	r3, #1
+  402044:	60fb      	str	r3, [r7, #12]
+  402046:	79fa      	ldrb	r2, [r7, #7]
+  402048:	68fb      	ldr	r3, [r7, #12]
+  40204a:	429a      	cmp	r2, r3
+  40204c:	dcde      	bgt.n	40200c <open_websocket+0x10>
 		}
 	}
 	// should check last thing in input buffer for handle
 	return NO_WEBSOCKET_OPEN; // indicate failure
-  402382:	230a      	movs	r3, #10
+  40204e:	230a      	movs	r3, #10
 }
-  402384:	4618      	mov	r0, r3
-  402386:	3714      	adds	r7, #20
-  402388:	46bd      	mov	sp, r7
-  40238a:	bd90      	pop	{r4, r7, pc}
-  40238c:	0040984c 	.word	0x0040984c
-  402390:	00409858 	.word	0x00409858
-  402394:	004021e5 	.word	0x004021e5
-  402398:	004098a0 	.word	0x004098a0
-  40239c:	004098a8 	.word	0x004098a8
+  402050:	4618      	mov	r0, r3
+  402052:	3714      	adds	r7, #20
+  402054:	46bd      	mov	sp, r7
+  402056:	bd90      	pop	{r4, r7, pc}
+  402058:	0040981c 	.word	0x0040981c
+  40205c:	00409828 	.word	0x00409828
+  402060:	00402895 	.word	0x00402895
+  402064:	00409870 	.word	0x00409870
+  402068:	00409878 	.word	0x00409878
 
-004023a0 <check_ws_handle>:
-	sprintf(templated_command, "fcr batman.txt %d\r\n", num_bytes);
-	usart_write_line(BOARD_USART, templated_command);
-	usart_write_line(BOARD_USART, message);
-}
+0040206c <check_ws_handle>:
 
 uint8_t check_ws_handle(uint8_t theoretical_handle){
-  4023a0:	b590      	push	{r4, r7, lr}
-  4023a2:	b0ad      	sub	sp, #180	; 0xb4
-  4023a4:	af00      	add	r7, sp, #0
-  4023a6:	4603      	mov	r3, r0
-  4023a8:	71fb      	strb	r3, [r7, #7]
-	
+  40206c:	b590      	push	{r4, r7, lr}
+  40206e:	b0ad      	sub	sp, #180	; 0xb4
+  402070:	af00      	add	r7, sp, #0
+  402072:	4603      	mov	r3, r0
+  402074:	71fb      	strb	r3, [r7, #7]
 	char* templated_response[40];
 	sprintf(templated_response, "%d WEBC", theoretical_handle);
-  4023aa:	79fa      	ldrb	r2, [r7, #7]
-  4023ac:	f107 030c 	add.w	r3, r7, #12
-  4023b0:	490c      	ldr	r1, [pc, #48]	; (4023e4 <check_ws_handle+0x44>)
-  4023b2:	4618      	mov	r0, r3
-  4023b4:	4b0c      	ldr	r3, [pc, #48]	; (4023e8 <check_ws_handle+0x48>)
-  4023b6:	4798      	blx	r3
+  402076:	79fa      	ldrb	r2, [r7, #7]
+  402078:	f107 030c 	add.w	r3, r7, #12
+  40207c:	490c      	ldr	r1, [pc, #48]	; (4020b0 <check_ws_handle+0x44>)
+  40207e:	4618      	mov	r0, r3
+  402080:	4b0c      	ldr	r3, [pc, #48]	; (4020b4 <check_ws_handle+0x48>)
+  402082:	4798      	blx	r3
 	
 	uint8_t command_response = write_wifi_command_safe("list\r\n", templated_response, 100, 0);
-  4023b8:	f107 010c 	add.w	r1, r7, #12
-  4023bc:	2300      	movs	r3, #0
-  4023be:	2264      	movs	r2, #100	; 0x64
-  4023c0:	480a      	ldr	r0, [pc, #40]	; (4023ec <check_ws_handle+0x4c>)
-  4023c2:	4c0b      	ldr	r4, [pc, #44]	; (4023f0 <check_ws_handle+0x50>)
-  4023c4:	47a0      	blx	r4
-  4023c6:	4603      	mov	r3, r0
-  4023c8:	f887 30af 	strb.w	r3, [r7, #175]	; 0xaf
-	
+  402084:	f107 010c 	add.w	r1, r7, #12
+  402088:	2300      	movs	r3, #0
+  40208a:	2264      	movs	r2, #100	; 0x64
+  40208c:	480a      	ldr	r0, [pc, #40]	; (4020b8 <check_ws_handle+0x4c>)
+  40208e:	4c0b      	ldr	r4, [pc, #44]	; (4020bc <check_ws_handle+0x50>)
+  402090:	47a0      	blx	r4
+  402092:	4603      	mov	r3, r0
+  402094:	f887 30af 	strb.w	r3, [r7, #175]	; 0xaf
 	return command_response == COMMAND_SUCCESS ? COMMAND_SUCCESS : COMMAND_FAILURE;
-  4023cc:	f897 30af 	ldrb.w	r3, [r7, #175]	; 0xaf
-  4023d0:	2b00      	cmp	r3, #0
-  4023d2:	bf14      	ite	ne
-  4023d4:	2301      	movne	r3, #1
-  4023d6:	2300      	moveq	r3, #0
-  4023d8:	b2db      	uxtb	r3, r3
+  402098:	f897 30af 	ldrb.w	r3, [r7, #175]	; 0xaf
+  40209c:	2b00      	cmp	r3, #0
+  40209e:	bf14      	ite	ne
+  4020a0:	2301      	movne	r3, #1
+  4020a2:	2300      	moveq	r3, #0
+  4020a4:	b2db      	uxtb	r3, r3
 }
-  4023da:	4618      	mov	r0, r3
-  4023dc:	37b4      	adds	r7, #180	; 0xb4
-  4023de:	46bd      	mov	sp, r7
-  4023e0:	bd90      	pop	{r4, r7, pc}
-  4023e2:	bf00      	nop
-  4023e4:	004098dc 	.word	0x004098dc
-  4023e8:	0040412d 	.word	0x0040412d
-  4023ec:	004098e4 	.word	0x004098e4
-  4023f0:	004021e5 	.word	0x004021e5
+  4020a6:	4618      	mov	r0, r3
+  4020a8:	37b4      	adds	r7, #180	; 0xb4
+  4020aa:	46bd      	mov	sp, r7
+  4020ac:	bd90      	pop	{r4, r7, pc}
+  4020ae:	bf00      	nop
+  4020b0:	00409884 	.word	0x00409884
+  4020b4:	0040412d 	.word	0x0040412d
+  4020b8:	0040988c 	.word	0x0040988c
+  4020bc:	00402895 	.word	0x00402895
 
-004023f4 <setup_wifi>:
+004020c0 <setup_wifi>:
 }
 
 /**
  *  \brief Sets up wifi chip on new network.
  */
-void setup_wifi(void){
-  4023f4:	b598      	push	{r3, r4, r7, lr}
-  4023f6:	af00      	add	r7, sp, #0
-	
-	write_wifi_command_safe("setup web\r\n","Associated]", 60000, 0);	// command wifi chip to setup
-  4023f8:	2300      	movs	r3, #0
-  4023fa:	f64e 2260 	movw	r2, #60000	; 0xea60
-  4023fe:	4904      	ldr	r1, [pc, #16]	; (402410 <setup_wifi+0x1c>)
-  402400:	4804      	ldr	r0, [pc, #16]	; (402414 <setup_wifi+0x20>)
-  402402:	4c05      	ldr	r4, [pc, #20]	; (402418 <setup_wifi+0x24>)
-  402404:	47a0      	blx	r4
-	
-	wifi_setup_flag = false;	// turn off setup flag
-  402406:	4b05      	ldr	r3, [pc, #20]	; (40241c <setup_wifi+0x28>)
-  402408:	2200      	movs	r2, #0
-  40240a:	601a      	str	r2, [r3, #0]
+void setup_wifi(){
+  4020c0:	b598      	push	{r3, r4, r7, lr}
+  4020c2:	af00      	add	r7, sp, #0
+	// command wifi chip to setup
+	write_wifi_command_safe("setup web\r\n","Associated]", 60000, 0);
+  4020c4:	2300      	movs	r3, #0
+  4020c6:	f64e 2260 	movw	r2, #60000	; 0xea60
+  4020ca:	4904      	ldr	r1, [pc, #16]	; (4020dc <setup_wifi+0x1c>)
+  4020cc:	4804      	ldr	r0, [pc, #16]	; (4020e0 <setup_wifi+0x20>)
+  4020ce:	4c05      	ldr	r4, [pc, #20]	; (4020e4 <setup_wifi+0x24>)
+  4020d0:	47a0      	blx	r4
+	// turn off setup flag
+	wifi_setup_flag = false;
+  4020d2:	4b05      	ldr	r3, [pc, #20]	; (4020e8 <setup_wifi+0x28>)
+  4020d4:	2200      	movs	r2, #0
+  4020d6:	601a      	str	r2, [r3, #0]
 }
-  40240c:	bf00      	nop
-  40240e:	bd98      	pop	{r3, r4, r7, pc}
-  402410:	004098ec 	.word	0x004098ec
-  402414:	004098f8 	.word	0x004098f8
-  402418:	004021e5 	.word	0x004021e5
-  40241c:	2000d588 	.word	0x2000d588
+  4020d8:	bf00      	nop
+  4020da:	bd98      	pop	{r3, r4, r7, pc}
+  4020dc:	00409894 	.word	0x00409894
+  4020e0:	004098a0 	.word	0x004098a0
+  4020e4:	00402895 	.word	0x00402895
+  4020e8:	2000d588 	.word	0x2000d588
 
-00402420 <configure_wifi>:
+004020ec <configure_wifi>:
 
 /**
  *  \brief Wrapper function for wifi module configuration.
  */
 void configure_wifi(){
-  402420:	b580      	push	{r7, lr}
-  402422:	af00      	add	r7, sp, #0
+  4020ec:	b580      	push	{r7, lr}
+  4020ee:	af00      	add	r7, sp, #0
 	configure_usart();
-  402424:	4b05      	ldr	r3, [pc, #20]	; (40243c <configure_wifi+0x1c>)
-  402426:	4798      	blx	r3
+  4020f0:	4b05      	ldr	r3, [pc, #20]	; (402108 <configure_wifi+0x1c>)
+  4020f2:	4798      	blx	r3
 	configure_command_complete();
-  402428:	4b05      	ldr	r3, [pc, #20]	; (402440 <configure_wifi+0x20>)
-  40242a:	4798      	blx	r3
+  4020f4:	4b05      	ldr	r3, [pc, #20]	; (40210c <configure_wifi+0x20>)
+  4020f6:	4798      	blx	r3
 	configure_web_setup();	
-  40242c:	4b05      	ldr	r3, [pc, #20]	; (402444 <configure_wifi+0x24>)
-  40242e:	4798      	blx	r3
+  4020f8:	4b05      	ldr	r3, [pc, #20]	; (402110 <configure_wifi+0x24>)
+  4020fa:	4798      	blx	r3
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
-  402430:	2101      	movs	r1, #1
-  402432:	4805      	ldr	r0, [pc, #20]	; (402448 <configure_wifi+0x28>)
-  402434:	4b05      	ldr	r3, [pc, #20]	; (40244c <configure_wifi+0x2c>)
-  402436:	4798      	blx	r3
+  4020fc:	2101      	movs	r1, #1
+  4020fe:	4805      	ldr	r0, [pc, #20]	; (402114 <configure_wifi+0x28>)
+  402100:	4b05      	ldr	r3, [pc, #20]	; (402118 <configure_wifi+0x2c>)
+  402102:	4798      	blx	r3
 }
-  402438:	bf00      	nop
-  40243a:	bd80      	pop	{r7, pc}
-  40243c:	00401e85 	.word	0x00401e85
-  402440:	00401f1d 	.word	0x00401f1d
-  402444:	00401fa1 	.word	0x00401fa1
-  402448:	40024000 	.word	0x40024000
-  40244c:	00400fd1 	.word	0x00400fd1
+  402104:	bf00      	nop
+  402106:	bd80      	pop	{r7, pc}
+  402108:	00401e81 	.word	0x00401e81
+  40210c:	00401f19 	.word	0x00401f19
+  402110:	00401f9d 	.word	0x00401f9d
+  402114:	40024000 	.word	0x40024000
+  402118:	00400fd1 	.word	0x00400fd1
 
-00402450 <reboot_wifi>:
+0040211c <reboot_wifi>:
 }
 
 /**
  *  \brief Reboots the wifi chip.
  */
 void reboot_wifi() {
-  402450:	b590      	push	{r4, r7, lr}
-  402452:	b083      	sub	sp, #12
-  402454:	af00      	add	r7, sp, #0
-	
+  40211c:	b590      	push	{r4, r7, lr}
+  40211e:	b083      	sub	sp, #12
+  402120:	af00      	add	r7, sp, #0
 	wifi_setup_flag = false;
-  402456:	4b14      	ldr	r3, [pc, #80]	; (4024a8 <reboot_wifi+0x58>)
-  402458:	2200      	movs	r2, #0
-  40245a:	601a      	str	r2, [r3, #0]
+  402122:	4b14      	ldr	r3, [pc, #80]	; (402174 <reboot_wifi+0x58>)
+  402124:	2200      	movs	r2, #0
+  402126:	601a      	str	r2, [r3, #0]
 	uint8_t status_code;
 	
 	while(write_wifi_command_safe("reboot\r\n", "Associated]", 10000,0) != COMMAND_SUCCESS){
-  40245c:	e005      	b.n	40246a <reboot_wifi+0x1a>
+  402128:	e005      	b.n	402136 <reboot_wifi+0x1a>
 		if(wifi_setup_flag){
-  40245e:	4b12      	ldr	r3, [pc, #72]	; (4024a8 <reboot_wifi+0x58>)
-  402460:	681b      	ldr	r3, [r3, #0]
-  402462:	2b00      	cmp	r3, #0
-  402464:	d001      	beq.n	40246a <reboot_wifi+0x1a>
+  40212a:	4b12      	ldr	r3, [pc, #72]	; (402174 <reboot_wifi+0x58>)
+  40212c:	681b      	ldr	r3, [r3, #0]
+  40212e:	2b00      	cmp	r3, #0
+  402130:	d001      	beq.n	402136 <reboot_wifi+0x1a>
 			setup_wifi();
-  402466:	4b11      	ldr	r3, [pc, #68]	; (4024ac <reboot_wifi+0x5c>)
-  402468:	4798      	blx	r3
+  402132:	4b11      	ldr	r3, [pc, #68]	; (402178 <reboot_wifi+0x5c>)
+  402134:	4798      	blx	r3
 	while(write_wifi_command_safe("reboot\r\n", "Associated]", 10000,0) != COMMAND_SUCCESS){
-  40246a:	2300      	movs	r3, #0
-  40246c:	f242 7210 	movw	r2, #10000	; 0x2710
-  402470:	490f      	ldr	r1, [pc, #60]	; (4024b0 <reboot_wifi+0x60>)
-  402472:	4810      	ldr	r0, [pc, #64]	; (4024b4 <reboot_wifi+0x64>)
-  402474:	4c10      	ldr	r4, [pc, #64]	; (4024b8 <reboot_wifi+0x68>)
-  402476:	47a0      	blx	r4
-  402478:	4603      	mov	r3, r0
-  40247a:	2b00      	cmp	r3, #0
-  40247c:	d1ef      	bne.n	40245e <reboot_wifi+0xe>
+  402136:	2300      	movs	r3, #0
+  402138:	f242 7210 	movw	r2, #10000	; 0x2710
+  40213c:	490f      	ldr	r1, [pc, #60]	; (40217c <reboot_wifi+0x60>)
+  40213e:	4810      	ldr	r0, [pc, #64]	; (402180 <reboot_wifi+0x64>)
+  402140:	4c10      	ldr	r4, [pc, #64]	; (402184 <reboot_wifi+0x68>)
+  402142:	47a0      	blx	r4
+  402144:	4603      	mov	r3, r0
+  402146:	2b00      	cmp	r3, #0
+  402148:	d1ef      	bne.n	40212a <reboot_wifi+0xe>
 		}
 	}
 	
 	status_code = write_wifi_command_safe("set sy c p off\r\n","Set OK",100,0);
-  40247e:	2300      	movs	r3, #0
-  402480:	2264      	movs	r2, #100	; 0x64
-  402482:	490e      	ldr	r1, [pc, #56]	; (4024bc <reboot_wifi+0x6c>)
-  402484:	480e      	ldr	r0, [pc, #56]	; (4024c0 <reboot_wifi+0x70>)
-  402486:	4c0c      	ldr	r4, [pc, #48]	; (4024b8 <reboot_wifi+0x68>)
-  402488:	47a0      	blx	r4
-  40248a:	4603      	mov	r3, r0
-  40248c:	71fb      	strb	r3, [r7, #7]
-	
+  40214a:	2300      	movs	r3, #0
+  40214c:	2264      	movs	r2, #100	; 0x64
+  40214e:	490e      	ldr	r1, [pc, #56]	; (402188 <reboot_wifi+0x6c>)
+  402150:	480e      	ldr	r0, [pc, #56]	; (40218c <reboot_wifi+0x70>)
+  402152:	4c0c      	ldr	r4, [pc, #48]	; (402184 <reboot_wifi+0x68>)
+  402154:	47a0      	blx	r4
+  402156:	4603      	mov	r3, r0
+  402158:	71fb      	strb	r3, [r7, #7]
 	status_code = write_wifi_command_safe("set sy c e off\r\n","Set OK", 100, 0);
-  40248e:	2300      	movs	r3, #0
-  402490:	2264      	movs	r2, #100	; 0x64
-  402492:	490a      	ldr	r1, [pc, #40]	; (4024bc <reboot_wifi+0x6c>)
-  402494:	480b      	ldr	r0, [pc, #44]	; (4024c4 <reboot_wifi+0x74>)
-  402496:	4c08      	ldr	r4, [pc, #32]	; (4024b8 <reboot_wifi+0x68>)
-  402498:	47a0      	blx	r4
-  40249a:	4603      	mov	r3, r0
-  40249c:	71fb      	strb	r3, [r7, #7]
-	
-	//write_wifi_command("set sy c e off\r\n", 5);	// resets a couple of system parameters in case they were changed
-	
+  40215a:	2300      	movs	r3, #0
+  40215c:	2264      	movs	r2, #100	; 0x64
+  40215e:	490a      	ldr	r1, [pc, #40]	; (402188 <reboot_wifi+0x6c>)
+  402160:	480b      	ldr	r0, [pc, #44]	; (402190 <reboot_wifi+0x74>)
+  402162:	4c08      	ldr	r4, [pc, #32]	; (402184 <reboot_wifi+0x68>)
+  402164:	47a0      	blx	r4
+  402166:	4603      	mov	r3, r0
+  402168:	71fb      	strb	r3, [r7, #7]
 }
-  40249e:	bf00      	nop
-  4024a0:	370c      	adds	r7, #12
-  4024a2:	46bd      	mov	sp, r7
-  4024a4:	bd90      	pop	{r4, r7, pc}
-  4024a6:	bf00      	nop
-  4024a8:	2000d588 	.word	0x2000d588
-  4024ac:	004023f5 	.word	0x004023f5
-  4024b0:	004098ec 	.word	0x004098ec
-  4024b4:	00409944 	.word	0x00409944
-  4024b8:	004021e5 	.word	0x004021e5
-  4024bc:	00409950 	.word	0x00409950
-  4024c0:	00409958 	.word	0x00409958
-  4024c4:	0040996c 	.word	0x0040996c
+  40216a:	bf00      	nop
+  40216c:	370c      	adds	r7, #12
+  40216e:	46bd      	mov	sp, r7
+  402170:	bd90      	pop	{r4, r7, pc}
+  402172:	bf00      	nop
+  402174:	2000d588 	.word	0x2000d588
+  402178:	004020c1 	.word	0x004020c1
+  40217c:	00409894 	.word	0x00409894
+  402180:	004098ec 	.word	0x004098ec
+  402184:	00402895 	.word	0x00402895
+  402188:	004098f8 	.word	0x004098f8
+  40218c:	00409900 	.word	0x00409900
+  402190:	00409914 	.word	0x00409914
 
-004024c8 <write_image_data_safe>:
-
-uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
-  4024c8:	e92d 4890 	stmdb	sp!, {r4, r7, fp, lr}
-  4024cc:	b0a8      	sub	sp, #160	; 0xa0
-  4024ce:	af00      	add	r7, sp, #0
-  4024d0:	60f8      	str	r0, [r7, #12]
-  4024d2:	60b9      	str	r1, [r7, #8]
-  4024d4:	607a      	str	r2, [r7, #4]
-  4024d6:	70fb      	strb	r3, [r7, #3]
-	// returns 2 for a timeout
-	// returns 3 for an unexpected stream closure
-	// returns 10+stream handle for opening a stream
-	
-	// first thing: check if we've received any transmission since the last time
-	if (usart_buffer_index != 0){
-  4024d8:	4b5e      	ldr	r3, [pc, #376]	; (402654 <write_image_data_safe+0x18c>)
-  4024da:	681b      	ldr	r3, [r3, #0]
-  4024dc:	2b00      	cmp	r3, #0
-  4024de:	d008      	beq.n	4024f2 <write_image_data_safe+0x2a>
-		// check for different issues
-		if(strstr(usart_buffer, "[Closed: ")){
-  4024e0:	495d      	ldr	r1, [pc, #372]	; (402658 <write_image_data_safe+0x190>)
-  4024e2:	485e      	ldr	r0, [pc, #376]	; (40265c <write_image_data_safe+0x194>)
-  4024e4:	4b5e      	ldr	r3, [pc, #376]	; (402660 <write_image_data_safe+0x198>)
-  4024e6:	4798      	blx	r3
-  4024e8:	4603      	mov	r3, r0
-  4024ea:	2b00      	cmp	r3, #0
-  4024ec:	d001      	beq.n	4024f2 <write_image_data_safe+0x2a>
-			return COMMAND_STCLOSE; // return a value indicating closure of the stream
-  4024ee:	2303      	movs	r3, #3
-  4024f0:	e0aa      	b.n	402648 <write_image_data_safe+0x180>
-		}
-	}
-	
-	uint8_t command_finished = 0;
-  4024f2:	2300      	movs	r3, #0
-  4024f4:	f887 3096 	strb.w	r3, [r7, #150]	; 0x96
-	uint8_t command_failed = 0;
-  4024f8:	2300      	movs	r3, #0
-  4024fa:	f887 3095 	strb.w	r3, [r7, #149]	; 0x95
-	uint8_t parse_error = 0;
-  4024fe:	2300      	movs	r3, #0
-  402500:	f887 3094 	strb.w	r3, [r7, #148]	; 0x94
-	
-	uint32_t ms_counter = 0;
-  402504:	2300      	movs	r3, #0
-  402506:	f8c7 309c 	str.w	r3, [r7, #156]	; 0x9c
-	// clear buffer
-	memset(usart_buffer, 0, BUFFER_SIZE);
-  40250a:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
-  40250e:	2100      	movs	r1, #0
-  402510:	4852      	ldr	r0, [pc, #328]	; (40265c <write_image_data_safe+0x194>)
-  402512:	4b54      	ldr	r3, [pc, #336]	; (402664 <write_image_data_safe+0x19c>)
-  402514:	4798      	blx	r3
-	// set buffer index to 0
-	usart_buffer_index = 0;
-  402516:	4b4f      	ldr	r3, [pc, #316]	; (402654 <write_image_data_safe+0x18c>)
-  402518:	2200      	movs	r2, #0
-  40251a:	601a      	str	r2, [r3, #0]
-	
-	uint32_t end_index = start_index + IMAGE_PACKET_SIZE;
-  40251c:	68bb      	ldr	r3, [r7, #8]
-  40251e:	f203 138f 	addw	r3, r3, #399	; 0x18f
-  402522:	f8c7 3090 	str.w	r3, [r7, #144]	; 0x90
-	end_index = (end_index < im_len) ? end_index : im_len; // if the end index goes past the end of the array, don't go there
-  402526:	f8d7 2090 	ldr.w	r2, [r7, #144]	; 0x90
-  40252a:	687b      	ldr	r3, [r7, #4]
-  40252c:	4293      	cmp	r3, r2
-  40252e:	bf28      	it	cs
-  402530:	4613      	movcs	r3, r2
-  402532:	f8c7 3090 	str.w	r3, [r7, #144]	; 0x90
-	
-	uint32_t bytes_to_send = end_index - start_index; // usually PACKET_SIZE, unless it's the last one
-  402536:	f8d7 2090 	ldr.w	r2, [r7, #144]	; 0x90
-  40253a:	68bb      	ldr	r3, [r7, #8]
-  40253c:	1ad3      	subs	r3, r2, r3
-  40253e:	f8c7 308c 	str.w	r3, [r7, #140]	; 0x8c
-	
-	uint8_t curr_data_point;
-	
-	char* templated_command[30];
-	usart_write_line(BOARD_USART,"\r\n");
-  402542:	4949      	ldr	r1, [pc, #292]	; (402668 <write_image_data_safe+0x1a0>)
-  402544:	4849      	ldr	r0, [pc, #292]	; (40266c <write_image_data_safe+0x1a4>)
-  402546:	4b4a      	ldr	r3, [pc, #296]	; (402670 <write_image_data_safe+0x1a8>)
-  402548:	4798      	blx	r3
-	sprintf(templated_command, "write %d %d\r\n", handle, bytes_to_send);
-  40254a:	78fa      	ldrb	r2, [r7, #3]
-  40254c:	f107 0010 	add.w	r0, r7, #16
-  402550:	f8d7 308c 	ldr.w	r3, [r7, #140]	; 0x8c
-  402554:	4947      	ldr	r1, [pc, #284]	; (402674 <write_image_data_safe+0x1ac>)
-  402556:	4c48      	ldr	r4, [pc, #288]	; (402678 <write_image_data_safe+0x1b0>)
-  402558:	47a0      	blx	r4
-	usart_write_line(BOARD_USART, templated_command);
-  40255a:	f107 0310 	add.w	r3, r7, #16
-  40255e:	4619      	mov	r1, r3
-  402560:	4842      	ldr	r0, [pc, #264]	; (40266c <write_image_data_safe+0x1a4>)
-  402562:	4b43      	ldr	r3, [pc, #268]	; (402670 <write_image_data_safe+0x1a8>)
-  402564:	4798      	blx	r3
-	
-	for (int i = start_index; i < end_index; i++) {
-  402566:	68bb      	ldr	r3, [r7, #8]
-  402568:	f8c7 3098 	str.w	r3, [r7, #152]	; 0x98
-  40256c:	e011      	b.n	402592 <write_image_data_safe+0xca>
-		curr_data_point = (array_start_pointer)[i];	
-  40256e:	f8d7 3098 	ldr.w	r3, [r7, #152]	; 0x98
-  402572:	68fa      	ldr	r2, [r7, #12]
-  402574:	4413      	add	r3, r2
-  402576:	781b      	ldrb	r3, [r3, #0]
-  402578:	f887 308b 	strb.w	r3, [r7, #139]	; 0x8b
-		usart_putchar(BOARD_USART, curr_data_point);
-  40257c:	f897 308b 	ldrb.w	r3, [r7, #139]	; 0x8b
-  402580:	4619      	mov	r1, r3
-  402582:	483a      	ldr	r0, [pc, #232]	; (40266c <write_image_data_safe+0x1a4>)
-  402584:	4b3d      	ldr	r3, [pc, #244]	; (40267c <write_image_data_safe+0x1b4>)
-  402586:	4798      	blx	r3
-	for (int i = start_index; i < end_index; i++) {
-  402588:	f8d7 3098 	ldr.w	r3, [r7, #152]	; 0x98
-  40258c:	3301      	adds	r3, #1
-  40258e:	f8c7 3098 	str.w	r3, [r7, #152]	; 0x98
-  402592:	f8d7 2098 	ldr.w	r2, [r7, #152]	; 0x98
-  402596:	f8d7 3090 	ldr.w	r3, [r7, #144]	; 0x90
-  40259a:	429a      	cmp	r2, r3
-  40259c:	d3e7      	bcc.n	40256e <write_image_data_safe+0xa6>
-	}
-	
-	uint8_t command_response = COMMAND_UNSET;
-  40259e:	2363      	movs	r3, #99	; 0x63
-  4025a0:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
-	
-	while(command_response == COMMAND_UNSET) {			
-  4025a4:	e047      	b.n	402636 <write_image_data_safe+0x16e>
-		if(strstr(usart_buffer, resp)){
-  4025a6:	f8d7 10b0 	ldr.w	r1, [r7, #176]	; 0xb0
-  4025aa:	482c      	ldr	r0, [pc, #176]	; (40265c <write_image_data_safe+0x194>)
-  4025ac:	4b2c      	ldr	r3, [pc, #176]	; (402660 <write_image_data_safe+0x198>)
-  4025ae:	4798      	blx	r3
-  4025b0:	4603      	mov	r3, r0
-  4025b2:	2b00      	cmp	r3, #0
-  4025b4:	d003      	beq.n	4025be <write_image_data_safe+0xf6>
-			command_response = COMMAND_SUCCESS; // successful response
-  4025b6:	2300      	movs	r3, #0
-  4025b8:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
-  4025bc:	e021      	b.n	402602 <write_image_data_safe+0x13a>
-			// otherwise, parse for handle
-		}
-		else if(strstr(usart_buffer, "[Closed: ")){
-  4025be:	4926      	ldr	r1, [pc, #152]	; (402658 <write_image_data_safe+0x190>)
-  4025c0:	4826      	ldr	r0, [pc, #152]	; (40265c <write_image_data_safe+0x194>)
-  4025c2:	4b27      	ldr	r3, [pc, #156]	; (402660 <write_image_data_safe+0x198>)
-  4025c4:	4798      	blx	r3
-  4025c6:	4603      	mov	r3, r0
-  4025c8:	2b00      	cmp	r3, #0
-  4025ca:	d003      	beq.n	4025d4 <write_image_data_safe+0x10c>
-			command_response = COMMAND_STCLOSE; // return a value indicating closure of the stream
-  4025cc:	2303      	movs	r3, #3
-  4025ce:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
-  4025d2:	e016      	b.n	402602 <write_image_data_safe+0x13a>
-			
-		}
-		else if(strstr(usart_buffer, "Command failed")){
-  4025d4:	492a      	ldr	r1, [pc, #168]	; (402680 <write_image_data_safe+0x1b8>)
-  4025d6:	4821      	ldr	r0, [pc, #132]	; (40265c <write_image_data_safe+0x194>)
-  4025d8:	4b21      	ldr	r3, [pc, #132]	; (402660 <write_image_data_safe+0x198>)
-  4025da:	4798      	blx	r3
-  4025dc:	4603      	mov	r3, r0
-  4025de:	2b00      	cmp	r3, #0
-  4025e0:	d003      	beq.n	4025ea <write_image_data_safe+0x122>
-			command_response = COMMAND_FAILURE; // command failed
-  4025e2:	2301      	movs	r3, #1
-  4025e4:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
-  4025e8:	e00b      	b.n	402602 <write_image_data_safe+0x13a>
-		}
-		else if(ms_counter++ > timeout_ms){
-  4025ea:	f8d7 309c 	ldr.w	r3, [r7, #156]	; 0x9c
-  4025ee:	1c5a      	adds	r2, r3, #1
-  4025f0:	f8c7 209c 	str.w	r2, [r7, #156]	; 0x9c
-  4025f4:	f8d7 20b4 	ldr.w	r2, [r7, #180]	; 0xb4
-  4025f8:	4293      	cmp	r3, r2
-  4025fa:	d902      	bls.n	402602 <write_image_data_safe+0x13a>
-			command_response = COMMAND_TIMEOUT;
-  4025fc:	2302      	movs	r3, #2
-  4025fe:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
-		}
-		delay_ms(1);
-  402602:	4b20      	ldr	r3, [pc, #128]	; (402684 <write_image_data_safe+0x1bc>)
-  402604:	4798      	blx	r3
-  402606:	4603      	mov	r3, r0
-  402608:	f04f 0400 	mov.w	r4, #0
-  40260c:	f243 61af 	movw	r1, #13999	; 0x36af
-  402610:	f04f 0200 	mov.w	r2, #0
-  402614:	eb13 0b01 	adds.w	fp, r3, r1
-  402618:	eb44 0c02 	adc.w	ip, r4, r2
-  40261c:	4658      	mov	r0, fp
-  40261e:	4661      	mov	r1, ip
-  402620:	4c19      	ldr	r4, [pc, #100]	; (402688 <write_image_data_safe+0x1c0>)
-  402622:	f243 62b0 	movw	r2, #14000	; 0x36b0
-  402626:	f04f 0300 	mov.w	r3, #0
-  40262a:	47a0      	blx	r4
-  40262c:	4603      	mov	r3, r0
-  40262e:	460c      	mov	r4, r1
-  402630:	4618      	mov	r0, r3
-  402632:	4b16      	ldr	r3, [pc, #88]	; (40268c <write_image_data_safe+0x1c4>)
-  402634:	4798      	blx	r3
-	while(command_response == COMMAND_UNSET) {			
-  402636:	f897 3097 	ldrb.w	r3, [r7, #151]	; 0x97
-  40263a:	2b63      	cmp	r3, #99	; 0x63
-  40263c:	d0b3      	beq.n	4025a6 <write_image_data_safe+0xde>
-	}
-	
-	usart_buffer_index = 0;
-  40263e:	4b05      	ldr	r3, [pc, #20]	; (402654 <write_image_data_safe+0x18c>)
-  402640:	2200      	movs	r2, #0
-  402642:	601a      	str	r2, [r3, #0]
-	return command_response;
-  402644:	f897 3097 	ldrb.w	r3, [r7, #151]	; 0x97
-}
-  402648:	4618      	mov	r0, r3
-  40264a:	37a0      	adds	r7, #160	; 0xa0
-  40264c:	46bd      	mov	sp, r7
-  40264e:	e8bd 8890 	ldmia.w	sp!, {r4, r7, fp, pc}
-  402652:	bf00      	nop
-  402654:	2000d784 	.word	0x2000d784
-  402658:	0040981c 	.word	0x0040981c
-  40265c:	2000d590 	.word	0x2000d590
-  402660:	0040450d 	.word	0x0040450d
-  402664:	00404091 	.word	0x00404091
-  402668:	00409828 	.word	0x00409828
-  40266c:	40024000 	.word	0x40024000
-  402670:	00401099 	.word	0x00401099
-  402674:	0040982c 	.word	0x0040982c
-  402678:	0040412d 	.word	0x0040412d
-  40267c:	00401069 	.word	0x00401069
-  402680:	0040983c 	.word	0x0040983c
-  402684:	00401dbd 	.word	0x00401dbd
-  402688:	00403d31 	.word	0x00403d31
-  40268c:	20000001 	.word	0x20000001
-
-00402690 <configure_websocket>:
-
+00402194 <configure_websocket>:
 
 void configure_websocket(){
-  402690:	b580      	push	{r7, lr}
-  402692:	af00      	add	r7, sp, #0
-	ws_handle = open_websocket(5); // try 5 times to open the socket
-  402694:	2005      	movs	r0, #5
-  402696:	4b04      	ldr	r3, [pc, #16]	; (4026a8 <configure_websocket+0x18>)
-  402698:	4798      	blx	r3
-  40269a:	4603      	mov	r3, r0
-  40269c:	461a      	mov	r2, r3
-  40269e:	4b03      	ldr	r3, [pc, #12]	; (4026ac <configure_websocket+0x1c>)
-  4026a0:	701a      	strb	r2, [r3, #0]
+  402194:	b580      	push	{r7, lr}
+  402196:	af00      	add	r7, sp, #0
+	// try 5 times to open the socket
+	ws_handle = open_websocket(5); 
+  402198:	2005      	movs	r0, #5
+  40219a:	4b04      	ldr	r3, [pc, #16]	; (4021ac <configure_websocket+0x18>)
+  40219c:	4798      	blx	r3
+  40219e:	4603      	mov	r3, r0
+  4021a0:	461a      	mov	r2, r3
+  4021a2:	4b03      	ldr	r3, [pc, #12]	; (4021b0 <configure_websocket+0x1c>)
+  4021a4:	701a      	strb	r2, [r3, #0]
 }
-  4026a2:	bf00      	nop
-  4026a4:	bd80      	pop	{r7, pc}
-  4026a6:	bf00      	nop
-  4026a8:	00402331 	.word	0x00402331
-  4026ac:	2000000a 	.word	0x2000000a
+  4021a6:	bf00      	nop
+  4021a8:	bd80      	pop	{r7, pc}
+  4021aa:	bf00      	nop
+  4021ac:	00401ffd 	.word	0x00401ffd
+  4021b0:	2000000a 	.word	0x2000000a
+  4021b4:	00000000 	.word	0x00000000
 
-004026b0 <send_audio_packet>:
-
-uint8_t send_audio_packet(){
-  4026b0:	b590      	push	{r4, r7, lr}
-  4026b2:	b083      	sub	sp, #12
-  4026b4:	af00      	add	r7, sp, #0
-	// sends one audio packet, assuming everything is OK everywhere
-	// called by camera functions to stream audio while capturing image
-	
-	uint8_t status_code;
-	
-	if (ws_handle != NO_WEBSOCKET_OPEN && ws_handle != PREV_COMMAND_FAILED && !is_audio_caught_up()){
-  4026b6:	4b15      	ldr	r3, [pc, #84]	; (40270c <send_audio_packet+0x5c>)
-  4026b8:	781b      	ldrb	r3, [r3, #0]
-  4026ba:	2b0a      	cmp	r3, #10
-  4026bc:	d021      	beq.n	402702 <send_audio_packet+0x52>
-  4026be:	4b13      	ldr	r3, [pc, #76]	; (40270c <send_audio_packet+0x5c>)
-  4026c0:	781b      	ldrb	r3, [r3, #0]
-  4026c2:	2b0b      	cmp	r3, #11
-  4026c4:	d01d      	beq.n	402702 <send_audio_packet+0x52>
-  4026c6:	4b12      	ldr	r3, [pc, #72]	; (402710 <send_audio_packet+0x60>)
-  4026c8:	4798      	blx	r3
-  4026ca:	4603      	mov	r3, r0
-  4026cc:	2b00      	cmp	r3, #0
-  4026ce:	d118      	bne.n	402702 <send_audio_packet+0x52>
-			//websocket open, no recent command failure, and enough data to send
-		status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
-  4026d0:	4b0e      	ldr	r3, [pc, #56]	; (40270c <send_audio_packet+0x5c>)
-  4026d2:	7819      	ldrb	r1, [r3, #0]
-  4026d4:	f44f 73fa 	mov.w	r3, #500	; 0x1f4
-  4026d8:	4a0e      	ldr	r2, [pc, #56]	; (402714 <send_audio_packet+0x64>)
-  4026da:	480f      	ldr	r0, [pc, #60]	; (402718 <send_audio_packet+0x68>)
-  4026dc:	4c0f      	ldr	r4, [pc, #60]	; (40271c <send_audio_packet+0x6c>)
-  4026de:	47a0      	blx	r4
-  4026e0:	4603      	mov	r3, r0
-  4026e2:	71fb      	strb	r3, [r7, #7]
-		
-		if(status_code == COMMAND_STCLOSE){
-  4026e4:	79fb      	ldrb	r3, [r7, #7]
-  4026e6:	2b03      	cmp	r3, #3
-  4026e8:	d103      	bne.n	4026f2 <send_audio_packet+0x42>
-			ws_handle = NO_WEBSOCKET_OPEN;
-  4026ea:	4b08      	ldr	r3, [pc, #32]	; (40270c <send_audio_packet+0x5c>)
-  4026ec:	220a      	movs	r2, #10
-  4026ee:	701a      	strb	r2, [r3, #0]
-  4026f0:	e005      	b.n	4026fe <send_audio_packet+0x4e>
-		} else if (status_code == COMMAND_FAILURE){
-  4026f2:	79fb      	ldrb	r3, [r7, #7]
-  4026f4:	2b01      	cmp	r3, #1
-  4026f6:	d102      	bne.n	4026fe <send_audio_packet+0x4e>
-			ws_handle = PREV_COMMAND_FAILED;
-  4026f8:	4b04      	ldr	r3, [pc, #16]	; (40270c <send_audio_packet+0x5c>)
-  4026fa:	220b      	movs	r2, #11
-  4026fc:	701a      	strb	r2, [r3, #0]
-		}
-		return 1;
-  4026fe:	2301      	movs	r3, #1
-  402700:	e000      	b.n	402704 <send_audio_packet+0x54>
-	}
-	return 0;
-  402702:	2300      	movs	r3, #0
-}
-  402704:	4618      	mov	r0, r3
-  402706:	370c      	adds	r7, #12
-  402708:	46bd      	mov	sp, r7
-  40270a:	bd90      	pop	{r4, r7, pc}
-  40270c:	2000000a 	.word	0x2000000a
-  402710:	00402821 	.word	0x00402821
-  402714:	004098a0 	.word	0x004098a0
-  402718:	200009dc 	.word	0x200009dc
-  40271c:	00402001 	.word	0x00402001
-
-00402720 <reopen_websockets>:
+004021b8 <reopen_websockets>:
 
 void reopen_websockets(){
-  402720:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
-  402722:	af00      	add	r7, sp, #0
+  4021b8:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+  4021ba:	af00      	add	r7, sp, #0
 	// reopen websocket connections if something breaks
 	write_wifi_command_safe("close all\r\n","Success",100,0); // fix this
-  402724:	2300      	movs	r3, #0
-  402726:	2264      	movs	r2, #100	; 0x64
-  402728:	4933      	ldr	r1, [pc, #204]	; (4027f8 <reopen_websockets+0xd8>)
-  40272a:	4834      	ldr	r0, [pc, #208]	; (4027fc <reopen_websockets+0xdc>)
-  40272c:	4c34      	ldr	r4, [pc, #208]	; (402800 <reopen_websockets+0xe0>)
-  40272e:	47a0      	blx	r4
+  4021bc:	2300      	movs	r3, #0
+  4021be:	2264      	movs	r2, #100	; 0x64
+  4021c0:	4933      	ldr	r1, [pc, #204]	; (402290 <reopen_websockets+0xd8>)
+  4021c2:	4834      	ldr	r0, [pc, #208]	; (402294 <reopen_websockets+0xdc>)
+  4021c4:	4c34      	ldr	r4, [pc, #208]	; (402298 <reopen_websockets+0xe0>)
+  4021c6:	47a0      	blx	r4
 	ws_handle = NO_WEBSOCKET_OPEN;
-  402730:	4b34      	ldr	r3, [pc, #208]	; (402804 <reopen_websockets+0xe4>)
-  402732:	220a      	movs	r2, #10
-  402734:	701a      	strb	r2, [r3, #0]
+  4021c8:	4b34      	ldr	r3, [pc, #208]	; (40229c <reopen_websockets+0xe4>)
+  4021ca:	220a      	movs	r2, #10
+  4021cc:	701a      	strb	r2, [r3, #0]
 	
-	while((ws_handle == NO_WEBSOCKET_OPEN)){// || (image_ws_handle == NO_WEBSOCKET_OPEN)){
-  402736:	e052      	b.n	4027de <reopen_websockets+0xbe>
+	while(ws_handle == NO_WEBSOCKET_OPEN) {
+  4021ce:	e052      	b.n	402276 <reopen_websockets+0xbe>
 		delay_s(reopen_delay_seconds);
-  402738:	4b33      	ldr	r3, [pc, #204]	; (402808 <reopen_websockets+0xe8>)
-  40273a:	681b      	ldr	r3, [r3, #0]
-  40273c:	2b00      	cmp	r3, #0
-  40273e:	d02b      	beq.n	402798 <reopen_websockets+0x78>
-  402740:	4b31      	ldr	r3, [pc, #196]	; (402808 <reopen_websockets+0xe8>)
-  402742:	681b      	ldr	r3, [r3, #0]
-  402744:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
-  402748:	fb02 f303 	mul.w	r3, r2, r3
-  40274c:	461d      	mov	r5, r3
-  40274e:	f04f 0600 	mov.w	r6, #0
-  402752:	4b2e      	ldr	r3, [pc, #184]	; (40280c <reopen_websockets+0xec>)
-  402754:	4798      	blx	r3
-  402756:	4603      	mov	r3, r0
-  402758:	f04f 0400 	mov.w	r4, #0
-  40275c:	fb03 f106 	mul.w	r1, r3, r6
-  402760:	fb05 f204 	mul.w	r2, r5, r4
-  402764:	440a      	add	r2, r1
-  402766:	fba5 3403 	umull	r3, r4, r5, r3
-  40276a:	4422      	add	r2, r4
-  40276c:	4614      	mov	r4, r2
-  40276e:	f243 61af 	movw	r1, #13999	; 0x36af
-  402772:	f04f 0200 	mov.w	r2, #0
-  402776:	185d      	adds	r5, r3, r1
-  402778:	eb44 0602 	adc.w	r6, r4, r2
-  40277c:	4628      	mov	r0, r5
-  40277e:	4631      	mov	r1, r6
-  402780:	4c23      	ldr	r4, [pc, #140]	; (402810 <reopen_websockets+0xf0>)
-  402782:	f243 62b0 	movw	r2, #14000	; 0x36b0
-  402786:	f04f 0300 	mov.w	r3, #0
-  40278a:	47a0      	blx	r4
-  40278c:	4603      	mov	r3, r0
-  40278e:	460c      	mov	r4, r1
-  402790:	4618      	mov	r0, r3
-  402792:	4b20      	ldr	r3, [pc, #128]	; (402814 <reopen_websockets+0xf4>)
-  402794:	4798      	blx	r3
-  402796:	e016      	b.n	4027c6 <reopen_websockets+0xa6>
-  402798:	4b1c      	ldr	r3, [pc, #112]	; (40280c <reopen_websockets+0xec>)
-  40279a:	4798      	blx	r3
-  40279c:	4603      	mov	r3, r0
-  40279e:	f04f 0400 	mov.w	r4, #0
-  4027a2:	a213      	add	r2, pc, #76	; (adr r2, 4027f0 <reopen_websockets+0xd0>)
-  4027a4:	e9d2 1200 	ldrd	r1, r2, [r2]
-  4027a8:	185d      	adds	r5, r3, r1
-  4027aa:	eb44 0602 	adc.w	r6, r4, r2
-  4027ae:	4628      	mov	r0, r5
-  4027b0:	4631      	mov	r1, r6
-  4027b2:	4c17      	ldr	r4, [pc, #92]	; (402810 <reopen_websockets+0xf0>)
-  4027b4:	4a18      	ldr	r2, [pc, #96]	; (402818 <reopen_websockets+0xf8>)
-  4027b6:	f04f 0300 	mov.w	r3, #0
-  4027ba:	47a0      	blx	r4
-  4027bc:	4603      	mov	r3, r0
-  4027be:	460c      	mov	r4, r1
-  4027c0:	4618      	mov	r0, r3
-  4027c2:	4b14      	ldr	r3, [pc, #80]	; (402814 <reopen_websockets+0xf4>)
-  4027c4:	4798      	blx	r3
+  4021d0:	4b33      	ldr	r3, [pc, #204]	; (4022a0 <reopen_websockets+0xe8>)
+  4021d2:	681b      	ldr	r3, [r3, #0]
+  4021d4:	2b00      	cmp	r3, #0
+  4021d6:	d02b      	beq.n	402230 <reopen_websockets+0x78>
+  4021d8:	4b31      	ldr	r3, [pc, #196]	; (4022a0 <reopen_websockets+0xe8>)
+  4021da:	681b      	ldr	r3, [r3, #0]
+  4021dc:	f44f 727a 	mov.w	r2, #1000	; 0x3e8
+  4021e0:	fb02 f303 	mul.w	r3, r2, r3
+  4021e4:	461d      	mov	r5, r3
+  4021e6:	f04f 0600 	mov.w	r6, #0
+  4021ea:	4b2e      	ldr	r3, [pc, #184]	; (4022a4 <reopen_websockets+0xec>)
+  4021ec:	4798      	blx	r3
+  4021ee:	4603      	mov	r3, r0
+  4021f0:	f04f 0400 	mov.w	r4, #0
+  4021f4:	fb03 f106 	mul.w	r1, r3, r6
+  4021f8:	fb05 f204 	mul.w	r2, r5, r4
+  4021fc:	440a      	add	r2, r1
+  4021fe:	fba5 3403 	umull	r3, r4, r5, r3
+  402202:	4422      	add	r2, r4
+  402204:	4614      	mov	r4, r2
+  402206:	f243 61af 	movw	r1, #13999	; 0x36af
+  40220a:	f04f 0200 	mov.w	r2, #0
+  40220e:	185d      	adds	r5, r3, r1
+  402210:	eb44 0602 	adc.w	r6, r4, r2
+  402214:	4628      	mov	r0, r5
+  402216:	4631      	mov	r1, r6
+  402218:	4c23      	ldr	r4, [pc, #140]	; (4022a8 <reopen_websockets+0xf0>)
+  40221a:	f243 62b0 	movw	r2, #14000	; 0x36b0
+  40221e:	f04f 0300 	mov.w	r3, #0
+  402222:	47a0      	blx	r4
+  402224:	4603      	mov	r3, r0
+  402226:	460c      	mov	r4, r1
+  402228:	4618      	mov	r0, r3
+  40222a:	4b20      	ldr	r3, [pc, #128]	; (4022ac <reopen_websockets+0xf4>)
+  40222c:	4798      	blx	r3
+  40222e:	e016      	b.n	40225e <reopen_websockets+0xa6>
+  402230:	4b1c      	ldr	r3, [pc, #112]	; (4022a4 <reopen_websockets+0xec>)
+  402232:	4798      	blx	r3
+  402234:	4603      	mov	r3, r0
+  402236:	f04f 0400 	mov.w	r4, #0
+  40223a:	a213      	add	r2, pc, #76	; (adr r2, 402288 <reopen_websockets+0xd0>)
+  40223c:	e9d2 1200 	ldrd	r1, r2, [r2]
+  402240:	185d      	adds	r5, r3, r1
+  402242:	eb44 0602 	adc.w	r6, r4, r2
+  402246:	4628      	mov	r0, r5
+  402248:	4631      	mov	r1, r6
+  40224a:	4c17      	ldr	r4, [pc, #92]	; (4022a8 <reopen_websockets+0xf0>)
+  40224c:	4a18      	ldr	r2, [pc, #96]	; (4022b0 <reopen_websockets+0xf8>)
+  40224e:	f04f 0300 	mov.w	r3, #0
+  402252:	47a0      	blx	r4
+  402254:	4603      	mov	r3, r0
+  402256:	460c      	mov	r4, r1
+  402258:	4618      	mov	r0, r3
+  40225a:	4b14      	ldr	r3, [pc, #80]	; (4022ac <reopen_websockets+0xf4>)
+  40225c:	4798      	blx	r3
 		ws_handle = open_websocket(5); // try 5 times to open the socket
-  4027c6:	2005      	movs	r0, #5
-  4027c8:	4b14      	ldr	r3, [pc, #80]	; (40281c <reopen_websockets+0xfc>)
-  4027ca:	4798      	blx	r3
-  4027cc:	4603      	mov	r3, r0
-  4027ce:	461a      	mov	r2, r3
-  4027d0:	4b0c      	ldr	r3, [pc, #48]	; (402804 <reopen_websockets+0xe4>)
-  4027d2:	701a      	strb	r2, [r3, #0]
+  40225e:	2005      	movs	r0, #5
+  402260:	4b14      	ldr	r3, [pc, #80]	; (4022b4 <reopen_websockets+0xfc>)
+  402262:	4798      	blx	r3
+  402264:	4603      	mov	r3, r0
+  402266:	461a      	mov	r2, r3
+  402268:	4b0c      	ldr	r3, [pc, #48]	; (40229c <reopen_websockets+0xe4>)
+  40226a:	701a      	strb	r2, [r3, #0]
 		reopen_delay_seconds += 5; // this could take a while
-  4027d4:	4b0c      	ldr	r3, [pc, #48]	; (402808 <reopen_websockets+0xe8>)
-  4027d6:	681b      	ldr	r3, [r3, #0]
-  4027d8:	3305      	adds	r3, #5
-  4027da:	4a0b      	ldr	r2, [pc, #44]	; (402808 <reopen_websockets+0xe8>)
-  4027dc:	6013      	str	r3, [r2, #0]
-	while((ws_handle == NO_WEBSOCKET_OPEN)){// || (image_ws_handle == NO_WEBSOCKET_OPEN)){
-  4027de:	4b09      	ldr	r3, [pc, #36]	; (402804 <reopen_websockets+0xe4>)
-  4027e0:	781b      	ldrb	r3, [r3, #0]
-  4027e2:	2b0a      	cmp	r3, #10
-  4027e4:	d0a8      	beq.n	402738 <reopen_websockets+0x18>
+  40226c:	4b0c      	ldr	r3, [pc, #48]	; (4022a0 <reopen_websockets+0xe8>)
+  40226e:	681b      	ldr	r3, [r3, #0]
+  402270:	3305      	adds	r3, #5
+  402272:	4a0b      	ldr	r2, [pc, #44]	; (4022a0 <reopen_websockets+0xe8>)
+  402274:	6013      	str	r3, [r2, #0]
+	while(ws_handle == NO_WEBSOCKET_OPEN) {
+  402276:	4b09      	ldr	r3, [pc, #36]	; (40229c <reopen_websockets+0xe4>)
+  402278:	781b      	ldrb	r3, [r3, #0]
+  40227a:	2b0a      	cmp	r3, #10
+  40227c:	d0a8      	beq.n	4021d0 <reopen_websockets+0x18>
 	}
 	reopen_delay_seconds = 5;
-  4027e6:	4b08      	ldr	r3, [pc, #32]	; (402808 <reopen_websockets+0xe8>)
-  4027e8:	2205      	movs	r2, #5
-  4027ea:	601a      	str	r2, [r3, #0]
+  40227e:	4b08      	ldr	r3, [pc, #32]	; (4022a0 <reopen_websockets+0xe8>)
+  402280:	2205      	movs	r2, #5
+  402282:	601a      	str	r2, [r3, #0]
 }
-  4027ec:	bf00      	nop
-  4027ee:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
-  4027f0:	00d59f7f 	.word	0x00d59f7f
-  4027f4:	00000000 	.word	0x00000000
-  4027f8:	004098a0 	.word	0x004098a0
-  4027fc:	004098a8 	.word	0x004098a8
-  402800:	004021e5 	.word	0x004021e5
-  402804:	2000000a 	.word	0x2000000a
-  402808:	2000000c 	.word	0x2000000c
-  40280c:	00401dbd 	.word	0x00401dbd
-  402810:	00403d31 	.word	0x00403d31
-  402814:	20000001 	.word	0x20000001
-  402818:	00d59f80 	.word	0x00d59f80
-  40281c:	00402331 	.word	0x00402331
+  402284:	bf00      	nop
+  402286:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+  402288:	00d59f7f 	.word	0x00d59f7f
+  40228c:	00000000 	.word	0x00000000
+  402290:	00409870 	.word	0x00409870
+  402294:	00409878 	.word	0x00409878
+  402298:	00402895 	.word	0x00402895
+  40229c:	2000000a 	.word	0x2000000a
+  4022a0:	2000000c 	.word	0x2000000c
+  4022a4:	00401dbd 	.word	0x00401dbd
+  4022a8:	00403d31 	.word	0x00403d31
+  4022ac:	20000001 	.word	0x20000001
+  4022b0:	00d59f80 	.word	0x00d59f80
+  4022b4:	00401ffd 	.word	0x00401ffd
 
-00402820 <is_audio_caught_up>:
+004022b8 <is_audio_caught_up>:
+		// websocket not open
+		reopen_websockets();
+	}	
+}
 
-uint8_t is_audio_caught_up(void){
-  402820:	b480      	push	{r7}
-  402822:	b087      	sub	sp, #28
-  402824:	af00      	add	r7, sp, #0
+uint8_t is_audio_caught_up(){
+  4022b8:	b480      	push	{r7}
+  4022ba:	b085      	sub	sp, #20
+  4022bc:	af00      	add	r7, sp, #0
 	uint32_t end_index = (i2s_send_index + AUDIO_PACKET_SIZE) % (AUDIO_BUFFER_SIZE); // the last uint16 index that will be hit if it sends
-  402826:	4b1e      	ldr	r3, [pc, #120]	; (4028a0 <is_audio_caught_up+0x80>)
-  402828:	681b      	ldr	r3, [r3, #0]
-  40282a:	33c8      	adds	r3, #200	; 0xc8
-  40282c:	4a1d      	ldr	r2, [pc, #116]	; (4028a4 <is_audio_caught_up+0x84>)
-  40282e:	fba2 1203 	umull	r1, r2, r2, r3
-  402832:	0a92      	lsrs	r2, r2, #10
-  402834:	f44f 517a 	mov.w	r1, #16000	; 0x3e80
-  402838:	fb01 f202 	mul.w	r2, r1, r2
-  40283c:	1a9b      	subs	r3, r3, r2
-  40283e:	617b      	str	r3, [r7, #20]
-	uint32_t adjusted_send_index = i2s_send_index;
-  402840:	4b17      	ldr	r3, [pc, #92]	; (4028a0 <is_audio_caught_up+0x80>)
-  402842:	681b      	ldr	r3, [r3, #0]
-  402844:	613b      	str	r3, [r7, #16]
-	uint32_t adjusted_capture_index = i2s_capture_index;
-  402846:	4b18      	ldr	r3, [pc, #96]	; (4028a8 <is_audio_caught_up+0x88>)
-  402848:	681b      	ldr	r3, [r3, #0]
-  40284a:	60fb      	str	r3, [r7, #12]
+  4022be:	4b1e      	ldr	r3, [pc, #120]	; (402338 <is_audio_caught_up+0x80>)
+  4022c0:	681b      	ldr	r3, [r3, #0]
+  4022c2:	33c8      	adds	r3, #200	; 0xc8
+  4022c4:	4a1d      	ldr	r2, [pc, #116]	; (40233c <is_audio_caught_up+0x84>)
+  4022c6:	fba2 1203 	umull	r1, r2, r2, r3
+  4022ca:	0a92      	lsrs	r2, r2, #10
+  4022cc:	f44f 517a 	mov.w	r1, #16000	; 0x3e80
+  4022d0:	fb01 f202 	mul.w	r2, r1, r2
+  4022d4:	1a9b      	subs	r3, r3, r2
+  4022d6:	60fb      	str	r3, [r7, #12]
 	
 	// make sure that the end index isn't in front of the receive index
-	uint32_t first_condition = ((adjusted_capture_index - adjusted_send_index) < AUDIO_PACKET_SIZE) && ((adjusted_capture_index - adjusted_send_index) > 0);
-  40284c:	68fa      	ldr	r2, [r7, #12]
-  40284e:	693b      	ldr	r3, [r7, #16]
-  402850:	1ad3      	subs	r3, r2, r3
-  402852:	2bc7      	cmp	r3, #199	; 0xc7
-  402854:	d805      	bhi.n	402862 <is_audio_caught_up+0x42>
-  402856:	68fa      	ldr	r2, [r7, #12]
-  402858:	693b      	ldr	r3, [r7, #16]
-  40285a:	429a      	cmp	r2, r3
-  40285c:	d001      	beq.n	402862 <is_audio_caught_up+0x42>
-  40285e:	2301      	movs	r3, #1
-  402860:	e000      	b.n	402864 <is_audio_caught_up+0x44>
-  402862:	2300      	movs	r3, #0
-  402864:	60bb      	str	r3, [r7, #8]
-	uint32_t second_condition = ((end_index - adjusted_capture_index) > 0) && ((end_index - adjusted_capture_index) < AUDIO_PACKET_SIZE);
-  402866:	697a      	ldr	r2, [r7, #20]
-  402868:	68fb      	ldr	r3, [r7, #12]
-  40286a:	429a      	cmp	r2, r3
-  40286c:	d006      	beq.n	40287c <is_audio_caught_up+0x5c>
-  40286e:	697a      	ldr	r2, [r7, #20]
-  402870:	68fb      	ldr	r3, [r7, #12]
-  402872:	1ad3      	subs	r3, r2, r3
-  402874:	2bc7      	cmp	r3, #199	; 0xc7
-  402876:	d801      	bhi.n	40287c <is_audio_caught_up+0x5c>
-  402878:	2301      	movs	r3, #1
-  40287a:	e000      	b.n	40287e <is_audio_caught_up+0x5e>
-  40287c:	2300      	movs	r3, #0
-  40287e:	607b      	str	r3, [r7, #4]
+	uint32_t first_condition = ((i2s_capture_index - i2s_send_index) < AUDIO_PACKET_SIZE) && ((i2s_capture_index - i2s_send_index) > 0);
+  4022d8:	4b19      	ldr	r3, [pc, #100]	; (402340 <is_audio_caught_up+0x88>)
+  4022da:	681a      	ldr	r2, [r3, #0]
+  4022dc:	4b16      	ldr	r3, [pc, #88]	; (402338 <is_audio_caught_up+0x80>)
+  4022de:	681b      	ldr	r3, [r3, #0]
+  4022e0:	1ad3      	subs	r3, r2, r3
+  4022e2:	2bc7      	cmp	r3, #199	; 0xc7
+  4022e4:	d807      	bhi.n	4022f6 <is_audio_caught_up+0x3e>
+  4022e6:	4b16      	ldr	r3, [pc, #88]	; (402340 <is_audio_caught_up+0x88>)
+  4022e8:	681a      	ldr	r2, [r3, #0]
+  4022ea:	4b13      	ldr	r3, [pc, #76]	; (402338 <is_audio_caught_up+0x80>)
+  4022ec:	681b      	ldr	r3, [r3, #0]
+  4022ee:	429a      	cmp	r2, r3
+  4022f0:	d001      	beq.n	4022f6 <is_audio_caught_up+0x3e>
+  4022f2:	2301      	movs	r3, #1
+  4022f4:	e000      	b.n	4022f8 <is_audio_caught_up+0x40>
+  4022f6:	2300      	movs	r3, #0
+  4022f8:	60bb      	str	r3, [r7, #8]
+	uint32_t second_condition = ((end_index - i2s_capture_index) > 0) && ((end_index - i2s_capture_index) < AUDIO_PACKET_SIZE);
+  4022fa:	4b11      	ldr	r3, [pc, #68]	; (402340 <is_audio_caught_up+0x88>)
+  4022fc:	681b      	ldr	r3, [r3, #0]
+  4022fe:	68fa      	ldr	r2, [r7, #12]
+  402300:	429a      	cmp	r2, r3
+  402302:	d007      	beq.n	402314 <is_audio_caught_up+0x5c>
+  402304:	4b0e      	ldr	r3, [pc, #56]	; (402340 <is_audio_caught_up+0x88>)
+  402306:	681b      	ldr	r3, [r3, #0]
+  402308:	68fa      	ldr	r2, [r7, #12]
+  40230a:	1ad3      	subs	r3, r2, r3
+  40230c:	2bc7      	cmp	r3, #199	; 0xc7
+  40230e:	d801      	bhi.n	402314 <is_audio_caught_up+0x5c>
+  402310:	2301      	movs	r3, #1
+  402312:	e000      	b.n	402316 <is_audio_caught_up+0x5e>
+  402314:	2300      	movs	r3, #0
+  402316:	607b      	str	r3, [r7, #4]
 	return (first_condition || second_condition) ? 1 : 0;
-  402880:	68bb      	ldr	r3, [r7, #8]
-  402882:	2b00      	cmp	r3, #0
-  402884:	d102      	bne.n	40288c <is_audio_caught_up+0x6c>
-  402886:	687b      	ldr	r3, [r7, #4]
-  402888:	2b00      	cmp	r3, #0
-  40288a:	d001      	beq.n	402890 <is_audio_caught_up+0x70>
-  40288c:	2301      	movs	r3, #1
-  40288e:	e000      	b.n	402892 <is_audio_caught_up+0x72>
-  402890:	2300      	movs	r3, #0
-  402892:	b2db      	uxtb	r3, r3
+  402318:	68bb      	ldr	r3, [r7, #8]
+  40231a:	2b00      	cmp	r3, #0
+  40231c:	d102      	bne.n	402324 <is_audio_caught_up+0x6c>
+  40231e:	687b      	ldr	r3, [r7, #4]
+  402320:	2b00      	cmp	r3, #0
+  402322:	d001      	beq.n	402328 <is_audio_caught_up+0x70>
+  402324:	2301      	movs	r3, #1
+  402326:	e000      	b.n	40232a <is_audio_caught_up+0x72>
+  402328:	2300      	movs	r3, #0
+  40232a:	b2db      	uxtb	r3, r3
 }
-  402894:	4618      	mov	r0, r3
-  402896:	371c      	adds	r7, #28
-  402898:	46bd      	mov	sp, r7
-  40289a:	bc80      	pop	{r7}
-  40289c:	4770      	bx	lr
-  40289e:	bf00      	nop
-  4028a0:	2000d788 	.word	0x2000d788
-  4028a4:	10624dd3 	.word	0x10624dd3
-  4028a8:	200009d8 	.word	0x200009d8
+  40232c:	4618      	mov	r0, r3
+  40232e:	3714      	adds	r7, #20
+  402330:	46bd      	mov	sp, r7
+  402332:	bc80      	pop	{r7}
+  402334:	4770      	bx	lr
+  402336:	bf00      	nop
+  402338:	2000d788 	.word	0x2000d788
+  40233c:	10624dd3 	.word	0x10624dd3
+  402340:	200009d8 	.word	0x200009d8
 
-004028ac <send_image>:
+00402344 <send_image>:
 
 void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
-  4028ac:	b590      	push	{r4, r7, lr}
-  4028ae:	b0a5      	sub	sp, #148	; 0x94
-  4028b0:	af02      	add	r7, sp, #8
-  4028b2:	6078      	str	r0, [r7, #4]
-  4028b4:	6039      	str	r1, [r7, #0]
+  402344:	b590      	push	{r4, r7, lr}
+  402346:	b0a5      	sub	sp, #148	; 0x94
+  402348:	af02      	add	r7, sp, #8
+  40234a:	6078      	str	r0, [r7, #4]
+  40234c:	6039      	str	r1, [r7, #0]
 	// sends image data over ws connection while still streaming audio
 	// throttled to audio speed
 	
 	uint32_t image_byte_index = 0;
-  4028b6:	2300      	movs	r3, #0
-  4028b8:	f8c7 3084 	str.w	r3, [r7, #132]	; 0x84
+  40234e:	2300      	movs	r3, #0
+  402350:	f8c7 3084 	str.w	r3, [r7, #132]	; 0x84
 	uint8_t status_code;
 	
 	while (image_byte_index < image_length){
-  4028bc:	e05f      	b.n	40297e <send_image+0xd2>
+  402354:	e05f      	b.n	402416 <send_image+0xd2>
 		// there's still image data to send
-		
 		//send audio data until caught up
 		if (ws_handle != NO_WEBSOCKET_OPEN){
-  4028be:	4b3d      	ldr	r3, [pc, #244]	; (4029b4 <send_image+0x108>)
-  4028c0:	781b      	ldrb	r3, [r3, #0]
-  4028c2:	2b0a      	cmp	r3, #10
-  4028c4:	d059      	beq.n	40297a <send_image+0xce>
+  402356:	4b3d      	ldr	r3, [pc, #244]	; (40244c <send_image+0x108>)
+  402358:	781b      	ldrb	r3, [r3, #0]
+  40235a:	2b0a      	cmp	r3, #10
+  40235c:	d059      	beq.n	402412 <send_image+0xce>
 			//websocket open
 			if(is_audio_caught_up()){
-  4028c6:	4b3c      	ldr	r3, [pc, #240]	; (4029b8 <send_image+0x10c>)
-  4028c8:	4798      	blx	r3
-  4028ca:	4603      	mov	r3, r0
-  4028cc:	2b00      	cmp	r3, #0
-  4028ce:	d032      	beq.n	402936 <send_image+0x8a>
+  40235e:	4b3c      	ldr	r3, [pc, #240]	; (402450 <send_image+0x10c>)
+  402360:	4798      	blx	r3
+  402362:	4603      	mov	r3, r0
+  402364:	2b00      	cmp	r3, #0
+  402366:	d032      	beq.n	4023ce <send_image+0x8a>
 				// if the audio sending is caught up, we can send an image packet
 				status_code = write_image_data_safe(start_of_image_ptr, image_byte_index, image_length, ws_handle, "Success", 500);
-  4028d0:	4b38      	ldr	r3, [pc, #224]	; (4029b4 <send_image+0x108>)
-  4028d2:	781a      	ldrb	r2, [r3, #0]
-  4028d4:	f44f 73fa 	mov.w	r3, #500	; 0x1f4
-  4028d8:	9301      	str	r3, [sp, #4]
-  4028da:	4b38      	ldr	r3, [pc, #224]	; (4029bc <send_image+0x110>)
-  4028dc:	9300      	str	r3, [sp, #0]
-  4028de:	4613      	mov	r3, r2
-  4028e0:	683a      	ldr	r2, [r7, #0]
-  4028e2:	f8d7 1084 	ldr.w	r1, [r7, #132]	; 0x84
-  4028e6:	6878      	ldr	r0, [r7, #4]
-  4028e8:	4c35      	ldr	r4, [pc, #212]	; (4029c0 <send_image+0x114>)
-  4028ea:	47a0      	blx	r4
-  4028ec:	4603      	mov	r3, r0
-  4028ee:	f887 3083 	strb.w	r3, [r7, #131]	; 0x83
+  402368:	4b38      	ldr	r3, [pc, #224]	; (40244c <send_image+0x108>)
+  40236a:	781a      	ldrb	r2, [r3, #0]
+  40236c:	f44f 73fa 	mov.w	r3, #500	; 0x1f4
+  402370:	9301      	str	r3, [sp, #4]
+  402372:	4b38      	ldr	r3, [pc, #224]	; (402454 <send_image+0x110>)
+  402374:	9300      	str	r3, [sp, #0]
+  402376:	4613      	mov	r3, r2
+  402378:	683a      	ldr	r2, [r7, #0]
+  40237a:	f8d7 1084 	ldr.w	r1, [r7, #132]	; 0x84
+  40237e:	6878      	ldr	r0, [r7, #4]
+  402380:	4c35      	ldr	r4, [pc, #212]	; (402458 <send_image+0x114>)
+  402382:	47a0      	blx	r4
+  402384:	4603      	mov	r3, r0
+  402386:	f887 3083 	strb.w	r3, [r7, #131]	; 0x83
 				if(status_code == COMMAND_STCLOSE){
-  4028f2:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
-  4028f6:	2b03      	cmp	r3, #3
-  4028f8:	d103      	bne.n	402902 <send_image+0x56>
+  40238a:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
+  40238e:	2b03      	cmp	r3, #3
+  402390:	d103      	bne.n	40239a <send_image+0x56>
 					ws_handle = NO_WEBSOCKET_OPEN;
-  4028fa:	4b2e      	ldr	r3, [pc, #184]	; (4029b4 <send_image+0x108>)
-  4028fc:	220a      	movs	r2, #10
-  4028fe:	701a      	strb	r2, [r3, #0]
-  402900:	e03d      	b.n	40297e <send_image+0xd2>
+  402392:	4b2e      	ldr	r3, [pc, #184]	; (40244c <send_image+0x108>)
+  402394:	220a      	movs	r2, #10
+  402396:	701a      	strb	r2, [r3, #0]
+  402398:	e03d      	b.n	402416 <send_image+0xd2>
 				} else if (status_code == COMMAND_FAILURE){
-  402902:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
-  402906:	2b01      	cmp	r3, #1
-  402908:	d10a      	bne.n	402920 <send_image+0x74>
+  40239a:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
+  40239e:	2b01      	cmp	r3, #1
+  4023a0:	d10a      	bne.n	4023b8 <send_image+0x74>
 					if(check_ws_handle(ws_handle) != COMMAND_SUCCESS){
-  40290a:	4b2a      	ldr	r3, [pc, #168]	; (4029b4 <send_image+0x108>)
-  40290c:	781b      	ldrb	r3, [r3, #0]
-  40290e:	4618      	mov	r0, r3
-  402910:	4b2c      	ldr	r3, [pc, #176]	; (4029c4 <send_image+0x118>)
-  402912:	4798      	blx	r3
-  402914:	4603      	mov	r3, r0
-  402916:	2b00      	cmp	r3, #0
-  402918:	d031      	beq.n	40297e <send_image+0xd2>
+  4023a2:	4b2a      	ldr	r3, [pc, #168]	; (40244c <send_image+0x108>)
+  4023a4:	781b      	ldrb	r3, [r3, #0]
+  4023a6:	4618      	mov	r0, r3
+  4023a8:	4b2c      	ldr	r3, [pc, #176]	; (40245c <send_image+0x118>)
+  4023aa:	4798      	blx	r3
+  4023ac:	4603      	mov	r3, r0
+  4023ae:	2b00      	cmp	r3, #0
+  4023b0:	d031      	beq.n	402416 <send_image+0xd2>
 						reopen_websockets();
-  40291a:	4b2b      	ldr	r3, [pc, #172]	; (4029c8 <send_image+0x11c>)
-  40291c:	4798      	blx	r3
-  40291e:	e02e      	b.n	40297e <send_image+0xd2>
+  4023b2:	4b2b      	ldr	r3, [pc, #172]	; (402460 <send_image+0x11c>)
+  4023b4:	4798      	blx	r3
+  4023b6:	e02e      	b.n	402416 <send_image+0xd2>
 					}
 				} else if (status_code == COMMAND_SUCCESS){
-  402920:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
-  402924:	2b00      	cmp	r3, #0
-  402926:	d12a      	bne.n	40297e <send_image+0xd2>
+  4023b8:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
+  4023bc:	2b00      	cmp	r3, #0
+  4023be:	d12a      	bne.n	402416 <send_image+0xd2>
 					image_byte_index += IMAGE_PACKET_SIZE;
-  402928:	f8d7 3084 	ldr.w	r3, [r7, #132]	; 0x84
-  40292c:	f203 138f 	addw	r3, r3, #399	; 0x18f
-  402930:	f8c7 3084 	str.w	r3, [r7, #132]	; 0x84
-  402934:	e023      	b.n	40297e <send_image+0xd2>
+  4023c0:	f8d7 3084 	ldr.w	r3, [r7, #132]	; 0x84
+  4023c4:	f203 138f 	addw	r3, r3, #399	; 0x18f
+  4023c8:	f8c7 3084 	str.w	r3, [r7, #132]	; 0x84
+  4023cc:	e023      	b.n	402416 <send_image+0xd2>
 				}
 
 			} else{
 				// the audio still has stuff to send (should be most of the time)
 				status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
-  402936:	4b1f      	ldr	r3, [pc, #124]	; (4029b4 <send_image+0x108>)
-  402938:	7819      	ldrb	r1, [r3, #0]
-  40293a:	f44f 73fa 	mov.w	r3, #500	; 0x1f4
-  40293e:	4a1f      	ldr	r2, [pc, #124]	; (4029bc <send_image+0x110>)
-  402940:	4822      	ldr	r0, [pc, #136]	; (4029cc <send_image+0x120>)
-  402942:	4c23      	ldr	r4, [pc, #140]	; (4029d0 <send_image+0x124>)
-  402944:	47a0      	blx	r4
-  402946:	4603      	mov	r3, r0
-  402948:	f887 3083 	strb.w	r3, [r7, #131]	; 0x83
+  4023ce:	4b1f      	ldr	r3, [pc, #124]	; (40244c <send_image+0x108>)
+  4023d0:	7819      	ldrb	r1, [r3, #0]
+  4023d2:	f44f 73fa 	mov.w	r3, #500	; 0x1f4
+  4023d6:	4a1f      	ldr	r2, [pc, #124]	; (402454 <send_image+0x110>)
+  4023d8:	4822      	ldr	r0, [pc, #136]	; (402464 <send_image+0x120>)
+  4023da:	4c23      	ldr	r4, [pc, #140]	; (402468 <send_image+0x124>)
+  4023dc:	47a0      	blx	r4
+  4023de:	4603      	mov	r3, r0
+  4023e0:	f887 3083 	strb.w	r3, [r7, #131]	; 0x83
 				if(status_code == COMMAND_STCLOSE){
-  40294c:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
-  402950:	2b03      	cmp	r3, #3
-  402952:	d103      	bne.n	40295c <send_image+0xb0>
+  4023e4:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
+  4023e8:	2b03      	cmp	r3, #3
+  4023ea:	d103      	bne.n	4023f4 <send_image+0xb0>
 					ws_handle = NO_WEBSOCKET_OPEN;
-  402954:	4b17      	ldr	r3, [pc, #92]	; (4029b4 <send_image+0x108>)
-  402956:	220a      	movs	r2, #10
-  402958:	701a      	strb	r2, [r3, #0]
-  40295a:	e010      	b.n	40297e <send_image+0xd2>
+  4023ec:	4b17      	ldr	r3, [pc, #92]	; (40244c <send_image+0x108>)
+  4023ee:	220a      	movs	r2, #10
+  4023f0:	701a      	strb	r2, [r3, #0]
+  4023f2:	e010      	b.n	402416 <send_image+0xd2>
 				} else if (status_code == COMMAND_FAILURE){
-  40295c:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
-  402960:	2b01      	cmp	r3, #1
-  402962:	d10c      	bne.n	40297e <send_image+0xd2>
+  4023f4:	f897 3083 	ldrb.w	r3, [r7, #131]	; 0x83
+  4023f8:	2b01      	cmp	r3, #1
+  4023fa:	d10c      	bne.n	402416 <send_image+0xd2>
 					if(check_ws_handle(ws_handle) != COMMAND_SUCCESS){
-  402964:	4b13      	ldr	r3, [pc, #76]	; (4029b4 <send_image+0x108>)
-  402966:	781b      	ldrb	r3, [r3, #0]
-  402968:	4618      	mov	r0, r3
-  40296a:	4b16      	ldr	r3, [pc, #88]	; (4029c4 <send_image+0x118>)
-  40296c:	4798      	blx	r3
-  40296e:	4603      	mov	r3, r0
-  402970:	2b00      	cmp	r3, #0
-  402972:	d004      	beq.n	40297e <send_image+0xd2>
+  4023fc:	4b13      	ldr	r3, [pc, #76]	; (40244c <send_image+0x108>)
+  4023fe:	781b      	ldrb	r3, [r3, #0]
+  402400:	4618      	mov	r0, r3
+  402402:	4b16      	ldr	r3, [pc, #88]	; (40245c <send_image+0x118>)
+  402404:	4798      	blx	r3
+  402406:	4603      	mov	r3, r0
+  402408:	2b00      	cmp	r3, #0
+  40240a:	d004      	beq.n	402416 <send_image+0xd2>
 						reopen_websockets();
-  402974:	4b14      	ldr	r3, [pc, #80]	; (4029c8 <send_image+0x11c>)
-  402976:	4798      	blx	r3
-  402978:	e001      	b.n	40297e <send_image+0xd2>
+  40240c:	4b14      	ldr	r3, [pc, #80]	; (402460 <send_image+0x11c>)
+  40240e:	4798      	blx	r3
+  402410:	e001      	b.n	402416 <send_image+0xd2>
 					}
 				}
 			}
 		} else{
 			// websocket not open
 			reopen_websockets();
-  40297a:	4b13      	ldr	r3, [pc, #76]	; (4029c8 <send_image+0x11c>)
-  40297c:	4798      	blx	r3
+  402412:	4b13      	ldr	r3, [pc, #76]	; (402460 <send_image+0x11c>)
+  402414:	4798      	blx	r3
 	while (image_byte_index < image_length){
-  40297e:	f8d7 2084 	ldr.w	r2, [r7, #132]	; 0x84
-  402982:	683b      	ldr	r3, [r7, #0]
-  402984:	429a      	cmp	r2, r3
-  402986:	d39a      	bcc.n	4028be <send_image+0x12>
-		}
-		
+  402416:	f8d7 2084 	ldr.w	r2, [r7, #132]	; 0x84
+  40241a:	683b      	ldr	r3, [r7, #0]
+  40241c:	429a      	cmp	r2, r3
+  40241e:	d39a      	bcc.n	402356 <send_image+0x12>
+		}	
 	}
 		
 	char* templated_command[30];
 	sprintf(templated_command, "write %d 10\r\nimage done", ws_handle);
-  402988:	4b0a      	ldr	r3, [pc, #40]	; (4029b4 <send_image+0x108>)
-  40298a:	781b      	ldrb	r3, [r3, #0]
-  40298c:	461a      	mov	r2, r3
-  40298e:	f107 0308 	add.w	r3, r7, #8
-  402992:	4910      	ldr	r1, [pc, #64]	; (4029d4 <send_image+0x128>)
-  402994:	4618      	mov	r0, r3
-  402996:	4b10      	ldr	r3, [pc, #64]	; (4029d8 <send_image+0x12c>)
-  402998:	4798      	blx	r3
+  402420:	4b0a      	ldr	r3, [pc, #40]	; (40244c <send_image+0x108>)
+  402422:	781b      	ldrb	r3, [r3, #0]
+  402424:	461a      	mov	r2, r3
+  402426:	f107 0308 	add.w	r3, r7, #8
+  40242a:	4910      	ldr	r1, [pc, #64]	; (40246c <send_image+0x128>)
+  40242c:	4618      	mov	r0, r3
+  40242e:	4b10      	ldr	r3, [pc, #64]	; (402470 <send_image+0x12c>)
+  402430:	4798      	blx	r3
 
 	write_wifi_command_safe(templated_command, "Success", 500, 0);
-  40299a:	f107 0008 	add.w	r0, r7, #8
-  40299e:	2300      	movs	r3, #0
-  4029a0:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
-  4029a4:	4905      	ldr	r1, [pc, #20]	; (4029bc <send_image+0x110>)
-  4029a6:	4c0d      	ldr	r4, [pc, #52]	; (4029dc <send_image+0x130>)
-  4029a8:	47a0      	blx	r4
+  402432:	f107 0008 	add.w	r0, r7, #8
+  402436:	2300      	movs	r3, #0
+  402438:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
+  40243c:	4905      	ldr	r1, [pc, #20]	; (402454 <send_image+0x110>)
+  40243e:	4c0d      	ldr	r4, [pc, #52]	; (402474 <send_image+0x130>)
+  402440:	47a0      	blx	r4
 }
-  4029aa:	bf00      	nop
-  4029ac:	378c      	adds	r7, #140	; 0x8c
-  4029ae:	46bd      	mov	sp, r7
-  4029b0:	bd90      	pop	{r4, r7, pc}
+  402442:	bf00      	nop
+  402444:	378c      	adds	r7, #140	; 0x8c
+  402446:	46bd      	mov	sp, r7
+  402448:	bd90      	pop	{r4, r7, pc}
+  40244a:	bf00      	nop
+  40244c:	2000000a 	.word	0x2000000a
+  402450:	004022b9 	.word	0x004022b9
+  402454:	00409870 	.word	0x00409870
+  402458:	004026cd 	.word	0x004026cd
+  40245c:	0040206d 	.word	0x0040206d
+  402460:	004021b9 	.word	0x004021b9
+  402464:	200009dc 	.word	0x200009dc
+  402468:	004024e9 	.word	0x004024e9
+  40246c:	00409928 	.word	0x00409928
+  402470:	0040412d 	.word	0x0040412d
+  402474:	00402895 	.word	0x00402895
+
+00402478 <send_audio_packet>:
+
+uint8_t send_audio_packet(){
+  402478:	b590      	push	{r4, r7, lr}
+  40247a:	b083      	sub	sp, #12
+  40247c:	af00      	add	r7, sp, #0
+	// sends one audio packet, assuming everything is OK everywhere
+	// called by camera functions to stream audio while capturing image
+	uint8_t status_code;
+	
+	if (ws_handle != NO_WEBSOCKET_OPEN && ws_handle != PREV_COMMAND_FAILED && !is_audio_caught_up()){
+  40247e:	4b15      	ldr	r3, [pc, #84]	; (4024d4 <send_audio_packet+0x5c>)
+  402480:	781b      	ldrb	r3, [r3, #0]
+  402482:	2b0a      	cmp	r3, #10
+  402484:	d021      	beq.n	4024ca <send_audio_packet+0x52>
+  402486:	4b13      	ldr	r3, [pc, #76]	; (4024d4 <send_audio_packet+0x5c>)
+  402488:	781b      	ldrb	r3, [r3, #0]
+  40248a:	2b0b      	cmp	r3, #11
+  40248c:	d01d      	beq.n	4024ca <send_audio_packet+0x52>
+  40248e:	4b12      	ldr	r3, [pc, #72]	; (4024d8 <send_audio_packet+0x60>)
+  402490:	4798      	blx	r3
+  402492:	4603      	mov	r3, r0
+  402494:	2b00      	cmp	r3, #0
+  402496:	d118      	bne.n	4024ca <send_audio_packet+0x52>
+			//websocket open, no recent command failure, and enough data to send
+		status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
+  402498:	4b0e      	ldr	r3, [pc, #56]	; (4024d4 <send_audio_packet+0x5c>)
+  40249a:	7819      	ldrb	r1, [r3, #0]
+  40249c:	f44f 73fa 	mov.w	r3, #500	; 0x1f4
+  4024a0:	4a0e      	ldr	r2, [pc, #56]	; (4024dc <send_audio_packet+0x64>)
+  4024a2:	480f      	ldr	r0, [pc, #60]	; (4024e0 <send_audio_packet+0x68>)
+  4024a4:	4c0f      	ldr	r4, [pc, #60]	; (4024e4 <send_audio_packet+0x6c>)
+  4024a6:	47a0      	blx	r4
+  4024a8:	4603      	mov	r3, r0
+  4024aa:	71fb      	strb	r3, [r7, #7]
+		
+		if(status_code == COMMAND_STCLOSE){
+  4024ac:	79fb      	ldrb	r3, [r7, #7]
+  4024ae:	2b03      	cmp	r3, #3
+  4024b0:	d103      	bne.n	4024ba <send_audio_packet+0x42>
+			ws_handle = NO_WEBSOCKET_OPEN;
+  4024b2:	4b08      	ldr	r3, [pc, #32]	; (4024d4 <send_audio_packet+0x5c>)
+  4024b4:	220a      	movs	r2, #10
+  4024b6:	701a      	strb	r2, [r3, #0]
+  4024b8:	e005      	b.n	4024c6 <send_audio_packet+0x4e>
+		} else if (status_code == COMMAND_FAILURE){
+  4024ba:	79fb      	ldrb	r3, [r7, #7]
+  4024bc:	2b01      	cmp	r3, #1
+  4024be:	d102      	bne.n	4024c6 <send_audio_packet+0x4e>
+			ws_handle = PREV_COMMAND_FAILED;
+  4024c0:	4b04      	ldr	r3, [pc, #16]	; (4024d4 <send_audio_packet+0x5c>)
+  4024c2:	220b      	movs	r2, #11
+  4024c4:	701a      	strb	r2, [r3, #0]
+		}
+		return 1;
+  4024c6:	2301      	movs	r3, #1
+  4024c8:	e000      	b.n	4024cc <send_audio_packet+0x54>
+	}
+	return 0;
+  4024ca:	2300      	movs	r3, #0
+}
+  4024cc:	4618      	mov	r0, r3
+  4024ce:	370c      	adds	r7, #12
+  4024d0:	46bd      	mov	sp, r7
+  4024d2:	bd90      	pop	{r4, r7, pc}
+  4024d4:	2000000a 	.word	0x2000000a
+  4024d8:	004022b9 	.word	0x004022b9
+  4024dc:	00409870 	.word	0x00409870
+  4024e0:	200009dc 	.word	0x200009dc
+  4024e4:	004024e9 	.word	0x004024e9
+
+004024e8 <write_audio_data_safe>:
+
+uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
+  4024e8:	e92d 4890 	stmdb	sp!, {r4, r7, fp, lr}
+  4024ec:	b0a6      	sub	sp, #152	; 0x98
+  4024ee:	af00      	add	r7, sp, #0
+  4024f0:	60f8      	str	r0, [r7, #12]
+  4024f2:	607a      	str	r2, [r7, #4]
+  4024f4:	603b      	str	r3, [r7, #0]
+  4024f6:	460b      	mov	r3, r1
+  4024f8:	72fb      	strb	r3, [r7, #11]
+	// returns 2 for a timeout
+	// returns 3 for an unexpected stream closure
+	// returns 10+stream handle for opening a stream
+	
+	// first thing: check if we've received any transmission since the last time
+	if (usart_buffer_index != 0){
+  4024fa:	4b62      	ldr	r3, [pc, #392]	; (402684 <write_audio_data_safe+0x19c>)
+  4024fc:	681b      	ldr	r3, [r3, #0]
+  4024fe:	2b00      	cmp	r3, #0
+  402500:	d008      	beq.n	402514 <write_audio_data_safe+0x2c>
+		// check for different issues
+		if(strstr(usart_buffer, "[Closed: ")){
+  402502:	4961      	ldr	r1, [pc, #388]	; (402688 <write_audio_data_safe+0x1a0>)
+  402504:	4861      	ldr	r0, [pc, #388]	; (40268c <write_audio_data_safe+0x1a4>)
+  402506:	4b62      	ldr	r3, [pc, #392]	; (402690 <write_audio_data_safe+0x1a8>)
+  402508:	4798      	blx	r3
+  40250a:	4603      	mov	r3, r0
+  40250c:	2b00      	cmp	r3, #0
+  40250e:	d001      	beq.n	402514 <write_audio_data_safe+0x2c>
+			return COMMAND_STCLOSE; // return a value indicating closure of the stream
+  402510:	2303      	movs	r3, #3
+  402512:	e0b1      	b.n	402678 <write_audio_data_safe+0x190>
+		}
+	}
+
+	uint32_t ms_counter = 0;
+  402514:	2300      	movs	r3, #0
+  402516:	f8c7 3094 	str.w	r3, [r7, #148]	; 0x94
+	// clear buffer
+	memset(usart_buffer, 0, BUFFER_SIZE);
+  40251a:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
+  40251e:	2100      	movs	r1, #0
+  402520:	485a      	ldr	r0, [pc, #360]	; (40268c <write_audio_data_safe+0x1a4>)
+  402522:	4b5c      	ldr	r3, [pc, #368]	; (402694 <write_audio_data_safe+0x1ac>)
+  402524:	4798      	blx	r3
+	// set buffer index to 0
+	usart_buffer_index = 0;
+  402526:	4b57      	ldr	r3, [pc, #348]	; (402684 <write_audio_data_safe+0x19c>)
+  402528:	2200      	movs	r2, #0
+  40252a:	601a      	str	r2, [r3, #0]
+	
+	if(is_audio_caught_up()) // make sure that the end index isn't in front of the receive index
+  40252c:	4b5a      	ldr	r3, [pc, #360]	; (402698 <write_audio_data_safe+0x1b0>)
+  40252e:	4798      	blx	r3
+  402530:	4603      	mov	r3, r0
+  402532:	2b00      	cmp	r3, #0
+  402534:	d001      	beq.n	40253a <write_audio_data_safe+0x52>
+		return COMMAND_RETRYIT;
+  402536:	2304      	movs	r3, #4
+  402538:	e09e      	b.n	402678 <write_audio_data_safe+0x190>
+	
+	uint8_t curr_data_point;
+	
+	char* templated_command[30];
+	usart_write_line(BOARD_USART,"\r\n");
+  40253a:	4958      	ldr	r1, [pc, #352]	; (40269c <write_audio_data_safe+0x1b4>)
+  40253c:	4858      	ldr	r0, [pc, #352]	; (4026a0 <write_audio_data_safe+0x1b8>)
+  40253e:	4b59      	ldr	r3, [pc, #356]	; (4026a4 <write_audio_data_safe+0x1bc>)
+  402540:	4798      	blx	r3
+	sprintf(templated_command, "write %d %d\r\n", handle, AUDIO_PACKET_SIZE * 2);
+  402542:	7afa      	ldrb	r2, [r7, #11]
+  402544:	f107 0014 	add.w	r0, r7, #20
+  402548:	f44f 73c8 	mov.w	r3, #400	; 0x190
+  40254c:	4956      	ldr	r1, [pc, #344]	; (4026a8 <write_audio_data_safe+0x1c0>)
+  40254e:	4c57      	ldr	r4, [pc, #348]	; (4026ac <write_audio_data_safe+0x1c4>)
+  402550:	47a0      	blx	r4
+	usart_write_line(BOARD_USART, templated_command);
+  402552:	f107 0314 	add.w	r3, r7, #20
+  402556:	4619      	mov	r1, r3
+  402558:	4851      	ldr	r0, [pc, #324]	; (4026a0 <write_audio_data_safe+0x1b8>)
+  40255a:	4b52      	ldr	r3, [pc, #328]	; (4026a4 <write_audio_data_safe+0x1bc>)
+  40255c:	4798      	blx	r3
+	
+	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++)
+  40255e:	4b54      	ldr	r3, [pc, #336]	; (4026b0 <write_audio_data_safe+0x1c8>)
+  402560:	681b      	ldr	r3, [r3, #0]
+  402562:	005b      	lsls	r3, r3, #1
+  402564:	f8c7 3090 	str.w	r3, [r7, #144]	; 0x90
+  402568:	e01c      	b.n	4025a4 <write_audio_data_safe+0xbc>
+	{
+		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];	
+  40256a:	f8d7 3090 	ldr.w	r3, [r7, #144]	; 0x90
+  40256e:	4a51      	ldr	r2, [pc, #324]	; (4026b4 <write_audio_data_safe+0x1cc>)
+  402570:	fb82 1203 	smull	r1, r2, r2, r3
+  402574:	12d1      	asrs	r1, r2, #11
+  402576:	17da      	asrs	r2, r3, #31
+  402578:	1a8a      	subs	r2, r1, r2
+  40257a:	f44f 41fa 	mov.w	r1, #32000	; 0x7d00
+  40257e:	fb01 f202 	mul.w	r2, r1, r2
+  402582:	1a9a      	subs	r2, r3, r2
+  402584:	68fb      	ldr	r3, [r7, #12]
+  402586:	4413      	add	r3, r2
+  402588:	781b      	ldrb	r3, [r3, #0]
+  40258a:	f887 308e 	strb.w	r3, [r7, #142]	; 0x8e
+		usart_putchar(BOARD_USART, curr_data_point);
+  40258e:	f897 308e 	ldrb.w	r3, [r7, #142]	; 0x8e
+  402592:	4619      	mov	r1, r3
+  402594:	4842      	ldr	r0, [pc, #264]	; (4026a0 <write_audio_data_safe+0x1b8>)
+  402596:	4b48      	ldr	r3, [pc, #288]	; (4026b8 <write_audio_data_safe+0x1d0>)
+  402598:	4798      	blx	r3
+	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++)
+  40259a:	f8d7 3090 	ldr.w	r3, [r7, #144]	; 0x90
+  40259e:	3301      	adds	r3, #1
+  4025a0:	f8c7 3090 	str.w	r3, [r7, #144]	; 0x90
+  4025a4:	4b42      	ldr	r3, [pc, #264]	; (4026b0 <write_audio_data_safe+0x1c8>)
+  4025a6:	681b      	ldr	r3, [r3, #0]
+  4025a8:	33c8      	adds	r3, #200	; 0xc8
+  4025aa:	005a      	lsls	r2, r3, #1
+  4025ac:	f8d7 3090 	ldr.w	r3, [r7, #144]	; 0x90
+  4025b0:	429a      	cmp	r2, r3
+  4025b2:	d8da      	bhi.n	40256a <write_audio_data_safe+0x82>
+	}
+	
+	uint8_t command_response = COMMAND_UNSET;
+  4025b4:	2363      	movs	r3, #99	; 0x63
+  4025b6:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
+	
+	while(command_response == COMMAND_UNSET) {			
+  4025ba:	e054      	b.n	402666 <write_audio_data_safe+0x17e>
+		if(strstr(usart_buffer, resp)){
+  4025bc:	6879      	ldr	r1, [r7, #4]
+  4025be:	4833      	ldr	r0, [pc, #204]	; (40268c <write_audio_data_safe+0x1a4>)
+  4025c0:	4b33      	ldr	r3, [pc, #204]	; (402690 <write_audio_data_safe+0x1a8>)
+  4025c2:	4798      	blx	r3
+  4025c4:	4603      	mov	r3, r0
+  4025c6:	2b00      	cmp	r3, #0
+  4025c8:	d012      	beq.n	4025f0 <write_audio_data_safe+0x108>
+			i2s_send_index = (i2s_send_index + AUDIO_PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
+  4025ca:	4b39      	ldr	r3, [pc, #228]	; (4026b0 <write_audio_data_safe+0x1c8>)
+  4025cc:	681b      	ldr	r3, [r3, #0]
+  4025ce:	f103 02c8 	add.w	r2, r3, #200	; 0xc8
+  4025d2:	4b38      	ldr	r3, [pc, #224]	; (4026b4 <write_audio_data_safe+0x1cc>)
+  4025d4:	fba3 1302 	umull	r1, r3, r3, r2
+  4025d8:	0a9b      	lsrs	r3, r3, #10
+  4025da:	f44f 517a 	mov.w	r1, #16000	; 0x3e80
+  4025de:	fb01 f303 	mul.w	r3, r1, r3
+  4025e2:	1ad3      	subs	r3, r2, r3
+  4025e4:	4a32      	ldr	r2, [pc, #200]	; (4026b0 <write_audio_data_safe+0x1c8>)
+  4025e6:	6013      	str	r3, [r2, #0]
+			command_response = COMMAND_SUCCESS; // successful response
+  4025e8:	2300      	movs	r3, #0
+  4025ea:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
+  4025ee:	e020      	b.n	402632 <write_audio_data_safe+0x14a>
+			// otherwise, parse for handle
+		}
+		else if(strstr(usart_buffer, "[Closed: ")){
+  4025f0:	4925      	ldr	r1, [pc, #148]	; (402688 <write_audio_data_safe+0x1a0>)
+  4025f2:	4826      	ldr	r0, [pc, #152]	; (40268c <write_audio_data_safe+0x1a4>)
+  4025f4:	4b26      	ldr	r3, [pc, #152]	; (402690 <write_audio_data_safe+0x1a8>)
+  4025f6:	4798      	blx	r3
+  4025f8:	4603      	mov	r3, r0
+  4025fa:	2b00      	cmp	r3, #0
+  4025fc:	d003      	beq.n	402606 <write_audio_data_safe+0x11e>
+			command_response = COMMAND_STCLOSE; // return a value indicating closure of the stream
+  4025fe:	2303      	movs	r3, #3
+  402600:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
+  402604:	e015      	b.n	402632 <write_audio_data_safe+0x14a>
+			
+		}
+		else if(strstr(usart_buffer, "Command failed")){
+  402606:	492d      	ldr	r1, [pc, #180]	; (4026bc <write_audio_data_safe+0x1d4>)
+  402608:	4820      	ldr	r0, [pc, #128]	; (40268c <write_audio_data_safe+0x1a4>)
+  40260a:	4b21      	ldr	r3, [pc, #132]	; (402690 <write_audio_data_safe+0x1a8>)
+  40260c:	4798      	blx	r3
+  40260e:	4603      	mov	r3, r0
+  402610:	2b00      	cmp	r3, #0
+  402612:	d003      	beq.n	40261c <write_audio_data_safe+0x134>
+			command_response = COMMAND_FAILURE; // command failed
+  402614:	2301      	movs	r3, #1
+  402616:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
+  40261a:	e00a      	b.n	402632 <write_audio_data_safe+0x14a>
+		}
+		else if(ms_counter++ > timeout_ms){
+  40261c:	f8d7 3094 	ldr.w	r3, [r7, #148]	; 0x94
+  402620:	1c5a      	adds	r2, r3, #1
+  402622:	f8c7 2094 	str.w	r2, [r7, #148]	; 0x94
+  402626:	683a      	ldr	r2, [r7, #0]
+  402628:	4293      	cmp	r3, r2
+  40262a:	d902      	bls.n	402632 <write_audio_data_safe+0x14a>
+			command_response = COMMAND_TIMEOUT;
+  40262c:	2302      	movs	r3, #2
+  40262e:	f887 308f 	strb.w	r3, [r7, #143]	; 0x8f
+		}
+		delay_ms(1);
+  402632:	4b23      	ldr	r3, [pc, #140]	; (4026c0 <write_audio_data_safe+0x1d8>)
+  402634:	4798      	blx	r3
+  402636:	4603      	mov	r3, r0
+  402638:	f04f 0400 	mov.w	r4, #0
+  40263c:	f243 61af 	movw	r1, #13999	; 0x36af
+  402640:	f04f 0200 	mov.w	r2, #0
+  402644:	eb13 0b01 	adds.w	fp, r3, r1
+  402648:	eb44 0c02 	adc.w	ip, r4, r2
+  40264c:	4658      	mov	r0, fp
+  40264e:	4661      	mov	r1, ip
+  402650:	4c1c      	ldr	r4, [pc, #112]	; (4026c4 <write_audio_data_safe+0x1dc>)
+  402652:	f243 62b0 	movw	r2, #14000	; 0x36b0
+  402656:	f04f 0300 	mov.w	r3, #0
+  40265a:	47a0      	blx	r4
+  40265c:	4603      	mov	r3, r0
+  40265e:	460c      	mov	r4, r1
+  402660:	4618      	mov	r0, r3
+  402662:	4b19      	ldr	r3, [pc, #100]	; (4026c8 <write_audio_data_safe+0x1e0>)
+  402664:	4798      	blx	r3
+	while(command_response == COMMAND_UNSET) {			
+  402666:	f897 308f 	ldrb.w	r3, [r7, #143]	; 0x8f
+  40266a:	2b63      	cmp	r3, #99	; 0x63
+  40266c:	d0a6      	beq.n	4025bc <write_audio_data_safe+0xd4>
+	}
+	
+	usart_buffer_index = 0;
+  40266e:	4b05      	ldr	r3, [pc, #20]	; (402684 <write_audio_data_safe+0x19c>)
+  402670:	2200      	movs	r2, #0
+  402672:	601a      	str	r2, [r3, #0]
+	return command_response;
+  402674:	f897 308f 	ldrb.w	r3, [r7, #143]	; 0x8f
+}
+  402678:	4618      	mov	r0, r3
+  40267a:	3798      	adds	r7, #152	; 0x98
+  40267c:	46bd      	mov	sp, r7
+  40267e:	e8bd 8890 	ldmia.w	sp!, {r4, r7, fp, pc}
+  402682:	bf00      	nop
+  402684:	2000d784 	.word	0x2000d784
+  402688:	00409940 	.word	0x00409940
+  40268c:	2000d590 	.word	0x2000d590
+  402690:	0040450d 	.word	0x0040450d
+  402694:	00404091 	.word	0x00404091
+  402698:	004022b9 	.word	0x004022b9
+  40269c:	0040994c 	.word	0x0040994c
+  4026a0:	40024000 	.word	0x40024000
+  4026a4:	00401099 	.word	0x00401099
+  4026a8:	00409950 	.word	0x00409950
+  4026ac:	0040412d 	.word	0x0040412d
+  4026b0:	2000d788 	.word	0x2000d788
+  4026b4:	10624dd3 	.word	0x10624dd3
+  4026b8:	00401069 	.word	0x00401069
+  4026bc:	00409960 	.word	0x00409960
+  4026c0:	00401dbd 	.word	0x00401dbd
+  4026c4:	00403d31 	.word	0x00403d31
+  4026c8:	20000001 	.word	0x20000001
+
+004026cc <write_image_data_safe>:
+
+uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
+  4026cc:	e92d 4890 	stmdb	sp!, {r4, r7, fp, lr}
+  4026d0:	b0a8      	sub	sp, #160	; 0xa0
+  4026d2:	af00      	add	r7, sp, #0
+  4026d4:	60f8      	str	r0, [r7, #12]
+  4026d6:	60b9      	str	r1, [r7, #8]
+  4026d8:	607a      	str	r2, [r7, #4]
+  4026da:	70fb      	strb	r3, [r7, #3]
+	// returns 2 for a timeout
+	// returns 3 for an unexpected stream closure
+	// returns 10+stream handle for opening a stream
+	
+	// first thing: check if we've received any transmission since the last time
+	if (usart_buffer_index != 0){
+  4026dc:	4b5e      	ldr	r3, [pc, #376]	; (402858 <write_image_data_safe+0x18c>)
+  4026de:	681b      	ldr	r3, [r3, #0]
+  4026e0:	2b00      	cmp	r3, #0
+  4026e2:	d008      	beq.n	4026f6 <write_image_data_safe+0x2a>
+		// check for different issues
+		if(strstr(usart_buffer, "[Closed: ")){
+  4026e4:	495d      	ldr	r1, [pc, #372]	; (40285c <write_image_data_safe+0x190>)
+  4026e6:	485e      	ldr	r0, [pc, #376]	; (402860 <write_image_data_safe+0x194>)
+  4026e8:	4b5e      	ldr	r3, [pc, #376]	; (402864 <write_image_data_safe+0x198>)
+  4026ea:	4798      	blx	r3
+  4026ec:	4603      	mov	r3, r0
+  4026ee:	2b00      	cmp	r3, #0
+  4026f0:	d001      	beq.n	4026f6 <write_image_data_safe+0x2a>
+			return COMMAND_STCLOSE; // return a value indicating closure of the stream
+  4026f2:	2303      	movs	r3, #3
+  4026f4:	e0aa      	b.n	40284c <write_image_data_safe+0x180>
+		}
+	}
+	
+	uint8_t command_finished = 0;
+  4026f6:	2300      	movs	r3, #0
+  4026f8:	f887 3096 	strb.w	r3, [r7, #150]	; 0x96
+	uint8_t command_failed = 0;
+  4026fc:	2300      	movs	r3, #0
+  4026fe:	f887 3095 	strb.w	r3, [r7, #149]	; 0x95
+	uint8_t parse_error = 0;
+  402702:	2300      	movs	r3, #0
+  402704:	f887 3094 	strb.w	r3, [r7, #148]	; 0x94
+	
+	uint32_t ms_counter = 0;
+  402708:	2300      	movs	r3, #0
+  40270a:	f8c7 309c 	str.w	r3, [r7, #156]	; 0x9c
+	// clear buffer
+	memset(usart_buffer, 0, BUFFER_SIZE);
+  40270e:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
+  402712:	2100      	movs	r1, #0
+  402714:	4852      	ldr	r0, [pc, #328]	; (402860 <write_image_data_safe+0x194>)
+  402716:	4b54      	ldr	r3, [pc, #336]	; (402868 <write_image_data_safe+0x19c>)
+  402718:	4798      	blx	r3
+	// set buffer index to 0
+	usart_buffer_index = 0;
+  40271a:	4b4f      	ldr	r3, [pc, #316]	; (402858 <write_image_data_safe+0x18c>)
+  40271c:	2200      	movs	r2, #0
+  40271e:	601a      	str	r2, [r3, #0]
+	
+	uint32_t end_index = start_index + IMAGE_PACKET_SIZE;
+  402720:	68bb      	ldr	r3, [r7, #8]
+  402722:	f203 138f 	addw	r3, r3, #399	; 0x18f
+  402726:	f8c7 3090 	str.w	r3, [r7, #144]	; 0x90
+	end_index = (end_index < im_len) ? end_index : im_len; // if the end index goes past the end of the array, don't go there
+  40272a:	f8d7 2090 	ldr.w	r2, [r7, #144]	; 0x90
+  40272e:	687b      	ldr	r3, [r7, #4]
+  402730:	4293      	cmp	r3, r2
+  402732:	bf28      	it	cs
+  402734:	4613      	movcs	r3, r2
+  402736:	f8c7 3090 	str.w	r3, [r7, #144]	; 0x90
+	
+	uint32_t bytes_to_send = end_index - start_index; // usually PACKET_SIZE, unless it's the last one
+  40273a:	f8d7 2090 	ldr.w	r2, [r7, #144]	; 0x90
+  40273e:	68bb      	ldr	r3, [r7, #8]
+  402740:	1ad3      	subs	r3, r2, r3
+  402742:	f8c7 308c 	str.w	r3, [r7, #140]	; 0x8c
+	
+	uint8_t curr_data_point;
+	
+	char* templated_command[30];
+	usart_write_line(BOARD_USART,"\r\n");
+  402746:	4949      	ldr	r1, [pc, #292]	; (40286c <write_image_data_safe+0x1a0>)
+  402748:	4849      	ldr	r0, [pc, #292]	; (402870 <write_image_data_safe+0x1a4>)
+  40274a:	4b4a      	ldr	r3, [pc, #296]	; (402874 <write_image_data_safe+0x1a8>)
+  40274c:	4798      	blx	r3
+	sprintf(templated_command, "write %d %d\r\n", handle, bytes_to_send);
+  40274e:	78fa      	ldrb	r2, [r7, #3]
+  402750:	f107 0010 	add.w	r0, r7, #16
+  402754:	f8d7 308c 	ldr.w	r3, [r7, #140]	; 0x8c
+  402758:	4947      	ldr	r1, [pc, #284]	; (402878 <write_image_data_safe+0x1ac>)
+  40275a:	4c48      	ldr	r4, [pc, #288]	; (40287c <write_image_data_safe+0x1b0>)
+  40275c:	47a0      	blx	r4
+	usart_write_line(BOARD_USART, templated_command);
+  40275e:	f107 0310 	add.w	r3, r7, #16
+  402762:	4619      	mov	r1, r3
+  402764:	4842      	ldr	r0, [pc, #264]	; (402870 <write_image_data_safe+0x1a4>)
+  402766:	4b43      	ldr	r3, [pc, #268]	; (402874 <write_image_data_safe+0x1a8>)
+  402768:	4798      	blx	r3
+	
+	for (int i = start_index; i < end_index; i++) {
+  40276a:	68bb      	ldr	r3, [r7, #8]
+  40276c:	f8c7 3098 	str.w	r3, [r7, #152]	; 0x98
+  402770:	e011      	b.n	402796 <write_image_data_safe+0xca>
+		curr_data_point = (array_start_pointer)[i];	
+  402772:	f8d7 3098 	ldr.w	r3, [r7, #152]	; 0x98
+  402776:	68fa      	ldr	r2, [r7, #12]
+  402778:	4413      	add	r3, r2
+  40277a:	781b      	ldrb	r3, [r3, #0]
+  40277c:	f887 308b 	strb.w	r3, [r7, #139]	; 0x8b
+		usart_putchar(BOARD_USART, curr_data_point);
+  402780:	f897 308b 	ldrb.w	r3, [r7, #139]	; 0x8b
+  402784:	4619      	mov	r1, r3
+  402786:	483a      	ldr	r0, [pc, #232]	; (402870 <write_image_data_safe+0x1a4>)
+  402788:	4b3d      	ldr	r3, [pc, #244]	; (402880 <write_image_data_safe+0x1b4>)
+  40278a:	4798      	blx	r3
+	for (int i = start_index; i < end_index; i++) {
+  40278c:	f8d7 3098 	ldr.w	r3, [r7, #152]	; 0x98
+  402790:	3301      	adds	r3, #1
+  402792:	f8c7 3098 	str.w	r3, [r7, #152]	; 0x98
+  402796:	f8d7 2098 	ldr.w	r2, [r7, #152]	; 0x98
+  40279a:	f8d7 3090 	ldr.w	r3, [r7, #144]	; 0x90
+  40279e:	429a      	cmp	r2, r3
+  4027a0:	d3e7      	bcc.n	402772 <write_image_data_safe+0xa6>
+	}
+	
+	uint8_t command_response = COMMAND_UNSET;
+  4027a2:	2363      	movs	r3, #99	; 0x63
+  4027a4:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
+	
+	while(command_response == COMMAND_UNSET) {			
+  4027a8:	e047      	b.n	40283a <write_image_data_safe+0x16e>
+		if(strstr(usart_buffer, resp)){
+  4027aa:	f8d7 10b0 	ldr.w	r1, [r7, #176]	; 0xb0
+  4027ae:	482c      	ldr	r0, [pc, #176]	; (402860 <write_image_data_safe+0x194>)
+  4027b0:	4b2c      	ldr	r3, [pc, #176]	; (402864 <write_image_data_safe+0x198>)
+  4027b2:	4798      	blx	r3
+  4027b4:	4603      	mov	r3, r0
+  4027b6:	2b00      	cmp	r3, #0
+  4027b8:	d003      	beq.n	4027c2 <write_image_data_safe+0xf6>
+			command_response = COMMAND_SUCCESS; // successful response
+  4027ba:	2300      	movs	r3, #0
+  4027bc:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
+  4027c0:	e021      	b.n	402806 <write_image_data_safe+0x13a>
+			// otherwise, parse for handle
+		}
+		else if(strstr(usart_buffer, "[Closed: ")){
+  4027c2:	4926      	ldr	r1, [pc, #152]	; (40285c <write_image_data_safe+0x190>)
+  4027c4:	4826      	ldr	r0, [pc, #152]	; (402860 <write_image_data_safe+0x194>)
+  4027c6:	4b27      	ldr	r3, [pc, #156]	; (402864 <write_image_data_safe+0x198>)
+  4027c8:	4798      	blx	r3
+  4027ca:	4603      	mov	r3, r0
+  4027cc:	2b00      	cmp	r3, #0
+  4027ce:	d003      	beq.n	4027d8 <write_image_data_safe+0x10c>
+			command_response = COMMAND_STCLOSE; // return a value indicating closure of the stream
+  4027d0:	2303      	movs	r3, #3
+  4027d2:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
+  4027d6:	e016      	b.n	402806 <write_image_data_safe+0x13a>
+			
+		}
+		else if(strstr(usart_buffer, "Command failed")){
+  4027d8:	492a      	ldr	r1, [pc, #168]	; (402884 <write_image_data_safe+0x1b8>)
+  4027da:	4821      	ldr	r0, [pc, #132]	; (402860 <write_image_data_safe+0x194>)
+  4027dc:	4b21      	ldr	r3, [pc, #132]	; (402864 <write_image_data_safe+0x198>)
+  4027de:	4798      	blx	r3
+  4027e0:	4603      	mov	r3, r0
+  4027e2:	2b00      	cmp	r3, #0
+  4027e4:	d003      	beq.n	4027ee <write_image_data_safe+0x122>
+			command_response = COMMAND_FAILURE; // command failed
+  4027e6:	2301      	movs	r3, #1
+  4027e8:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
+  4027ec:	e00b      	b.n	402806 <write_image_data_safe+0x13a>
+		}
+		else if(ms_counter++ > timeout_ms){
+  4027ee:	f8d7 309c 	ldr.w	r3, [r7, #156]	; 0x9c
+  4027f2:	1c5a      	adds	r2, r3, #1
+  4027f4:	f8c7 209c 	str.w	r2, [r7, #156]	; 0x9c
+  4027f8:	f8d7 20b4 	ldr.w	r2, [r7, #180]	; 0xb4
+  4027fc:	4293      	cmp	r3, r2
+  4027fe:	d902      	bls.n	402806 <write_image_data_safe+0x13a>
+			command_response = COMMAND_TIMEOUT;
+  402800:	2302      	movs	r3, #2
+  402802:	f887 3097 	strb.w	r3, [r7, #151]	; 0x97
+		}
+		delay_ms(1);
+  402806:	4b20      	ldr	r3, [pc, #128]	; (402888 <write_image_data_safe+0x1bc>)
+  402808:	4798      	blx	r3
+  40280a:	4603      	mov	r3, r0
+  40280c:	f04f 0400 	mov.w	r4, #0
+  402810:	f243 61af 	movw	r1, #13999	; 0x36af
+  402814:	f04f 0200 	mov.w	r2, #0
+  402818:	eb13 0b01 	adds.w	fp, r3, r1
+  40281c:	eb44 0c02 	adc.w	ip, r4, r2
+  402820:	4658      	mov	r0, fp
+  402822:	4661      	mov	r1, ip
+  402824:	4c19      	ldr	r4, [pc, #100]	; (40288c <write_image_data_safe+0x1c0>)
+  402826:	f243 62b0 	movw	r2, #14000	; 0x36b0
+  40282a:	f04f 0300 	mov.w	r3, #0
+  40282e:	47a0      	blx	r4
+  402830:	4603      	mov	r3, r0
+  402832:	460c      	mov	r4, r1
+  402834:	4618      	mov	r0, r3
+  402836:	4b16      	ldr	r3, [pc, #88]	; (402890 <write_image_data_safe+0x1c4>)
+  402838:	4798      	blx	r3
+	while(command_response == COMMAND_UNSET) {			
+  40283a:	f897 3097 	ldrb.w	r3, [r7, #151]	; 0x97
+  40283e:	2b63      	cmp	r3, #99	; 0x63
+  402840:	d0b3      	beq.n	4027aa <write_image_data_safe+0xde>
+	}
+	
+	usart_buffer_index = 0;
+  402842:	4b05      	ldr	r3, [pc, #20]	; (402858 <write_image_data_safe+0x18c>)
+  402844:	2200      	movs	r2, #0
+  402846:	601a      	str	r2, [r3, #0]
+	return command_response;
+  402848:	f897 3097 	ldrb.w	r3, [r7, #151]	; 0x97
+}
+  40284c:	4618      	mov	r0, r3
+  40284e:	37a0      	adds	r7, #160	; 0xa0
+  402850:	46bd      	mov	sp, r7
+  402852:	e8bd 8890 	ldmia.w	sp!, {r4, r7, fp, pc}
+  402856:	bf00      	nop
+  402858:	2000d784 	.word	0x2000d784
+  40285c:	00409940 	.word	0x00409940
+  402860:	2000d590 	.word	0x2000d590
+  402864:	0040450d 	.word	0x0040450d
+  402868:	00404091 	.word	0x00404091
+  40286c:	0040994c 	.word	0x0040994c
+  402870:	40024000 	.word	0x40024000
+  402874:	00401099 	.word	0x00401099
+  402878:	00409950 	.word	0x00409950
+  40287c:	0040412d 	.word	0x0040412d
+  402880:	00401069 	.word	0x00401069
+  402884:	00409960 	.word	0x00409960
+  402888:	00401dbd 	.word	0x00401dbd
+  40288c:	00403d31 	.word	0x00403d31
+  402890:	20000001 	.word	0x20000001
+
+00402894 <write_wifi_command_safe>:
+
+uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, uint8_t handle_expected){
+  402894:	e92d 4890 	stmdb	sp!, {r4, r7, fp, lr}
+  402898:	b08a      	sub	sp, #40	; 0x28
+  40289a:	af00      	add	r7, sp, #0
+  40289c:	60f8      	str	r0, [r7, #12]
+  40289e:	60b9      	str	r1, [r7, #8]
+  4028a0:	607a      	str	r2, [r7, #4]
+  4028a2:	70fb      	strb	r3, [r7, #3]
+	// returns 0 for a successful write
+	// returns 1 for a failed write
+	// returns 2 for a timeout
+	// returns 10+stream handle for opening a stream
+	
+	uint8_t command_finished = 0;
+  4028a4:	2300      	movs	r3, #0
+  4028a6:	f887 3022 	strb.w	r3, [r7, #34]	; 0x22
+	uint8_t command_failed = 0;
+  4028aa:	2300      	movs	r3, #0
+  4028ac:	f887 3021 	strb.w	r3, [r7, #33]	; 0x21
+	uint8_t parse_error = 0;
+  4028b0:	2300      	movs	r3, #0
+  4028b2:	f887 3020 	strb.w	r3, [r7, #32]
+	
+	uint32_t ms_counter = 0;
+  4028b6:	2300      	movs	r3, #0
+  4028b8:	627b      	str	r3, [r7, #36]	; 0x24
+	// clear buffer
+	memset(usart_buffer, 0, BUFFER_SIZE);
+  4028ba:	f44f 72fa 	mov.w	r2, #500	; 0x1f4
+  4028be:	2100      	movs	r1, #0
+  4028c0:	483c      	ldr	r0, [pc, #240]	; (4029b4 <write_wifi_command_safe+0x120>)
+  4028c2:	4b3d      	ldr	r3, [pc, #244]	; (4029b8 <write_wifi_command_safe+0x124>)
+  4028c4:	4798      	blx	r3
+	// set buffer index to 0
+	usart_buffer_index = 0;
+  4028c6:	4b3d      	ldr	r3, [pc, #244]	; (4029bc <write_wifi_command_safe+0x128>)
+  4028c8:	2200      	movs	r2, #0
+  4028ca:	601a      	str	r2, [r3, #0]
+	
+	usart_write_line(BOARD_USART,"\r\n");
+  4028cc:	493c      	ldr	r1, [pc, #240]	; (4029c0 <write_wifi_command_safe+0x12c>)
+  4028ce:	483d      	ldr	r0, [pc, #244]	; (4029c4 <write_wifi_command_safe+0x130>)
+  4028d0:	4b3d      	ldr	r3, [pc, #244]	; (4029c8 <write_wifi_command_safe+0x134>)
+  4028d2:	4798      	blx	r3
+	usart_write_line(BOARD_USART, command);
+  4028d4:	68f9      	ldr	r1, [r7, #12]
+  4028d6:	483b      	ldr	r0, [pc, #236]	; (4029c4 <write_wifi_command_safe+0x130>)
+  4028d8:	4b3b      	ldr	r3, [pc, #236]	; (4029c8 <write_wifi_command_safe+0x134>)
+  4028da:	4798      	blx	r3
+	
+	uint8_t command_response = COMMAND_UNSET;
+  4028dc:	2363      	movs	r3, #99	; 0x63
+  4028de:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
+	
+	while(command_response == COMMAND_UNSET) {			
+  4028e2:	e058      	b.n	402996 <write_wifi_command_safe+0x102>
+		// makes sure we have complete response before matching on expected
+		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == 10)){ // 10 is new line, should be the last thing in the buffer
+  4028e4:	68b9      	ldr	r1, [r7, #8]
+  4028e6:	4833      	ldr	r0, [pc, #204]	; (4029b4 <write_wifi_command_safe+0x120>)
+  4028e8:	4b38      	ldr	r3, [pc, #224]	; (4029cc <write_wifi_command_safe+0x138>)
+  4028ea:	4798      	blx	r3
+  4028ec:	4603      	mov	r3, r0
+  4028ee:	2b00      	cmp	r3, #0
+  4028f0:	d023      	beq.n	40293a <write_wifi_command_safe+0xa6>
+  4028f2:	4b32      	ldr	r3, [pc, #200]	; (4029bc <write_wifi_command_safe+0x128>)
+  4028f4:	681b      	ldr	r3, [r3, #0]
+  4028f6:	3b01      	subs	r3, #1
+  4028f8:	4a2e      	ldr	r2, [pc, #184]	; (4029b4 <write_wifi_command_safe+0x120>)
+  4028fa:	5cd3      	ldrb	r3, [r2, r3]
+  4028fc:	b2db      	uxtb	r3, r3
+  4028fe:	2b0a      	cmp	r3, #10
+  402900:	d11b      	bne.n	40293a <write_wifi_command_safe+0xa6>
+			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
+  402902:	78fb      	ldrb	r3, [r7, #3]
+  402904:	2b00      	cmp	r3, #0
+  402906:	d103      	bne.n	402910 <write_wifi_command_safe+0x7c>
+  402908:	2300      	movs	r3, #0
+  40290a:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
+  40290e:	e028      	b.n	402962 <write_wifi_command_safe+0xce>
+			// otherwise, parse for handle
+			else {
+				char *opened_pointer = strstr(usart_buffer, resp);
+  402910:	68b9      	ldr	r1, [r7, #8]
+  402912:	4828      	ldr	r0, [pc, #160]	; (4029b4 <write_wifi_command_safe+0x120>)
+  402914:	4b2d      	ldr	r3, [pc, #180]	; (4029cc <write_wifi_command_safe+0x138>)
+  402916:	4798      	blx	r3
+  402918:	61f8      	str	r0, [r7, #28]
+				uint32_t buffer_offset = ((uint8_t *) opened_pointer) - usart_buffer;
+  40291a:	69fb      	ldr	r3, [r7, #28]
+  40291c:	4a25      	ldr	r2, [pc, #148]	; (4029b4 <write_wifi_command_safe+0x120>)
+  40291e:	1a9b      	subs	r3, r3, r2
+  402920:	61bb      	str	r3, [r7, #24]
+				uint8_t handle = usart_buffer[buffer_offset+12] - '0';
+  402922:	69bb      	ldr	r3, [r7, #24]
+  402924:	330c      	adds	r3, #12
+  402926:	4a23      	ldr	r2, [pc, #140]	; (4029b4 <write_wifi_command_safe+0x120>)
+  402928:	5cd3      	ldrb	r3, [r2, r3]
+  40292a:	b2db      	uxtb	r3, r3
+  40292c:	3b30      	subs	r3, #48	; 0x30
+  40292e:	75fb      	strb	r3, [r7, #23]
+				command_response = handle+10;
+  402930:	7dfb      	ldrb	r3, [r7, #23]
+  402932:	330a      	adds	r3, #10
+  402934:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
+			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
+  402938:	e013      	b.n	402962 <write_wifi_command_safe+0xce>
+			}
+		}
+		else if (strstr(usart_buffer, "Command failed")){
+  40293a:	4925      	ldr	r1, [pc, #148]	; (4029d0 <write_wifi_command_safe+0x13c>)
+  40293c:	481d      	ldr	r0, [pc, #116]	; (4029b4 <write_wifi_command_safe+0x120>)
+  40293e:	4b23      	ldr	r3, [pc, #140]	; (4029cc <write_wifi_command_safe+0x138>)
+  402940:	4798      	blx	r3
+  402942:	4603      	mov	r3, r0
+  402944:	2b00      	cmp	r3, #0
+  402946:	d003      	beq.n	402950 <write_wifi_command_safe+0xbc>
+			command_response = COMMAND_FAILURE; // command failed
+  402948:	2301      	movs	r3, #1
+  40294a:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
+  40294e:	e008      	b.n	402962 <write_wifi_command_safe+0xce>
+		}
+		else if (ms_counter++ > timeout_ms){
+  402950:	6a7b      	ldr	r3, [r7, #36]	; 0x24
+  402952:	1c5a      	adds	r2, r3, #1
+  402954:	627a      	str	r2, [r7, #36]	; 0x24
+  402956:	687a      	ldr	r2, [r7, #4]
+  402958:	4293      	cmp	r3, r2
+  40295a:	d902      	bls.n	402962 <write_wifi_command_safe+0xce>
+			command_response = COMMAND_TIMEOUT;
+  40295c:	2302      	movs	r3, #2
+  40295e:	f887 3023 	strb.w	r3, [r7, #35]	; 0x23
+		}
+		delay_ms(1);
+  402962:	4b1c      	ldr	r3, [pc, #112]	; (4029d4 <write_wifi_command_safe+0x140>)
+  402964:	4798      	blx	r3
+  402966:	4603      	mov	r3, r0
+  402968:	f04f 0400 	mov.w	r4, #0
+  40296c:	f243 61af 	movw	r1, #13999	; 0x36af
+  402970:	f04f 0200 	mov.w	r2, #0
+  402974:	eb13 0b01 	adds.w	fp, r3, r1
+  402978:	eb44 0c02 	adc.w	ip, r4, r2
+  40297c:	4658      	mov	r0, fp
+  40297e:	4661      	mov	r1, ip
+  402980:	4c15      	ldr	r4, [pc, #84]	; (4029d8 <write_wifi_command_safe+0x144>)
+  402982:	f243 62b0 	movw	r2, #14000	; 0x36b0
+  402986:	f04f 0300 	mov.w	r3, #0
+  40298a:	47a0      	blx	r4
+  40298c:	4603      	mov	r3, r0
+  40298e:	460c      	mov	r4, r1
+  402990:	4618      	mov	r0, r3
+  402992:	4b12      	ldr	r3, [pc, #72]	; (4029dc <write_wifi_command_safe+0x148>)
+  402994:	4798      	blx	r3
+	while(command_response == COMMAND_UNSET) {			
+  402996:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
+  40299a:	2b63      	cmp	r3, #99	; 0x63
+  40299c:	d0a2      	beq.n	4028e4 <write_wifi_command_safe+0x50>
+	}
+	
+	usart_buffer_index = 0;
+  40299e:	4b07      	ldr	r3, [pc, #28]	; (4029bc <write_wifi_command_safe+0x128>)
+  4029a0:	2200      	movs	r2, #0
+  4029a2:	601a      	str	r2, [r3, #0]
+	return command_response;
+  4029a4:	f897 3023 	ldrb.w	r3, [r7, #35]	; 0x23
+  4029a8:	4618      	mov	r0, r3
+  4029aa:	3728      	adds	r7, #40	; 0x28
+  4029ac:	46bd      	mov	sp, r7
+  4029ae:	e8bd 8890 	ldmia.w	sp!, {r4, r7, fp, pc}
   4029b2:	bf00      	nop
-  4029b4:	2000000a 	.word	0x2000000a
-  4029b8:	00402821 	.word	0x00402821
-  4029bc:	004098a0 	.word	0x004098a0
-  4029c0:	004024c9 	.word	0x004024c9
-  4029c4:	004023a1 	.word	0x004023a1
-  4029c8:	00402721 	.word	0x00402721
-  4029cc:	200009dc 	.word	0x200009dc
-  4029d0:	00402001 	.word	0x00402001
-  4029d4:	00409980 	.word	0x00409980
-  4029d8:	0040412d 	.word	0x0040412d
-  4029dc:	004021e5 	.word	0x004021e5
+  4029b4:	2000d590 	.word	0x2000d590
+  4029b8:	00404091 	.word	0x00404091
+  4029bc:	2000d784 	.word	0x2000d784
+  4029c0:	0040994c 	.word	0x0040994c
+  4029c4:	40024000 	.word	0x40024000
+  4029c8:	00401099 	.word	0x00401099
+  4029cc:	0040450d 	.word	0x0040450d
+  4029d0:	00409960 	.word	0x00409960
+  4029d4:	00401dbd 	.word	0x00401dbd
+  4029d8:	00403d31 	.word	0x00403d31
+  4029dc:	20000001 	.word	0x20000001
 
 004029e0 <osc_enable>:
 {
@@ -9785,7 +9762,7 @@ __attribute__( ( always_inline ) ) __STATIC_INLINE void __NOP(void)
 	while (1);
   4039d8:	e7fe      	b.n	4039d8 <Reset_Handler+0xa0>
   4039da:	bf00      	nop
-  4039dc:	00409c4c 	.word	0x00409c4c
+  4039dc:	00409c24 	.word	0x00409c24
   4039e0:	20000000 	.word	0x20000000
   4039e4:	200009bc 	.word	0x200009bc
   4039e8:	200009bc 	.word	0x200009bc
@@ -10329,18 +10306,18 @@ int main (void)
   403cf4:	00401c7d 	.word	0x00401c7d
   403cf8:	40010000 	.word	0x40010000
   403cfc:	0040041d 	.word	0x0040041d
-  403d00:	00402421 	.word	0x00402421
+  403d00:	004020ed 	.word	0x004020ed
   403d04:	00401441 	.word	0x00401441
-  403d08:	00402451 	.word	0x00402451
+  403d08:	0040211d 	.word	0x0040211d
   403d0c:	004007b1 	.word	0x004007b1
-  403d10:	00402691 	.word	0x00402691
+  403d10:	00402195 	.word	0x00402195
   403d14:	004006f9 	.word	0x004006f9
   403d18:	2000d588 	.word	0x2000d588
-  403d1c:	004023f5 	.word	0x004023f5
+  403d1c:	004020c1 	.word	0x004020c1
   403d20:	00401535 	.word	0x00401535
   403d24:	004015c5 	.word	0x004015c5
   403d28:	2000d580 	.word	0x2000d580
-  403d2c:	004028ad 	.word	0x004028ad
+  403d2c:	00402345 	.word	0x00402345
 
 00403d30 <__aeabi_uldivmod>:
   403d30:	b953      	cbnz	r3, 403d48 <__aeabi_uldivmod+0x18>
@@ -10636,7 +10613,7 @@ int main (void)
   40405c:	4e0a      	ldr	r6, [pc, #40]	; (404088 <__libc_init_array+0x48>)
   40405e:	4d0b      	ldr	r5, [pc, #44]	; (40408c <__libc_init_array+0x4c>)
   404060:	1b76      	subs	r6, r6, r5
-  404062:	f005 fddd 	bl	409c20 <_init>
+  404062:	f005 fdc9 	bl	409bf8 <_init>
   404066:	10b6      	asrs	r6, r6, #2
   404068:	bf18      	it	ne
   40406a:	2400      	movne	r4, #0
@@ -10649,10 +10626,10 @@ int main (void)
   40407a:	bd70      	pop	{r4, r5, r6, pc}
   40407c:	bd70      	pop	{r4, r5, r6, pc}
   40407e:	bf00      	nop
-  404080:	00409c2c 	.word	0x00409c2c
-  404084:	00409c2c 	.word	0x00409c2c
-  404088:	00409c34 	.word	0x00409c34
-  40408c:	00409c2c 	.word	0x00409c2c
+  404080:	00409c04 	.word	0x00409c04
+  404084:	00409c04 	.word	0x00409c04
+  404088:	00409c0c 	.word	0x00409c0c
+  40408c:	00409c04 	.word	0x00409c04
 
 00404090 <memset>:
   404090:	b470      	push	{r4, r5, r6}
@@ -11826,9 +11803,9 @@ int main (void)
   404c84:	930f      	str	r3, [sp, #60]	; 0x3c
   404c86:	f89a 3000 	ldrb.w	r3, [sl]
   404c8a:	e5a3      	b.n	4047d4 <_svfprintf_r+0xb0>
-  404c8c:	004099e0 	.word	0x004099e0
-  404c90:	004099f0 	.word	0x004099f0
-  404c94:	004099c0 	.word	0x004099c0
+  404c8c:	004099b8 	.word	0x004099b8
+  404c90:	004099c8 	.word	0x004099c8
+  404c94:	00409998 	.word	0x00409998
   404c98:	f04b 0b10 	orr.w	fp, fp, #16
   404c9c:	f01b 0f20 	tst.w	fp, #32
   404ca0:	9311      	str	r3, [sp, #68]	; 0x44
@@ -12156,13 +12133,13 @@ int main (void)
   405014:	f8dd b030 	ldr.w	fp, [sp, #48]	; 0x30
   405018:	9c0b      	ldr	r4, [sp, #44]	; 0x2c
   40501a:	e013      	b.n	405044 <_svfprintf_r+0x920>
-  40501c:	004099c0 	.word	0x004099c0
-  405020:	004099ac 	.word	0x004099ac
+  40501c:	00409998 	.word	0x00409998
+  405020:	00409984 	.word	0x00409984
   405024:	7fefffff 	.word	0x7fefffff
-  405028:	004099a0 	.word	0x004099a0
-  40502c:	0040999c 	.word	0x0040999c
-  405030:	004099dc 	.word	0x004099dc
-  405034:	004099f0 	.word	0x004099f0
+  405028:	00409978 	.word	0x00409978
+  40502c:	00409974 	.word	0x00409974
+  405030:	004099b4 	.word	0x004099b4
+  405034:	004099c8 	.word	0x004099c8
   405038:	f108 0808 	add.w	r8, r8, #8
   40503c:	3e10      	subs	r6, #16
   40503e:	2e10      	cmp	r6, #16
@@ -12480,7 +12457,7 @@ int main (void)
   405352:	9c0c      	ldr	r4, [sp, #48]	; 0x30
   405354:	e007      	b.n	405366 <_svfprintf_r+0xc42>
   405356:	bf00      	nop
-  405358:	004099f0 	.word	0x004099f0
+  405358:	004099c8 	.word	0x004099c8
   40535c:	3e10      	subs	r6, #16
   40535e:	2e10      	cmp	r6, #16
   405360:	f108 0808 	add.w	r8, r8, #8
@@ -12894,8 +12871,8 @@ int main (void)
   405746:	46c8      	mov	r8, r9
   405748:	e458      	b.n	404ffc <_svfprintf_r+0x8d8>
   40574a:	bf00      	nop
-  40574c:	004099f0 	.word	0x004099f0
-  405750:	004099dc 	.word	0x004099dc
+  40574c:	004099c8 	.word	0x004099c8
+  405750:	004099b4 	.word	0x004099b4
   405754:	2140      	movs	r1, #64	; 0x40
   405756:	980c      	ldr	r0, [sp, #48]	; 0x30
   405758:	f001 fb36 	bl	406dc8 <_malloc_r>
@@ -13275,10 +13252,10 @@ int main (void)
   405af0:	e74b      	b.n	40598a <_svfprintf_r+0x1266>
   405af2:	bf00      	nop
   405af4:	66666667 	.word	0x66666667
-  405af8:	004099d4 	.word	0x004099d4
-  405afc:	004099f0 	.word	0x004099f0
-  405b00:	004099a8 	.word	0x004099a8
-  405b04:	004099a4 	.word	0x004099a4
+  405af8:	004099ac 	.word	0x004099ac
+  405afc:	004099c8 	.word	0x004099c8
+  405b00:	00409980 	.word	0x00409980
+  405b04:	0040997c 	.word	0x0040997c
   405b08:	9d0f      	ldr	r5, [sp, #60]	; 0x3c
   405b0a:	f89a 3001 	ldrb.w	r3, [sl, #1]
   405b0e:	6828      	ldr	r0, [r5, #0]
@@ -13694,12 +13671,12 @@ int main (void)
   405f58:	509f79fb 	.word	0x509f79fb
   405f5c:	3fd34413 	.word	0x3fd34413
   405f60:	7ff00000 	.word	0x7ff00000
-  405f64:	004099dd 	.word	0x004099dd
-  405f68:	00409a00 	.word	0x00409a00
-  405f6c:	00409a0c 	.word	0x00409a0c
+  405f64:	004099b5 	.word	0x004099b5
+  405f68:	004099d8 	.word	0x004099d8
+  405f6c:	004099e4 	.word	0x004099e4
   405f70:	3ff80000 	.word	0x3ff80000
-  405f74:	00409a48 	.word	0x00409a48
-  405f78:	004099dc 	.word	0x004099dc
+  405f74:	00409a20 	.word	0x00409a20
+  405f78:	004099b4 	.word	0x004099b4
   405f7c:	40240000 	.word	0x40240000
   405f80:	f002 fb5c 	bl	40863c <__aeabi_dmul>
   405f84:	2200      	movs	r2, #0
@@ -14479,8 +14456,8 @@ int main (void)
   406718:	f8dd 902c 	ldr.w	r9, [sp, #44]	; 0x2c
   40671c:	9c0c      	ldr	r4, [sp, #48]	; 0x30
   40671e:	e48f      	b.n	406040 <_dtoa_r+0x388>
-  406720:	00409a48 	.word	0x00409a48
-  406724:	00409a20 	.word	0x00409a20
+  406720:	00409a20 	.word	0x00409a20
+  406724:	004099f8 	.word	0x004099f8
   406728:	3ff00000 	.word	0x3ff00000
   40672c:	401c0000 	.word	0x401c0000
   406730:	3fe00000 	.word	0x3fe00000
@@ -14789,8 +14766,8 @@ int main (void)
   406a50:	f7ff bba5 	b.w	40619e <_dtoa_r+0x4e6>
   406a54:	401c0000 	.word	0x401c0000
   406a58:	40140000 	.word	0x40140000
-  406a5c:	00409a48 	.word	0x00409a48
-  406a60:	00409a20 	.word	0x00409a20
+  406a5c:	00409a20 	.word	0x00409a20
+  406a60:	004099f8 	.word	0x004099f8
   406a64:	3fe00000 	.word	0x3fe00000
   406a68:	40240000 	.word	0x40240000
   406a6c:	2b39      	cmp	r3, #57	; 0x39
@@ -14872,10 +14849,10 @@ int main (void)
   406b2a:	2c00      	cmp	r4, #0
   406b2c:	d1f9      	bne.n	406b22 <__libc_fini_array+0x16>
   406b2e:	e8bd 4038 	ldmia.w	sp!, {r3, r4, r5, lr}
-  406b32:	f003 b87f 	b.w	409c34 <_fini>
+  406b32:	f003 b86b 	b.w	409c0c <_fini>
   406b36:	bf00      	nop
-  406b38:	00409c44 	.word	0x00409c44
-  406b3c:	00409c40 	.word	0x00409c40
+  406b38:	00409c1c 	.word	0x00409c1c
+  406b3c:	00409c18 	.word	0x00409c18
 
 00406b40 <_malloc_trim_r>:
   406b40:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
@@ -16331,7 +16308,7 @@ int main (void)
   4079b2:	6003      	str	r3, [r0, #0]
   4079b4:	e7be      	b.n	407934 <__pow5mult+0x18>
   4079b6:	bf00      	nop
-  4079b8:	00409b10 	.word	0x00409b10
+  4079b8:	00409ae8 	.word	0x00409ae8
 
 004079bc <__lshift>:
   4079bc:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -17190,7 +17167,7 @@ int main (void)
   40825a:	f04f 30ff 	mov.w	r0, #4294967295
   40825e:	e8bd 87f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, sl, pc}
   408262:	bf00      	nop
-  408264:	00409998 	.word	0x00409998
+  408264:	00409970 	.word	0x00409970
   408268:	00000000 	.word	0x00000000
 
 0040826c <_calloc_r>:
@@ -18256,105 +18233,103 @@ int main (void)
   4097f4:	0012 3f36 0053 c433 891b 0322 0228 ffff     ..6?S.3...".(...
   409804:	1000 000e 00c0 0000 0800 0000 0000 0000     ................
 	...
-  40981c:	435b 6f6c 6573 3a64 0020 0000 0a0d 0000     [Closed: .......
-  40982c:	7277 7469 2065 6425 2520 0d64 000a 0000     write %d %d.....
-  40983c:	6f43 6d6d 6e61 2064 6166 6c69 6465 0000     Command failed..
-  40984c:	704f 6e65 6465 203a 0000 0000 6577 7362     Opened: ....webs
-  40985c:	636f 656b 5f74 6c63 6569 746e 2d20 2066     ocket_client -f 
-  40986c:	6962 206e 7377 3a73 2f2f 6962 6267 6f72     bin wss://bigbro
-  40987c:	6874 7265 6573 7365 6d2e 2f65 6f73 7275     thersees.me/sour
-  40988c:	6563 615f 6475 6f69 735f 636f 656b 0d74     ce_audio_socket.
-  40989c:	000a 0000 7553 6363 7365 0073 6c63 736f     ....Success.clos
-  4098ac:	2065 6c61 0d6c 000a 6466 2065 6162 6d74     e all...fde batm
-  4098bc:	6e61 742e 7478 0a0d 0000 0000 6366 2072     an.txt......fcr 
-  4098cc:	6162 6d74 6e61 742e 7478 2520 0d64 000a     batman.txt %d...
-  4098dc:	6425 5720 4245 0043 696c 7473 0a0d 0000     %d WEBC.list....
-  4098ec:	7341 6f73 6963 7461 6465 005d 6573 7574     Associated].setu
-  4098fc:	2070 6577 0d62 000a 6567 2074 7973 7473     p web...get syst
-  40990c:	6d65 732e 6661 6d65 646f 2e65 7473 7461     em.safemode.stat
-  40991c:	7375 0a0d 0000 0000 6166 6c75 7374 705f     us......faults_p
-  40992c:	6972 746e 0a0d 0000 6166 6c75 7374 725f     rint....faults_r
-  40993c:	7365 7465 0a0d 0000 6572 6f62 746f 0a0d     eset....reboot..
-  40994c:	0000 0000 6553 2074 4b4f 0000 6573 2074     ....Set OK..set 
-  40995c:	7973 6320 7020 6f20 6666 0a0d 0000 0000     sy c p off......
-  40996c:	6573 2074 7973 6320 6520 6f20 6666 0a0d     set sy c e off..
-  40997c:	0000 0000 7277 7469 2065 6425 3120 0d30     ....write %d 10.
-  40998c:	690a 616d 6567 6420 6e6f 0065               .image done.
+  40981c:	704f 6e65 6465 203a 0000 0000 6577 7362     Opened: ....webs
+  40982c:	636f 656b 5f74 6c63 6569 746e 2d20 2066     ocket_client -f 
+  40983c:	6962 206e 7377 3a73 2f2f 6962 6267 6f72     bin wss://bigbro
+  40984c:	6874 7265 6573 7365 6d2e 2f65 6f73 7275     thersees.me/sour
+  40985c:	6563 615f 6475 6f69 735f 636f 656b 0d74     ce_audio_socket.
+  40986c:	000a 0000 7553 6363 7365 0073 6c63 736f     ....Success.clos
+  40987c:	2065 6c61 0d6c 000a 6425 5720 4245 0043     e all...%d WEBC.
+  40988c:	696c 7473 0a0d 0000 7341 6f73 6963 7461     list....Associat
+  40989c:	6465 005d 6573 7574 2070 6577 0d62 000a     ed].setup web...
+  4098ac:	6567 2074 7973 7473 6d65 732e 6661 6d65     get system.safem
+  4098bc:	646f 2e65 7473 7461 7375 0a0d 0000 0000     ode.status......
+  4098cc:	6166 6c75 7374 705f 6972 746e 0a0d 0000     faults_print....
+  4098dc:	6166 6c75 7374 725f 7365 7465 0a0d 0000     faults_reset....
+  4098ec:	6572 6f62 746f 0a0d 0000 0000 6553 2074     reboot......Set 
+  4098fc:	4b4f 0000 6573 2074 7973 6320 7020 6f20     OK..set sy c p o
+  40990c:	6666 0a0d 0000 0000 6573 2074 7973 6320     ff......set sy c
+  40991c:	6520 6f20 6666 0a0d 0000 0000 7277 7469      e off......writ
+  40992c:	2065 6425 3120 0d30 690a 616d 6567 6420     e %d 10..image d
+  40993c:	6e6f 0065 435b 6f6c 6573 3a64 0020 0000     one.[Closed: ...
+  40994c:	0a0d 0000 7277 7469 2065 6425 2520 0d64     ....write %d %d.
+  40995c:	000a 0000 6f43 6d6d 6e61 2064 6166 6c69     ....Command fail
+  40996c:	6465 0000                                   ed..
 
-00409998 <_global_impure_ptr>:
-  409998:	0018 2000 4e49 0046 6e69 0066 414e 004e     ... INF.inf.NAN.
-  4099a8:	616e 006e 3130 3332 3534 3736 3938 4241     nan.0123456789AB
-  4099b8:	4443 4645 0000 0000 3130 3332 3534 3736     CDEF....01234567
-  4099c8:	3938 6261 6463 6665 0000 0000 6e28 6c75     89abcdef....(nul
-  4099d8:	296c 0000 0030 0000                         l)..0...
+00409970 <_global_impure_ptr>:
+  409970:	0018 2000 4e49 0046 6e69 0066 414e 004e     ... INF.inf.NAN.
+  409980:	616e 006e 3130 3332 3534 3736 3938 4241     nan.0123456789AB
+  409990:	4443 4645 0000 0000 3130 3332 3534 3736     CDEF....01234567
+  4099a0:	3938 6261 6463 6665 0000 0000 6e28 6c75     89abcdef....(nul
+  4099b0:	296c 0000 0030 0000                         l)..0...
 
-004099e0 <blanks.7208>:
-  4099e0:	2020 2020 2020 2020 2020 2020 2020 2020                     
+004099b8 <blanks.7208>:
+  4099b8:	2020 2020 2020 2020 2020 2020 2020 2020                     
 
-004099f0 <zeroes.7209>:
-  4099f0:	3030 3030 3030 3030 3030 3030 3030 3030     0000000000000000
-  409a00:	6e49 6966 696e 7974 0000 0000 614e 004e     Infinity....NaN.
-  409a10:	0043 0000 4f50 4953 0058 0000 002e 0000     C...POSIX.......
+004099c8 <zeroes.7209>:
+  4099c8:	3030 3030 3030 3030 3030 3030 3030 3030     0000000000000000
+  4099d8:	6e49 6966 696e 7974 0000 0000 614e 004e     Infinity....NaN.
+  4099e8:	0043 0000 4f50 4953 0058 0000 002e 0000     C...POSIX.......
 
-00409a20 <__mprec_bigtens>:
-  409a20:	8000 37e0 c379 4341 6e17 b505 b8b5 4693     ...7y.AC.n.....F
-  409a30:	f9f5 e93f 4f03 4d38 1d32 f930 7748 5a82     ..?..O8M2.0.Hw.Z
-  409a40:	bf3c 7f73 4fdd 7515                         <.s..O.u
+004099f8 <__mprec_bigtens>:
+  4099f8:	8000 37e0 c379 4341 6e17 b505 b8b5 4693     ...7y.AC.n.....F
+  409a08:	f9f5 e93f 4f03 4d38 1d32 f930 7748 5a82     ..?..O8M2.0.Hw.Z
+  409a18:	bf3c 7f73 4fdd 7515                         <.s..O.u
 
-00409a48 <__mprec_tens>:
-  409a48:	0000 0000 0000 3ff0 0000 0000 0000 4024     .......?......$@
-  409a58:	0000 0000 0000 4059 0000 0000 4000 408f     ......Y@.....@.@
-  409a68:	0000 0000 8800 40c3 0000 0000 6a00 40f8     .......@.....j.@
-  409a78:	0000 0000 8480 412e 0000 0000 12d0 4163     .......A......cA
-  409a88:	0000 0000 d784 4197 0000 0000 cd65 41cd     .......A....e..A
-  409a98:	0000 2000 a05f 4202 0000 e800 4876 4237     ... _..B....vH7B
-  409aa8:	0000 a200 1a94 426d 0000 e540 309c 42a2     ......mB..@..0.B
-  409ab8:	0000 1e90 bcc4 42d6 0000 2634 6bf5 430c     .......B..4&.k.C
-  409ac8:	8000 37e0 c379 4341 a000 85d8 3457 4376     ...7y.AC....W4vC
-  409ad8:	c800 674e c16d 43ab 3d00 6091 58e4 43e1     ..Ngm..C.=.`.X.C
-  409ae8:	8c40 78b5 af1d 4415 ef50 d6e2 1ae4 444b     @..x...DP.....KD
-  409af8:	d592 064d f0cf 4480 4af6 c7e1 2d02 44b5     ..M....D.J...-.D
-  409b08:	9db4 79d9 7843 44ea                         ...yCx.D
+00409a20 <__mprec_tens>:
+  409a20:	0000 0000 0000 3ff0 0000 0000 0000 4024     .......?......$@
+  409a30:	0000 0000 0000 4059 0000 0000 4000 408f     ......Y@.....@.@
+  409a40:	0000 0000 8800 40c3 0000 0000 6a00 40f8     .......@.....j.@
+  409a50:	0000 0000 8480 412e 0000 0000 12d0 4163     .......A......cA
+  409a60:	0000 0000 d784 4197 0000 0000 cd65 41cd     .......A....e..A
+  409a70:	0000 2000 a05f 4202 0000 e800 4876 4237     ... _..B....vH7B
+  409a80:	0000 a200 1a94 426d 0000 e540 309c 42a2     ......mB..@..0.B
+  409a90:	0000 1e90 bcc4 42d6 0000 2634 6bf5 430c     .......B..4&.k.C
+  409aa0:	8000 37e0 c379 4341 a000 85d8 3457 4376     ...7y.AC....W4vC
+  409ab0:	c800 674e c16d 43ab 3d00 6091 58e4 43e1     ..Ngm..C.=.`.X.C
+  409ac0:	8c40 78b5 af1d 4415 ef50 d6e2 1ae4 444b     @..x...DP.....KD
+  409ad0:	d592 064d f0cf 4480 4af6 c7e1 2d02 44b5     ..M....D.J...-.D
+  409ae0:	9db4 79d9 7843 44ea                         ...yCx.D
 
-00409b10 <p05.6040>:
-  409b10:	0005 0000 0019 0000 007d 0000               ........}...
+00409ae8 <p05.6040>:
+  409ae8:	0005 0000 0019 0000 007d 0000               ........}...
 
-00409b1c <_ctype_>:
-  409b1c:	2000 2020 2020 2020 2020 2828 2828 2028     .         ((((( 
-  409b2c:	2020 2020 2020 2020 2020 2020 2020 2020                     
-  409b3c:	8820 1010 1010 1010 1010 1010 1010 1010      ...............
-  409b4c:	0410 0404 0404 0404 0404 1004 1010 1010     ................
-  409b5c:	1010 4141 4141 4141 0101 0101 0101 0101     ..AAAAAA........
-  409b6c:	0101 0101 0101 0101 0101 0101 1010 1010     ................
-  409b7c:	1010 4242 4242 4242 0202 0202 0202 0202     ..BBBBBB........
-  409b8c:	0202 0202 0202 0202 0202 0202 1010 1010     ................
-  409b9c:	0020 0000 0000 0000 0000 0000 0000 0000      ...............
+00409af4 <_ctype_>:
+  409af4:	2000 2020 2020 2020 2020 2828 2828 2028     .         ((((( 
+  409b04:	2020 2020 2020 2020 2020 2020 2020 2020                     
+  409b14:	8820 1010 1010 1010 1010 1010 1010 1010      ...............
+  409b24:	0410 0404 0404 0404 0404 1004 1010 1010     ................
+  409b34:	1010 4141 4141 4141 0101 0101 0101 0101     ..AAAAAA........
+  409b44:	0101 0101 0101 0101 0101 0101 1010 1010     ................
+  409b54:	1010 4242 4242 4242 0202 0202 0202 0202     ..BBBBBB........
+  409b64:	0202 0202 0202 0202 0202 0202 1010 1010     ................
+  409b74:	0020 0000 0000 0000 0000 0000 0000 0000      ...............
 	...
 
-00409c20 <_init>:
-  409c20:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
-  409c22:	bf00      	nop
-  409c24:	bcf8      	pop	{r3, r4, r5, r6, r7}
-  409c26:	bc08      	pop	{r3}
-  409c28:	469e      	mov	lr, r3
-  409c2a:	4770      	bx	lr
+00409bf8 <_init>:
+  409bf8:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+  409bfa:	bf00      	nop
+  409bfc:	bcf8      	pop	{r3, r4, r5, r6, r7}
+  409bfe:	bc08      	pop	{r3}
+  409c00:	469e      	mov	lr, r3
+  409c02:	4770      	bx	lr
 
-00409c2c <__init_array_start>:
-  409c2c:	00405b71 	.word	0x00405b71
+00409c04 <__init_array_start>:
+  409c04:	00405b71 	.word	0x00405b71
 
-00409c30 <__frame_dummy_init_array_entry>:
-  409c30:	004000f1                                ..@.
+00409c08 <__frame_dummy_init_array_entry>:
+  409c08:	004000f1                                ..@.
 
-00409c34 <_fini>:
-  409c34:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
-  409c36:	bf00      	nop
-  409c38:	bcf8      	pop	{r3, r4, r5, r6, r7}
-  409c3a:	bc08      	pop	{r3}
-  409c3c:	469e      	mov	lr, r3
-  409c3e:	4770      	bx	lr
+00409c0c <_fini>:
+  409c0c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+  409c0e:	bf00      	nop
+  409c10:	bcf8      	pop	{r3, r4, r5, r6, r7}
+  409c12:	bc08      	pop	{r3}
+  409c14:	469e      	mov	lr, r3
+  409c16:	4770      	bx	lr
 
-00409c40 <__fini_array_start>:
-  409c40:	004000cd 	.word	0x004000cd
+00409c18 <__fini_array_start>:
+  409c18:	004000cd 	.word	0x004000cd
 
 Disassembly of section .relocate:
 
@@ -18404,10 +18379,10 @@ void portable_delay_cycles(unsigned long n)
 	...
 20000500:	0043 0000 0000 0000 0000 0000 0000 0000     C...............
 	...
-20000520:	81ad 0040 7329 0040 0000 0000 9b1c 0040     ..@.)s@.......@.
-20000530:	9a1c 0040 99bc 0040 99bc 0040 99bc 0040     ..@...@...@...@.
-20000540:	99bc 0040 99bc 0040 99bc 0040 99bc 0040     ..@...@...@...@.
-20000550:	99bc 0040 99bc 0040 ffff ffff ffff ffff     ..@...@.........
+20000520:	81ad 0040 7329 0040 0000 0000 9af4 0040     ..@.)s@.......@.
+20000530:	99f4 0040 9994 0040 9994 0040 9994 0040     ..@...@...@...@.
+20000540:	9994 0040 9994 0040 9994 0040 9994 0040     ..@...@...@...@.
+20000550:	9994 0040 9994 0040 ffff ffff ffff ffff     ..@...@.........
 20000560:	ffff ffff ffff 0000 0001 5341 4943 0049     ..........ASCII.
 	...
 20000588:	0000 5341 4943 0049 0000 0000 0000 0000     ..ASCII.........

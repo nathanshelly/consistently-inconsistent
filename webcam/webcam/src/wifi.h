@@ -41,26 +41,31 @@ volatile uint32_t received_byte_wifi;
 // function declarations
 void handler_usart(void);
 void configure_usart(void);
-void handler_command_complete(uint32_t ul_id, uint32_t ul_mask);
+void handler_command_complete(uint32_t, uint32_t);
 void configure_command_complete(void);
-void handler_web_setup(uint32_t ul_id, uint32_t ul_mask);
+void handler_web_setup(uint32_t, uint32_t);
 void configure_web_setup(void);
+
 void write_wifi_command(char* comm, uint8_t cnt);
-uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms,uint8_t handle_expected);
-void post_image_usart(uint8_t *start_of_image_ptr, uint32_t image_length);
-void print_to_file(char* message, int num_bytes);
-void blink_LED(int ms_blink);
+uint8_t open_websocket(uint8_t);
+uint8_t check_ws_handle(uint8_t);
+
+void blink_LED(int);
 void setup_wifi(void);
 void configure_wifi(void);
-void reboot_wifi(void);
 void safe_mode_recovery(void);
+void reboot_wifi(void);
+void configure_websocket();
+void reopen_websockets();
+
 void send_image_dummy(void);
 uint8_t is_audio_caught_up(void);
-uint8_t open_websocket(uint8_t number_of_attempts);
-uint8_t check_ws_handle(uint8_t theoretical_handle);
-void configure_websocket();
+void send_image(uint8_t*, uint32_t);
 uint8_t send_audio_packet();
-void send_image(uint8_t *start_of_image_ptr, uint32_t image_length);
+uint8_t write_audio_data_safe(uint16_t*, uint8_t, char*, uint32_t);
+uint8_t write_image_data_safe(uint8_t*, uint32_t, uint32_t, uint8_t, char*, uint32_t);
+uint8_t write_wifi_command_safe(char*, char*, uint32_t, uint8_t);
+
 
 // Usart communication definitions
 

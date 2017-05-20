@@ -1,8 +1,5 @@
 /*
  * microphone.h
- *
- * Created: 4/5/2017 20:53:18
- *  Author: Nathan
  */ 
 
 
