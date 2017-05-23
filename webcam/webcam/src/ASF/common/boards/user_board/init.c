@@ -30,6 +30,12 @@ void board_init(void)
 	gpio_configure_pin(LED0_GPIO, LED0_FLAGS);
 	ioport_set_pin_dir(LED_PIN, IOPORT_DIR_OUTPUT);
 	ioport_set_pin_level(LED_PIN, false);
+
+	gpio_configure_pin(SETUP_PIN, SETUP_FLAGS);
+	gpio_configure_pin(SETUP0_GPIO, SETUP0_FLAGS);
+	ioport_set_pin_dir(SETUP_PIN, IOPORT_DIR_OUTPUT);
+	ioport_set_pin_level(SETUP_PIN, true);
+
 	
 	// initialize MCU RTS as a gpio and drive it low
 	gpio_configure_pin(RTS_LOW, RTS_LOW_FLAGS);
@@ -45,7 +51,7 @@ void board_init(void)
 	// initialize USART pins
 	gpio_configure_pin(PIN_USART0_RXD_IDX, PIN_USART0_RXD_FLAGS);
 	gpio_configure_pin(PIN_USART0_TXD_IDX, PIN_USART0_TXD_FLAGS);
-	//gpio_configure_pin(PIN_USART0_CTS_IDX, PIN_USART0_CTS_FLAGS);
+	gpio_configure_pin(PIN_USART0_CTS_IDX, PIN_USART0_CTS_FLAGS);
 	//gpio_configure_pin(PIN_USART0_RTS_IDX, PIN_USART0_RTS_FLAGS);	// don't configure RTS pin as RTS
 	
 	// initialize camera communication pins

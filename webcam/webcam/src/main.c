@@ -20,6 +20,10 @@ int main (void)
 	uint8_t status_code = 0;
 	uint32_t im_length;
 	
+	ioport_toggle_pin_level(SETUP_PIN);
+	delay_ms(15);
+	ioport_toggle_pin_level(SETUP_PIN);
+	
 	reboot_wifi();
 	//safe_mode_recovery();
 	

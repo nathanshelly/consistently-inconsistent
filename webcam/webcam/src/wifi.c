@@ -63,7 +63,8 @@ void configure_usart()
 	sysclk_enable_peripheral_clock(BOARD_ID_USART);
 
 	/* Configure USART. */
-	usart_init_hw_handshaking(BOARD_USART, &usart_console_settings, ul_sysclk);
+	//usart_init_hw_handshaking(BOARD_USART, &usart_console_settings, ul_sysclk);
+	usart_init_rs232(BOARD_USART, &usart_console_settings, ul_sysclk);
 
 	/* Disable all the interrupts. */
 	usart_disable_interrupt(BOARD_USART, ALL_INTERRUPT_MASK);
