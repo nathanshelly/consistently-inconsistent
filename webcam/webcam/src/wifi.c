@@ -362,6 +362,39 @@ uint8_t send_audio_packet(){
 	return 0;
 }
 
+void prep_stream_for_data(uint8_t handle, uint32_t num_bytes) {
+	char* templated_command[30];
+	usart_write_line(BOARD_USART,"\r\n");
+	sprintf(templated_command, "write %d %d\r\n", handle, AUDIO_PACKET_SIZE * 2);
+	usart_write_line(BOARD_USART, templated_command);
+}
+
+uint8_t get_stream_response(uint8_t is_audio_data_send) {
+	uint32_t ms_counter = 0;
+	uint8_t command_response = COMMAND_UNSET;
+
+	while(command_response == COMMAND_UNSET) {
+		if(strstr(usart_buffer, resp)){
+			if(is_audio_data_send)
+				// recompute send index after loop execution
+				i2s_send_index = (i2s_send_index + AUDIO_PACKET_SIZE) % AUDIO_BUFFER_SIZE;
+
+			command_response = COMMAND_SUCCESS;
+		}
+		else if(strstr(usart_buffer, "[Closed: "))
+			command_response = COMMAND_STCLOSE;
+		else if(strstr(usart_buffer, "Command failed"))
+			command_response = COMMAND_FAILURE;
+		else if(ms_counter++ > timeout_ms)
+			command_response = COMMAND_TIMEOUT;
+
+		delay_ms(1);
+	}
+	
+	usart_buffer_index = 0;
+	return command_response;
+}
+
 uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
 	// returns 0 for a successful write
 	// returns 1 for a failed write
@@ -374,49 +407,22 @@ uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp
 		return COMMAND_STCLOSE; // return a value indicating closure of the stream
 	}
 
-	uint32_t ms_counter = 0;
 	// clear buffer
 	memset(usart_buffer, 0, BUFFER_SIZE);
-	// set buffer index to 0
 	usart_buffer_index = 0;
 	
 	if(is_audio_caught_up()) // make sure that the end index isn't in front of the receive index
 		return COMMAND_RETRYIT;
-		
-	char* templated_command[30];
-	usart_write_line(BOARD_USART,"\r\n");
-	sprintf(templated_command, "write %d %d\r\n", handle, AUDIO_PACKET_SIZE * 2);
-	usart_write_line(BOARD_USART, templated_command);
+
+	prep_stream_for_data(handle, AUDIO_PACKET_SIZE * 2);
 	
 	uint8_t curr_data_point;
 	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++) {
 		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
-	
-	uint8_t command_response = COMMAND_UNSET;
 
-	while(command_response == COMMAND_UNSET) {			
-		if(strstr(usart_buffer, resp)){
-			i2s_send_index = (i2s_send_index + AUDIO_PACKET_SIZE) % AUDIO_BUFFER_SIZE; // recompute send index after loop execution
-			command_response = COMMAND_SUCCESS; // successful response
-			// otherwise, parse for handle
-		}
-		else if(strstr(usart_buffer, "[Closed: ")){
-			// return a value indicating closure of the stream
-			command_response = COMMAND_STCLOSE;
-		}
-		else if(strstr(usart_buffer, "Command failed")){
-			command_response = COMMAND_FAILURE; // command failed
-		}
-		else if(ms_counter++ > timeout_ms){
-			command_response = COMMAND_TIMEOUT;
-		}
-		delay_ms(1);
-	}
-	
-	usart_buffer_index = 0;
-	return command_response;
+	return get_stream_response(1);
 }
 
 uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
@@ -431,23 +437,17 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 		return COMMAND_STCLOSE; // return a value indicating closure of the stream
 	}
 	
-	uint32_t ms_counter = 0;
 	// clear buffer
 	memset(usart_buffer, 0, BUFFER_SIZE);
-	// set buffer index to 0
 	usart_buffer_index = 0;
 	
 	uint32_t end_index = start_index + IMAGE_PACKET_SIZE;
 	// if the end index goes past the end of the array, don't go there
-	end_index = (end_index < im_len) ? end_index : im_len;
+	end_index = end_index < im_len ? end_index : im_len;
 	
 	// usually PACKET_SIZE, unless it's the last one
 	uint32_t bytes_to_send = end_index - start_index;
-
-	char* templated_command[30];
-	usart_write_line(BOARD_USART,"\r\n");
-	sprintf(templated_command, "write %d %d\r\n", handle, bytes_to_send);
-	usart_write_line(BOARD_USART, templated_command);
+	prep_stream_for_data(handle, bytes_to_send)
 
 	uint8_t curr_data_point;	
 	for (int i = start_index; i < end_index; i++) {
@@ -455,28 +455,7 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
 	
-	uint8_t command_response = COMMAND_UNSET;
-	
-	while(command_response == COMMAND_UNSET) {			
-		if(strstr(usart_buffer, resp)){
-			command_response = COMMAND_SUCCESS; // successful response
-			// otherwise, parse for handle
-		}
-		else if(strstr(usart_buffer, "[Closed: ")){
-			// return a value indicating closure of the stream
-			command_response = COMMAND_STCLOSE;
-		}
-		else if(strstr(usart_buffer, "Command failed")){
-			command_response = COMMAND_FAILURE; // command failed
-		}
-		else if(ms_counter++ > timeout_ms){
-			command_response = COMMAND_TIMEOUT;
-		}
-		delay_ms(1);
-	}
-	
-	usart_buffer_index = 0;
-	return command_response;
+	return get_stream_response(0);
 }
 
 uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, uint8_t handle_expected){
@@ -485,21 +464,20 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 	// returns 2 for a timeout
 	// returns 10+stream handle for opening a stream
 
-	uint32_t ms_counter = 0;
 	// clear buffer
 	memset(usart_buffer, 0, BUFFER_SIZE);
-	// set buffer index to 0
 	usart_buffer_index = 0;
 	
 	usart_write_line(BOARD_USART,"\r\n");
 	usart_write_line(BOARD_USART, command);
 	
+	uint32_t ms_counter = 0;
 	uint8_t command_response = COMMAND_UNSET;
 	
 	while(command_response == COMMAND_UNSET) {			
 		// makes sure we have complete response before matching on expected
 		// 10 is new line, should be the last thing in the buffer
-		if( (strstr(usart_buffer, resp))  && (usart_buffer[usart_buffer_index-1] == 10)){
+		if( (strstr(usart_buffer, resp)) && (usart_buffer[usart_buffer_index-1] == 10)){
 			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
 			// otherwise, parse for handle
 			else {
