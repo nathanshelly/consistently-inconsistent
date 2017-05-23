@@ -369,7 +369,7 @@ void prep_stream_for_data(uint8_t handle, uint32_t num_bytes) {
 	usart_write_line(BOARD_USART, templated_command);
 }
 
-uint8_t get_stream_response(uint8_t is_audio_data_send) {
+uint8_t get_stream_response(char* resp, uint32_t timeout_ms, uint8_t is_audio_data_send) {
 	uint32_t ms_counter = 0;
 	uint8_t command_response = COMMAND_UNSET;
 
@@ -422,7 +422,7 @@ uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
 
-	return get_stream_response(1);
+	return get_stream_response(resp, timeout_ms, 1);
 }
 
 uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
@@ -447,7 +447,7 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	
 	// usually PACKET_SIZE, unless it's the last one
 	uint32_t bytes_to_send = end_index - start_index;
-	prep_stream_for_data(handle, bytes_to_send)
+	prep_stream_for_data(handle, bytes_to_send);
 
 	uint8_t curr_data_point;	
 	for (int i = start_index; i < end_index; i++) {
@@ -455,7 +455,7 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 		usart_putchar(BOARD_USART, curr_data_point);
 	}
 	
-	return get_stream_response(0);
+	return get_stream_response(resp, timeout_ms, 0);
 }
 
 uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, uint8_t handle_expected){
