@@ -17,12 +17,17 @@ int main (void)
 	configure_wifi();		// configures and initializes wifi 
 	configure_camera();		// configures and initializes camera module
 	
+	//safe_mode_recovery();
+	
 	uint8_t status_code = 0;
 	uint32_t im_length;
 	
-	ioport_toggle_pin_level(SETUP_PIN);
-	delay_ms(15);
-	ioport_toggle_pin_level(SETUP_PIN);
+	//ioport_toggle_pin_level(SETUP_PIN);
+	//delay_ms(15);
+	//ioport_toggle_pin_level(SETUP_PIN);
+	
+	//usart_write_line(BOARD_USART,"set ua b 1 921600\r\n");
+	//usart_write_line(BOARD_USART,"save\r\n");
 	
 	reboot_wifi();
 	//safe_mode_recovery();

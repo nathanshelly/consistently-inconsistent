@@ -63,8 +63,8 @@ void configure_usart()
 	sysclk_enable_peripheral_clock(BOARD_ID_USART);
 
 	/* Configure USART. */
-	//usart_init_hw_handshaking(BOARD_USART, &usart_console_settings, ul_sysclk);
-	usart_init_rs232(BOARD_USART, &usart_console_settings, ul_sysclk);
+	usart_init_hw_handshaking(BOARD_USART, &usart_console_settings, ul_sysclk);
+	//usart_init_rs232(BOARD_USART, &usart_console_settings, ul_sysclk);
 
 	/* Disable all the interrupts. */
 	usart_disable_interrupt(BOARD_USART, ALL_INTERRUPT_MASK);
@@ -170,7 +170,7 @@ uint8_t open_websocket(uint8_t number_of_attempts) {
 	// figure out handle
 	uint8_t status_code;
 	for(int i=0; i<number_of_attempts; i++){
-		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_audio_socket\r\n", "Opened: ", 20000, 1);
+		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_socket\r\n", "Opened: ", 20000, 1);
 		if (status_code >= 10){
 			if (status_code > 18){
 				write_wifi_command_safe("close all\r\n","Success",200,0);
