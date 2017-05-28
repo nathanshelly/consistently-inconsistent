@@ -366,7 +366,7 @@ uint8_t send_audio_packet(){
 void prep_stream_for_data(uint8_t handle, uint32_t num_bytes) {
 	char* templated_command[30];
 	usart_write_line(BOARD_USART,"\r\n");
-	sprintf(templated_command, "write %d %d\r\n", handle, AUDIO_PACKET_SIZE * 2);
+	sprintf(templated_command, "write %d %d\r\n", handle, num_bytes);
 	usart_write_line(BOARD_USART, templated_command);
 }
 
