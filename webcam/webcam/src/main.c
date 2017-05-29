@@ -29,7 +29,13 @@ int main (void)
 	//usart_write_line(BOARD_USART,"set ua b 1 921600\r\n");
 	//usart_write_line(BOARD_USART,"save\r\n");
 	
+	//usart_write_line(BOARD_USART,"set ne t a lets-encrypt-x3-cross-signed.pem\r\n");
+	//usart_write_line(BOARD_USART,"save\r\n");
+	
 	reboot_wifi();
+	
+	//reboot_wifi();
+	//setup_wifi();
 	//safe_mode_recovery();
 	
 	configure_i2s(); // microphone configuration
