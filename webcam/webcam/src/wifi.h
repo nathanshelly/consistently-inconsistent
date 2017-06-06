@@ -64,7 +64,7 @@ uint8_t write_wifi_command_safe(char*, char*, uint32_t, uint8_t);
 
 #define BOARD_ID_USART				ID_USART0
 #define BOARD_USART					USART0
-#define BOARD_USART_BAUDRATE		921600//2500000 
+#define BOARD_USART_BAUDRATE		2500000
 #define handler_usart				USART0_Handler
 #define USART_IRQn					USART0_IRQn
 

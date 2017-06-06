@@ -8637,49 +8637,49 @@ OUTPUT(webcam.elf elf32-littlearm)
  .debug_line    0x0000ffe9      0x413 src/ASF/sam/utils/syscalls/gcc/syscalls.o
  .debug_line    0x000103fc      0xf57 src/main.o
 
-.debug_str      0x00000000    0x50762
+.debug_str      0x00000000    0x50763
  .debug_str     0x00000000    0x47af3 src/ASF/sam/drivers/ssc/ssc.o
                               0x47ec3 (size before relaxing)
  .debug_str     0x00047af3      0x369 src/ASF/sam/drivers/tc/tc.o
                               0x47a66 (size before relaxing)
  .debug_str     0x00047e5c      0x135 src/ASF/sam/drivers/wdt/wdt.o
                               0x47802 (size before relaxing)
- .debug_str     0x00047f91     0x396e src/microphone.o
-                              0x4b4de (size before relaxing)
- .debug_str     0x0004b8ff       0x35 src/ASF/common/services/delay/sam/cycle_counter.o
+ .debug_str     0x00047f91     0x396f src/microphone.o
+                              0x4b4df (size before relaxing)
+ .debug_str     0x0004b900       0x35 src/ASF/common/services/delay/sam/cycle_counter.o
                               0x4787b (size before relaxing)
- .debug_str     0x0004b934      0x48a src/ASF/sam/drivers/pio/pio_handler.o
+ .debug_str     0x0004b935      0x48a src/ASF/sam/drivers/pio/pio_handler.o
                               0x4820b (size before relaxing)
- .debug_str     0x0004bdbe      0x3cd src/ASF/sam/drivers/twi/twi.o
+ .debug_str     0x0004bdbf      0x3cd src/ASF/sam/drivers/twi/twi.o
                               0x47c46 (size before relaxing)
- .debug_str     0x0004c18b      0x8bd src/ASF/sam/drivers/usart/usart.o
+ .debug_str     0x0004c18c      0x8bd src/ASF/sam/drivers/usart/usart.o
                               0x48100 (size before relaxing)
- .debug_str     0x0004ca48     0x1c66 src/camera.o
-                              0x4c8f0 (size before relaxing)
- .debug_str     0x0004e6ae      0x1b2 src/ov2640.o
+ .debug_str     0x0004ca49     0x1c66 src/camera.o
+                              0x4c8f1 (size before relaxing)
+ .debug_str     0x0004e6af      0x1b2 src/ov2640.o
                               0x4b5c7 (size before relaxing)
- .debug_str     0x0004e860       0x20 src/ov2640_table_registers.o
+ .debug_str     0x0004e861       0x20 src/ov2640_table_registers.o
                               0x4ad78 (size before relaxing)
- .debug_str     0x0004e880       0x66 src/timer_interface.o
+ .debug_str     0x0004e881       0x66 src/timer_interface.o
                               0x4a53b (size before relaxing)
- .debug_str     0x0004e8e6      0x4c9 src/wifi.o
-                              0x4bfad (size before relaxing)
- .debug_str     0x0004edaf      0x295 src/ASF/common/services/clock/sam4s/sysclk.o
+ .debug_str     0x0004e8e7      0x4c9 src/wifi.o
+                              0x4bfae (size before relaxing)
+ .debug_str     0x0004edb0      0x295 src/ASF/common/services/clock/sam4s/sysclk.o
                               0x49471 (size before relaxing)
- .debug_str     0x0004f044      0x454 src/ASF/sam/drivers/pio/pio.o
+ .debug_str     0x0004f045      0x454 src/ASF/sam/drivers/pio/pio.o
                               0x4831b (size before relaxing)
- .debug_str     0x0004f498      0x57b src/ASF/sam/drivers/pmc/pmc.o
+ .debug_str     0x0004f499      0x57b src/ASF/sam/drivers/pmc/pmc.o
                               0x4816a (size before relaxing)
- .debug_str     0x0004fa13       0xee src/ASF/common/boards/user_board/init.o
-                              0x4b801 (size before relaxing)
- .debug_str     0x0004fb01      0x428 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
+ .debug_str     0x0004fa14       0xee src/ASF/common/boards/user_board/init.o
+                              0x4b802 (size before relaxing)
+ .debug_str     0x0004fb02      0x428 src/ASF/sam/utils/cmsis/sam4s/source/templates/gcc/startup_sam4s.o
                               0x3833e (size before relaxing)
- .debug_str     0x0004ff29       0xb9 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
+ .debug_str     0x0004ff2a       0xb9 src/ASF/sam/utils/cmsis/sam4s/source/templates/system_sam4s.o
                               0x380dd (size before relaxing)
- .debug_str     0x0004ffe2      0x768 src/ASF/sam/utils/syscalls/gcc/syscalls.o
+ .debug_str     0x0004ffe3      0x768 src/ASF/sam/utils/syscalls/gcc/syscalls.o
                                0x7291 (size before relaxing)
- .debug_str     0x0005074a       0x18 src/main.o
-                              0x4cad3 (size before relaxing)
+ .debug_str     0x0005074b       0x18 src/main.o
+                              0x4cad4 (size before relaxing)
 
 .debug_frame    0x00000000     0x499c
  .debug_frame   0x00000000      0x5f8 src/ASF/sam/drivers/ssc/ssc.o
