@@ -8,8 +8,6 @@
 
 #define AUDIO_BUFFER_SIZE	16000
 
-volatile uint8_t capture_toggle;
-volatile uint32_t buffer_filled;
 volatile uint32_t i2s_capture_index;
 volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE];
 

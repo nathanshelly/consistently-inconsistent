@@ -1,14 +1,12 @@
 #include "microphone.h"
 
 volatile uint8_t capture_toggle = 0;
-volatile uint32_t buffer_filled = 0;
 
 /** Receive index. **/
 volatile uint32_t i2s_capture_index = 0;
 
 /** Receiver buffer content. **/
 volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE] = {0};
-
 
 /**
  * \brief Remove zero padding and tristated signal.

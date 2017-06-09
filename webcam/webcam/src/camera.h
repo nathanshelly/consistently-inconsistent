@@ -14,13 +14,7 @@ volatile uint32_t vsync_rising_edge_flag;
 uint8_t image_dest_buffer_ptr[CAM_BUFFER_SIZE];
 
 // function declarations
-void handler_vsync(uint32_t, uint32_t);
-void configure_vsync(void);
-void configure_twi(void);
-void init_pio_capture(Pio*, uint32_t);
-void init_camera(void);
 void configure_camera(void);
-uint8_t capture_pio(Pio*, uint8_t*, uint32_t);
 void start_capture(void);
 uint32_t find_image_len(void);
 
