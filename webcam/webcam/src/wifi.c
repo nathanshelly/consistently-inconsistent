@@ -2,25 +2,24 @@
 #include "camera.h"
 #include "microphone.h"
 
-volatile uint8_t usart_buffer[BUFFER_SIZE] = {0};
-volatile uint32_t usart_buffer_index = 0;
 volatile uint8_t timeout_counter = 0;
-volatile uint32_t data_recieved = 0;
-volatile uint32_t wifi_setup_flag = false;
 volatile uint32_t received_byte_wifi = 0;
+volatile uint32_t wifi_setup_flag = false;
 
-volatile uint32_t i2s_send_index = 0;
-uint32_t post_counter = 0;
-uint8_t ws_handle = NO_WEBSOCKET_OPEN;
 uint32_t reopen_delay_seconds = 5;
+volatile uint32_t i2s_send_index = 0;
+uint8_t ws_handle = NO_WEBSOCKET_OPEN;
+
+volatile uint32_t data_recieved = 0;
+volatile uint32_t usart_buffer_index = 0;
+volatile uint8_t usart_buffer[BUFFER_SIZE] = {0};
 
 /**
  * \brief Interrupt handler for USART.
  *
  * Increment the number of bytes received in the current second and start
  * another transfer if the desired bps has not been met yet.
- *
- */
+ **/
 void handler_usart()
 {
 	usart_disable_interrupt(BOARD_USART, US_IER_RXRDY);
@@ -42,7 +41,7 @@ void handler_usart()
 
 /**
  *  Configure board USART communication with PC or other terminal.
- */
+ **/
 void configure_usart()
 {
 	static uint32_t ul_sysclk;
@@ -81,7 +80,7 @@ void configure_usart()
 
 /**
  *  \brief Command response handler for wifi.
- */
+ **/
 void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
@@ -89,7 +88,7 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 
 /**
  *  \brief Configures communication pin for wifi.
- */
+ **/
 void configure_command_complete(){
 	// do something here
 	// just configuring a rising edge interrupt on whichever pin
@@ -114,7 +113,7 @@ void configure_command_complete(){
 
 /**
  *  \brief Handler for setting up wifi.
- */
+ **/
 void handler_web_setup(uint32_t ul_id, uint32_t ul_mask) {
 	unused(ul_id);
 	unused(ul_mask);
@@ -124,7 +123,7 @@ void handler_web_setup(uint32_t ul_id, uint32_t ul_mask) {
 
 /**
  *  \brief Configures wifi setup pin.
- */
+ **/
 void configure_web_setup(){
 	// Configuration of a button to initiate web setup
 	// Pin is PB14
@@ -152,7 +151,7 @@ void configure_web_setup(){
 
 /**
  *  \brief Writes wifi command.
- */
+ **/
 void write_wifi_command(char* comm, uint8_t cnt){
 	data_recieved = 0;
 	usart_write_line(BOARD_USART, comm);
@@ -166,6 +165,9 @@ void write_wifi_command(char* comm, uint8_t cnt){
 	}
 }
 
+/**
+ *  \brief Opens websocket connection to server
+ **/
 uint8_t open_websocket(uint8_t number_of_attempts) {
 	// figure out handle
 	uint8_t status_code;
@@ -183,6 +185,9 @@ uint8_t open_websocket(uint8_t number_of_attempts) {
 	return NO_WEBSOCKET_OPEN; // indicate failure
 }
 
+/**
+ *  \brief Checks if we currently have a websocket open
+ **/
 uint8_t check_ws_handle(uint8_t theoretical_handle){
 	char* templated_response[40];
 	sprintf(templated_response, "%d WEBC", theoretical_handle);
@@ -191,11 +196,11 @@ uint8_t check_ws_handle(uint8_t theoretical_handle){
 	return command_response == COMMAND_SUCCESS ? COMMAND_SUCCESS : COMMAND_FAILURE;
 }
 
-/*
-	\brief Blinks a defined LED_PIN.
-	Delays, switches, delays, switches, delays
-	Total time is 3x ms_blink
- */
+/**
+ *  \brief Blinks a defined LED_PIN.
+ *	Delays, switches, delays, switches, delays
+ *	Total time is 3x ms_blink
+ **/
 void blink_LED(int ms_blink){
 	delay_ms(ms_blink);
 	ioport_toggle_pin_level(LED_PIN);
@@ -206,17 +211,16 @@ void blink_LED(int ms_blink){
 
 /**
  *  \brief Sets up wifi chip on new network.
- */
+ **/
 void setup_wifi(){
 	// command wifi chip to setup
 	write_wifi_command_safe("setup web\r\n","Associated]", 60000, 0);
-	// turn off setup flag
 	wifi_setup_flag = false;
 }
 
 /**
  *  \brief Wrapper function for wifi module configuration.
- */
+ **/
 void configure_wifi(){
 	configure_usart();
 	configure_command_complete();
@@ -224,6 +228,9 @@ void configure_wifi(){
 	usart_enable_interrupt(BOARD_USART, US_IER_RXRDY);
 }
 
+/**
+ *  \brief Recovers wifi chip from safemode.
+ **/
 void safe_mode_recovery(){
 	write_wifi_command("get system.safemode.status\r\n",2);
 	write_wifi_command("faults_print\r\n",2);
@@ -234,7 +241,7 @@ void safe_mode_recovery(){
 
 /**
  *  \brief Reboots the wifi chip.
- */
+ **/
 void reboot_wifi() {
 	wifi_setup_flag = false;
 	uint8_t status_code;
@@ -249,13 +256,18 @@ void reboot_wifi() {
 	status_code = write_wifi_command_safe("set sy c e off\r\n","Set OK", 100, 0);
 }
 
+/**
+ *  \brief Initial opening of websocket connection.
+ **/
 void configure_websocket(){
 	// try 5 times to open the socket
 	ws_handle = open_websocket(5); 
 }
 
+/**
+ *  \brief Attempts to reopen websocket connections on disconnect.
+ **/
 void reopen_websockets(){
-	// reopen websocket connections if something breaks
 	write_wifi_command_safe("close all\r\n","Success",100,0); // fix this
 	ws_handle = NO_WEBSOCKET_OPEN;
 	
@@ -267,45 +279,31 @@ void reopen_websockets(){
 	reopen_delay_seconds = 5;
 }
 
-void send_image_dummy(){
-	uint8_t status_code;
-
-	if (ws_handle != NO_WEBSOCKET_OPEN){
-		//websocket open
-		// the audio still has stuff to send (should be most of the time)
-		status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
-		if(status_code == COMMAND_STCLOSE){
-			ws_handle = NO_WEBSOCKET_OPEN;
-		} else if (status_code == COMMAND_FAILURE){
-			if(check_ws_handle(ws_handle) != COMMAND_SUCCESS){
-				reopen_websockets();
-			}
-		}
-	} else{
-		// websocket not open
-		reopen_websockets();
-	}	
-}
-
+/**
+ *  \brief Determines if our audio sending is caught up to our audio capture
+ **/
 uint8_t is_audio_caught_up(){
 	uint32_t end_index = (i2s_send_index + AUDIO_PACKET_SIZE) % (AUDIO_BUFFER_SIZE); // the last uint16 index that will be hit if it sends
 	
 	// make sure that the end index isn't in front of the receive index
-	uint32_t first_condition = ((i2s_capture_index - i2s_send_index) < AUDIO_PACKET_SIZE) && ((i2s_capture_index - i2s_send_index) > 0);
-	uint32_t second_condition = ((end_index - i2s_capture_index) > 0) && ((end_index - i2s_capture_index) < AUDIO_PACKET_SIZE);
+	uint32_t first_condition = ((i2s_capture_index - i2s_send_index) < AUDIO_PACKET_SIZE)
+							&& ((i2s_capture_index - i2s_send_index) > 0);
+	uint32_t second_condition = ((end_index - i2s_capture_index) > 0)
+							  && ((end_index - i2s_capture_index) < AUDIO_PACKET_SIZE);
 	return (first_condition || second_condition) ? 1 : 0;
 }
 
+/**
+ *  \brief Sends image data over ws connection while still streaming audio
+ *	throttled to audio speed
+ **/
 void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
-	// sends image data over ws connection while still streaming audio
-	// throttled to audio speed
-	
 	uint32_t image_byte_index = 0;
 	uint8_t status_code;
 	
 	while (image_byte_index < image_length){
 		// there's still image data to send
-		//send audio data until caught up
+		// send audio data until caught up
 		if (ws_handle != NO_WEBSOCKET_OPEN){
 			//websocket open
 			if(is_audio_caught_up()){
@@ -344,9 +342,11 @@ void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
 	write_wifi_command_safe(templated_command, "Success", 500, 0);
 }
 
+/**
+ *  \brief Sends one audio packet
+ *	called by camera functions to stream audio while capturing image
+ **/
 uint8_t send_audio_packet(){
-	// sends one audio packet, assuming everything is OK everywhere
-	// called by camera functions to stream audio while capturing image
 	uint8_t status_code;
 	
 	if (ws_handle != NO_WEBSOCKET_OPEN && ws_handle != PREV_COMMAND_FAILED && !is_audio_caught_up()){
@@ -363,6 +363,9 @@ uint8_t send_audio_packet(){
 	return 0;
 }
 
+/**
+ *  \brief Readies Zentri for data sent over websocket connection
+ **/
 void prep_stream_for_data(uint8_t handle, uint32_t num_bytes) {
 	char* templated_command[30];
 	usart_write_line(BOARD_USART,"\r\n");
@@ -370,6 +373,9 @@ void prep_stream_for_data(uint8_t handle, uint32_t num_bytes) {
 	usart_write_line(BOARD_USART, templated_command);
 }
 
+/**
+ *  \brief Returns constant representing response from Zentri on a command
+ **/
 uint8_t get_stream_response(char* resp, uint32_t timeout_ms, uint8_t is_audio_data_send) {
 	uint32_t ms_counter = 0;
 	uint8_t command_response = COMMAND_UNSET;
@@ -396,11 +402,9 @@ uint8_t get_stream_response(char* resp, uint32_t timeout_ms, uint8_t is_audio_da
 	return command_response;
 }
 
-// returns 0 for a successful write
-// returns 1 for a failed write
-// returns 2 for a timeout
-// returns 3 for an unexpected stream closure
-// returns 10+stream handle for opening a stream
+/**
+ *  \brief Writes one packet of audio data to websocket connection
+ **/
 uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
 	
 	// first thing: check if we've received any transmission since the last time
@@ -426,11 +430,9 @@ uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp
 	return get_stream_response(resp, timeout_ms, 1);
 }
 
-// returns 0 for a successful write
-// returns 1 for a failed write
-// returns 2 for a timeout
-// returns 3 for an unexpected stream closure
-// returns 10+stream handle for opening a stream
+/**
+ *  \brief Writes one packet of image data to websocket connection
+ **/
 uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
 	
 	// first thing: check if we've received any transmission since the last time
@@ -459,10 +461,9 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	return get_stream_response(resp, timeout_ms, 0);
 }
 
-// returns 0 for a successful write
-// returns 1 for a failed write
-// returns 2 for a timeout
-// returns 10+stream handle for opening a stream
+/**
+ *  \brief Writes a command to the wifi chip, appropriately handling the chip's response
+ **/
 uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, uint8_t handle_expected){
 
 	// clear buffer
