@@ -403,34 +403,6 @@ uint8_t get_stream_response(char* resp, uint32_t timeout_ms, uint8_t is_audio_da
 }
 
 /**
- *  \brief Writes one packet of audio data to websocket connection
- **/
-uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
-	
-	// first thing: check if we've received any transmission since the last time
-	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: ")) {
-		return COMMAND_STCLOSE; // return a value indicating closure of the stream
-	}
-
-	// clear buffer
-	memset(usart_buffer, 0, BUFFER_SIZE);
-	usart_buffer_index = 0;
-	
-	if(is_audio_caught_up()) // make sure that the end index isn't in front of the receive index
-		return COMMAND_RETRYIT;
-
-	prep_stream_for_data(handle, AUDIO_PACKET_SIZE * 2);
-	
-	uint8_t curr_data_point;
-	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++) {
-		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];
-		usart_putchar(BOARD_USART, curr_data_point);
-	}
-
-	return get_stream_response(resp, timeout_ms, 1);
-}
-
-/**
  *  \brief Writes one packet of image data to websocket connection
  **/
 uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
@@ -460,6 +432,35 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	
 	return get_stream_response(resp, timeout_ms, 0);
 }
+
+/**
+ *  \brief Writes one packet of audio data to websocket connection
+ **/
+uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
+	
+	// first thing: check if we've received any transmission since the last time
+	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: ")) {
+		return COMMAND_STCLOSE; // return a value indicating closure of the stream
+	}
+
+	// clear buffer
+	memset(usart_buffer, 0, BUFFER_SIZE);
+	usart_buffer_index = 0;
+	
+	if(is_audio_caught_up()) // make sure that the end index isn't in front of the receive index
+		return COMMAND_RETRYIT;
+
+	prep_stream_for_data(handle, AUDIO_PACKET_SIZE * 2);
+	
+	uint8_t curr_data_point;
+	for (int i = i2s_send_index*2; i < i2s_send_index*2 + (AUDIO_PACKET_SIZE*2); i++) {
+		curr_data_point = ((uint8_t*) data_pointer)[i % (AUDIO_BUFFER_SIZE*2)];
+		usart_putchar(BOARD_USART, curr_data_point);
+	}
+
+	return get_stream_response(resp, timeout_ms, 1);
+}
+
 
 /**
  *  \brief Writes a command to the wifi chip, appropriately handling the chip's response

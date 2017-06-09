@@ -36,6 +36,9 @@ void configure_websocket();
 
 void send_image(uint8_t*, uint32_t);
 uint8_t send_audio_packet();
+uint8_t write_wifi_command_safe(char*, char*, uint32_t, uint8_t);
+uint8_t write_audio_data_safe(uint16_t*, uint8_t, char*, uint32_t);
+uint8_t write_image_data_safe(uint8_t*, uint32_t, uint32_t, uint8_t, char*, uint32_t);
 
 // Usart communication definitions
 #define BOARD_ID_USART				ID_USART0
