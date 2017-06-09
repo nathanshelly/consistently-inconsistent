@@ -396,12 +396,12 @@ uint8_t get_stream_response(char* resp, uint32_t timeout_ms, uint8_t is_audio_da
 	return command_response;
 }
 
+// returns 0 for a successful write
+// returns 1 for a failed write
+// returns 2 for a timeout
+// returns 3 for an unexpected stream closure
+// returns 10+stream handle for opening a stream
 uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
-	// returns 0 for a successful write
-	// returns 1 for a failed write
-	// returns 2 for a timeout
-	// returns 3 for an unexpected stream closure
-	// returns 10+stream handle for opening a stream
 	
 	// first thing: check if we've received any transmission since the last time
 	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: ")) {
@@ -426,12 +426,12 @@ uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp
 	return get_stream_response(resp, timeout_ms, 1);
 }
 
+// returns 0 for a successful write
+// returns 1 for a failed write
+// returns 2 for a timeout
+// returns 3 for an unexpected stream closure
+// returns 10+stream handle for opening a stream
 uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
-	// returns 0 for a successful write
-	// returns 1 for a failed write
-	// returns 2 for a timeout
-	// returns 3 for an unexpected stream closure
-	// returns 10+stream handle for opening a stream
 	
 	// first thing: check if we've received any transmission since the last time
 	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: ")) {
@@ -459,11 +459,11 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
 	return get_stream_response(resp, timeout_ms, 0);
 }
 
+// returns 0 for a successful write
+// returns 1 for a failed write
+// returns 2 for a timeout
+// returns 10+stream handle for opening a stream
 uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, uint8_t handle_expected){
-	// returns 0 for a successful write
-	// returns 1 for a failed write
-	// returns 2 for a timeout
-	// returns 10+stream handle for opening a stream
 
 	// clear buffer
 	memset(usart_buffer, 0, BUFFER_SIZE);
