@@ -1,24 +1,25 @@
 #include "microphone.h"
 
-/** Receive index. */
-volatile uint32_t i2s_capture_index = 0;
+volatile uint8_t capture_toggle = 0;
 volatile uint32_t buffer_filled = 0;
 
-/** Receiver buffer content. */
+/** Receive index. **/
+volatile uint32_t i2s_capture_index = 0;
+
+/** Receiver buffer content. **/
 volatile uint16_t i2s_rec_buf[AUDIO_BUFFER_SIZE] = {0};
-	
-volatile uint8_t capture_toggle = 0;
 
-void start_i2s_capture(void){ ssc_enable_interrupt(SSC, SSC_IDR_RXRDY); }
 
-// get rid of zero padding and tristated signal
+/**
+ * \brief Remove zero padding and tristated signal.
+ **/
 uint16_t modify_data(uint32_t data_to_modify) {
 	return (uint16_t) (data_to_modify >> 16);
 }
 
 /**
  * \brief Synchronous Serial Controller Handler.
- */
+ **/
 void SSC_Handler(void) {
 	uint32_t ul_data;
 	ssc_get_status(SSC);
@@ -27,8 +28,7 @@ void SSC_Handler(void) {
 	if(!(capture_toggle++ % 2) && i2s_capture_index < AUDIO_BUFFER_SIZE)
 		i2s_rec_buf[i2s_capture_index++] = modify_data(ul_data);
 
-	if (i2s_capture_index >= AUDIO_BUFFER_SIZE)// && !buffer_filled)
-		//buffer_filled = 1;
+	if (i2s_capture_index >= AUDIO_BUFFER_SIZE)
 		i2s_capture_index = 0;
 }
 
@@ -37,7 +37,7 @@ void SSC_Handler(void) {
  * \param p_ssc Pointer to an SSC instance.
  * \param ul_bitrate Desired bit clock.
  * \param ul_mck MCK clock.
-*/
+ **/
 void configure_i2s(void) {
 	/* Initialize the SSC module and work in loop mode. */
 	pmc_enable_periph_clk(ID_SSC);
@@ -57,4 +57,11 @@ void configure_i2s(void) {
 	NVIC_ClearPendingIRQ(SSC_IRQn);
 	NVIC_SetPriority(SSC_IRQn, SSC_IRQ_PRIO);
 	NVIC_EnableIRQ(SSC_IRQn);
+}
+
+/** 
+ * \brief Begin capturing audio
+ **/
+void start_i2s_capture(void) {
+	ssc_enable_interrupt(SSC, SSC_IDR_RXRDY);
 }
