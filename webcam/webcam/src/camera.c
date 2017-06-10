@@ -129,7 +129,7 @@ uint8_t capture_pio(Pio *p_pio, uint8_t *uc_buf, uint32_t ul_size) {
 		p_pio->PIO_RCR = ul_size;
 		p_pio->PIO_PTCR = PIO_PTCR_RXTEN;
 		return 1;
-		} 
+	}
 	else if (p_pio->PIO_RNCR == 0) {
 		p_pio->PIO_RNPR = (uint32_t)image_dest_buffer_ptr;
 		p_pio->PIO_RNCR = ul_size;
@@ -165,9 +165,9 @@ void start_capture(void) {
 	uint32_t counter = 0;
 	/* Wait end of capture*/
 	// send 0-10 packets here - useful but not critical
-	while (!((OV_DATA_BUS_PIO->PIO_PCISR & PIO_PCIMR_RXBUFF) == PIO_PCIMR_RXBUFF)) {
-		counter += send_audio_packet(); // send one audio packet if available
-	}
+	while (!((OV_DATA_BUS_PIO->PIO_PCISR & PIO_PCIMR_RXBUFF) == PIO_PCIMR_RXBUFF))
+		// send one audio packet if available
+		counter += send_audio_packet(); 
 
 	/* Disable pio capture*/
 	pio_capture_disable(OV_DATA_BUS_PIO);
@@ -180,29 +180,20 @@ void start_capture(void) {
  *  \brief Finds image len. Returns a uint32_t for the length
  **/
 uint32_t find_image_len(void) {
-	uint16_t *reading_ptr =  image_dest_buffer_ptr;
+	uint16_t *reading_ptr = image_dest_buffer_ptr;
 	while((*reading_ptr != 0xD8FF) && (reading_ptr < (image_dest_buffer_ptr + CAM_BUFFER_SIZE)))
-	{
 		reading_ptr++;
-	}
 	
 	if (*reading_ptr != 0xD8FF)
-	{
 		return 0;
-	}
 	else
-	{
 		start_of_image_ptr = (uint8_t *) reading_ptr;
-	}
 	
 	while((*reading_ptr != 0xD9FF) && (reading_ptr < (image_dest_buffer_ptr + CAM_BUFFER_SIZE)))
-	{
 		reading_ptr++;
-	}
+	
 	if (reading_ptr > (image_dest_buffer_ptr + CAM_BUFFER_SIZE))
-	{
 		return 0;
-	}
 	// need to get past end of file to include it in image
 	reading_ptr++;
 	return (uint32_t) (((uint8_t*) reading_ptr) - ((uint8_t*) image_dest_buffer_ptr));
