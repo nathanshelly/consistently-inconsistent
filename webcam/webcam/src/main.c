@@ -14,20 +14,17 @@ int main (void)
 	tc_start(TC0, 0);
 		
 	// Custom configuration calls
-	configure_wifi();		// configures and initializes wifi 
-	configure_camera();		// configures and initializes camera module
-	
-	//safe_mode_recovery();
-	uint8_t status_code = 0;
-	uint32_t im_length;
+	configure_wifi();	// configures and initializes wifi 
+	configure_camera();	// configures and initializes camera module
 	
 	reboot_wifi();
-		
-	configure_i2s(); // microphone configuration
 	
+	configure_i2s(); // microphone configuration
 	configure_websocket();
 	
-	start_i2s_capture();	
+	start_i2s_capture();
+	
+	uint32_t im_length;
 	while(1) {
 		if(wifi_setup_flag) {	// if the user pressed the wifi setup button, 
 			setup_wifi();		// the wifi chip tries to reassociate to a new network
