@@ -90,16 +90,7 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
  *  \brief Configures communication pin for wifi.
  **/
 void configure_command_complete(){
-	// do something here
-	// just configuring a rising edge interrupt on whichever pin
-	// we set as the wifi command pin
-	// we should be able to do this
-	
-	//configure button from the button project?
-	
-	pmc_enable_periph_clk(WIFI_COMM_ID); // put these definitions in wifi.h
-	// see which pins we used
-	// just the rising edge option
+	pmc_enable_periph_clk(WIFI_COMM_ID);
 	
 	pio_set_debounce_filter(WIFI_COMM_PIO, WIFI_COMM_PIN_MSK, 10);
 	
@@ -125,13 +116,6 @@ void handler_web_setup(uint32_t ul_id, uint32_t ul_mask) {
  *  \brief Configures wifi setup pin.
  **/
 void configure_web_setup(){
-	// Configuration of a button to initiate web setup
-	// Pin is PB14
-	//pio_configure_pin(GPIO_WIFI_RESET_PB, GPIO_WIFI_RESET_PB_FLAGS);
-	
-	///* Set direction and pullup on the given button IOPORT */
-	//ioport_set_pin_dir(GPIO_WIFI_RESET_PB, IOPORT_DIR_INPUT);
-	//ioport_set_pin_mode(GPIO_WIFI_RESET_PB, IOPORT_MODE_PULLUP);
 	/* Configure PIO clock. */
 	pmc_enable_periph_clk(WIFI_SETUP_ID);
 
