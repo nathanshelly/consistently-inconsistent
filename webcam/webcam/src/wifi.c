@@ -89,17 +89,8 @@ void handler_command_complete(uint32_t ul_id, uint32_t ul_mask) {
 /**
  *  \brief Configures communication pin for wifi.
  **/
-void configure_command_complete(){
-	// do something here
-	// just configuring a rising edge interrupt on whichever pin
-	// we set as the wifi command pin
-	// we should be able to do this
-	
-	//configure button from the button project?
-	
-	pmc_enable_periph_clk(WIFI_COMM_ID); // put these definitions in wifi.h
-	// see which pins we used
-	// just the rising edge option
+void configure_command_complete() {
+	pmc_enable_periph_clk(WIFI_COMM_ID);
 	
 	pio_set_debounce_filter(WIFI_COMM_PIO, WIFI_COMM_PIN_MSK, 10);
 	
@@ -125,13 +116,6 @@ void handler_web_setup(uint32_t ul_id, uint32_t ul_mask) {
  *  \brief Configures wifi setup pin.
  **/
 void configure_web_setup(){
-	// Configuration of a button to initiate web setup
-	// Pin is PB14
-	//pio_configure_pin(GPIO_WIFI_RESET_PB, GPIO_WIFI_RESET_PB_FLAGS);
-	
-	///* Set direction and pullup on the given button IOPORT */
-	//ioport_set_pin_dir(GPIO_WIFI_RESET_PB, IOPORT_DIR_INPUT);
-	//ioport_set_pin_mode(GPIO_WIFI_RESET_PB, IOPORT_MODE_PULLUP);
 	/* Configure PIO clock. */
 	pmc_enable_periph_clk(WIFI_SETUP_ID);
 
@@ -156,10 +140,9 @@ void write_wifi_command(char* comm, uint8_t cnt){
 	data_recieved = 0;
 	usart_write_line(BOARD_USART, comm);
 	
-	timeout_counter = 0;
 	cnt = cnt*20;
+	timeout_counter = 0;
 	while(timeout_counter < cnt && !data_recieved) {
-		// leave long
 		delay_ms(10);
 		timeout_counter++;
 	}
@@ -173,12 +156,11 @@ uint8_t open_websocket(uint8_t number_of_attempts) {
 	uint8_t status_code;
 	for(int i=0; i<number_of_attempts; i++){
 		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_socket\r\n", "Opened: ", 20000, 1);
-		if (status_code >= 10){
-			if (status_code > 18){
+		if (status_code >= 10) {
+			if (status_code > 18)
 				write_wifi_command_safe("close all\r\n","Success",200,0);
-				continue;
-			}
-			return status_code - 10;
+			else
+				return status_code - 10;
 		}
 	}
 	// should check last thing in input buffer for handle
@@ -246,14 +228,12 @@ void reboot_wifi() {
 	wifi_setup_flag = false;
 	uint8_t status_code;
 	
-	while(write_wifi_command_safe("reboot\r\n", "Associated]", 10000,0) != COMMAND_SUCCESS){
-		if(wifi_setup_flag){
+	while(write_wifi_command_safe("reboot\r\n", "Associated]", 10000,0) != COMMAND_SUCCESS)
+		if(wifi_setup_flag)
 			setup_wifi();
-		}
-	}
 	
-	status_code = write_wifi_command_safe("set sy c p off\r\n","Set OK",100,0);
-	status_code = write_wifi_command_safe("set sy c e off\r\n","Set OK", 100, 0);
+	status_code = write_wifi_command_safe("set sy c p off\r\n", "Set OK", 100, 0);
+	status_code = write_wifi_command_safe("set sy c e off\r\n", "Set OK", 100, 0);
 }
 
 /**
@@ -276,6 +256,7 @@ void reopen_websockets(){
 		ws_handle = open_websocket(5); // try 5 times to open the socket
 		reopen_delay_seconds += 5; // this could take a while
 	}
+	
 	reopen_delay_seconds = 5;
 }
 
@@ -306,36 +287,29 @@ void send_image(uint8_t *start_of_image_ptr, uint32_t image_length){
 		// send audio data until caught up
 		if (ws_handle != NO_WEBSOCKET_OPEN){
 			//websocket open
-			if(is_audio_caught_up()){
+			if(is_audio_caught_up()) {
 				// if the audio sending is caught up, we can send an image packet
 				status_code = write_image_data_safe(start_of_image_ptr, image_byte_index, image_length, ws_handle, "Success", 500);
-				if(status_code == COMMAND_STCLOSE){
+				if(status_code == COMMAND_STCLOSE)
 					ws_handle = NO_WEBSOCKET_OPEN;
-				} else if (status_code == COMMAND_FAILURE){
-					if(check_ws_handle(ws_handle) != COMMAND_SUCCESS){
+				else if (status_code == COMMAND_FAILURE && check_ws_handle(ws_handle) != COMMAND_SUCCESS)
 						reopen_websockets();
-					}
-				} else if (status_code == COMMAND_SUCCESS){
+				else if (status_code == COMMAND_SUCCESS)
 					image_byte_index += IMAGE_PACKET_SIZE;
-				}
-
-			} else{
+			}
+			else {
 				// the audio still has stuff to send (should be most of the time)
 				status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
-				if(status_code == COMMAND_STCLOSE){
+				if(status_code == COMMAND_STCLOSE)
 					ws_handle = NO_WEBSOCKET_OPEN;
-				} else if (status_code == COMMAND_FAILURE){
-					if(check_ws_handle(ws_handle) != COMMAND_SUCCESS){
+				else if (status_code == COMMAND_FAILURE && check_ws_handle(ws_handle) != COMMAND_SUCCESS)
 						reopen_websockets();
-					}
-				}
 			}
-		} else{
-			// websocket not open
+		}
+		else
 			reopen_websockets();
-		}	
 	}
-		
+
 	char* templated_command[30];
 	sprintf(templated_command, "write %d 10\r\nimage done", ws_handle);
 
@@ -353,13 +327,14 @@ uint8_t send_audio_packet(){
 			//websocket open, no recent command failure, and enough data to send
 		status_code = write_audio_data_safe(i2s_rec_buf, ws_handle, "Success", 500);
 		
-		if(status_code == COMMAND_STCLOSE){
+		if(status_code == COMMAND_STCLOSE)
 			ws_handle = NO_WEBSOCKET_OPEN;
-		} else if (status_code == COMMAND_FAILURE){
+		else if (status_code == COMMAND_FAILURE)
 			ws_handle = PREV_COMMAND_FAILED;
-		}
+			
 		return 1;
 	}
+	
 	return 0;
 }
 
@@ -382,8 +357,8 @@ uint8_t get_stream_response(char* resp, uint32_t timeout_ms, uint8_t is_audio_da
 
 	while(command_response == COMMAND_UNSET) {
 		if(strstr(usart_buffer, resp)){
+			// recompute send index after loop execution
 			if(is_audio_data_send)
-				// recompute send index after loop execution
 				i2s_send_index = (i2s_send_index + AUDIO_PACKET_SIZE) % AUDIO_BUFFER_SIZE;
 
 			command_response = COMMAND_SUCCESS;
@@ -407,10 +382,9 @@ uint8_t get_stream_response(char* resp, uint32_t timeout_ms, uint8_t is_audio_da
  **/
 uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index, uint32_t im_len, uint8_t handle, char* resp, uint32_t timeout_ms){
 	
-	// first thing: check if we've received any transmission since the last time
-	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: ")) {
-		return COMMAND_STCLOSE; // return a value indicating closure of the stream
-	}
+	// check if any transmission received since the last time
+	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: "))
+		return COMMAND_STCLOSE;
 	
 	// clear buffer
 	memset(usart_buffer, 0, BUFFER_SIZE);
@@ -438,10 +412,9 @@ uint8_t write_image_data_safe(uint8_t* array_start_pointer, uint32_t start_index
  **/
 uint8_t write_audio_data_safe(uint16_t* data_pointer, uint8_t handle, char* resp, uint32_t timeout_ms){
 	
-	// first thing: check if we've received any transmission since the last time
-	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: ")) {
-		return COMMAND_STCLOSE; // return a value indicating closure of the stream
-	}
+	// check if any transmission received since the last time
+	if (usart_buffer_index != 0 && strstr(usart_buffer, "[Closed: "))
+		return COMMAND_STCLOSE;
 
 	// clear buffer
 	memset(usart_buffer, 0, BUFFER_SIZE);
@@ -480,9 +453,9 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 	while(command_response == COMMAND_UNSET) {			
 		// makes sure we have complete response before matching on expected
 		// 10 is new line, should be the last thing in the buffer
-		if( (strstr(usart_buffer, resp)) && (usart_buffer[usart_buffer_index-1] == 10)){
-			if(!handle_expected) command_response = COMMAND_SUCCESS; // successful response
-			// otherwise, parse for handle
+		if(strstr(usart_buffer, resp) && (usart_buffer[usart_buffer_index-1] == 10)) {
+			if(!handle_expected)
+				command_response = COMMAND_SUCCESS;
 			else {
 				char *opened_pointer = strstr(usart_buffer, resp);
 				uint32_t buffer_offset = ((uint8_t *) opened_pointer) - usart_buffer;
@@ -490,16 +463,12 @@ uint8_t write_wifi_command_safe(char* command, char* resp, uint32_t timeout_ms, 
 				command_response = handle+10;
 			}
 		}
-		else if(strstr(usart_buffer, "[Closed: ")){
-			// return a value indicating closure of the stream
+		else if(strstr(usart_buffer, "[Closed: "))
 			command_response = COMMAND_STCLOSE;
-		}
-		else if (strstr(usart_buffer, "Command failed")){
-			command_response = COMMAND_FAILURE; // command failed
-		}
-		else if (ms_counter++ > timeout_ms){
+		else if (strstr(usart_buffer, "Command failed"))
+			command_response = COMMAND_FAILURE;
+		else if (ms_counter++ > timeout_ms)
 			command_response = COMMAND_TIMEOUT;
-		}
 		delay_ms(1);
 	}
 	
