@@ -25,6 +25,8 @@
 
 // variable declarations
 volatile uint32_t wifi_setup_flag;
+// Modularity and all that
+// static const char WEBSOCKET_URL[] = "wss://bigbrothersees.me/source_socket";
 
 // function declarations
 void blink_LED(int);

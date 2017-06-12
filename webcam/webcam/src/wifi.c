@@ -156,6 +156,16 @@ uint8_t open_websocket(uint8_t number_of_attempts) {
 	// figure out handle
 	uint8_t status_code;
 	for(int i=0; i<number_of_attempts; i++){
+
+		// Modularity and all that
+		// char websocket_url[80];
+		// char* start = "websocket_client -f bin ";
+		// char* end = "\r\n";
+
+		// strcat(websocket_url, start);
+		// strcat(websocket_url, WEBSOCKET_URL);
+		// strcat(websocket_url, end);
+
 		uint8_t status_code = write_wifi_command_safe("websocket_client -f bin wss://bigbrothersees.me/source_socket\r\n", "Opened: ", 20000, 1);
 		if (status_code >= 10){
 			if (status_code > 18){
